@@ -11,7 +11,7 @@ import {
 
 function Navbar({ setPage }) {
     return (
-        <div className="nav-container">
+        <div className="nav-container bg-blue-900">
 
             {/* 🔵 TOP BAR */}
             <div className="topbar">
@@ -36,10 +36,10 @@ function Navbar({ setPage }) {
             </div>
 
             {/* ⚪ MAIN NAVBAR */}
-            <div className="mainnav">
+            <div className="mainnav bg-blue-600">
 
                 {/* LOGO */}
-                <div className="logo" onClick={() => setPage("Home")}>
+                <div className="logo bg-blue-600 p-5 rounded-2xl" onClick={() => setPage("Home")}>
                     <img src="/logo.webp" alt="logo" />
                 </div>
 
