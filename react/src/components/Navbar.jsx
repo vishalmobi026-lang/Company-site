@@ -1,18 +1,25 @@
+import { useState } from "react";
 import {
   FaPhoneAlt,
   FaEnvelope,
   FaInstagram,
   FaFacebookF,
   FaLinkedinIn,
-  FaChevronDown
+  FaChevronDown,
+  FaBars,
+  FaTimes
 } from "react-icons/fa";
 
-function Navbar({ setPage, Page }) {
+function Navbar({ setPage, Page, openCourses, setOpenCourses }) {
+
+  // ✅ ADDED STATE FOR MOBILE MENU
+  const [mobileMenu, setMobileMenu] = useState(false);
+
   return (
     <div className="w-full sticky top-0 z-50">
 
       {/* 🔵 TOP BAR */}
-      <div className="bg-blue-900 text-white text-sm px-10 py-4 flex justify-between items-center">
+      <div className="bg-blue-900 text-white text-sm px-10 py-4 flex justify-between items-center hidden md:flex">
         <div className="flex gap-12 items-center">
           <span className="flex items-center gap-2">
             <FaPhoneAlt /> +91 75980 98675
@@ -58,11 +65,24 @@ function Navbar({ setPage, Page }) {
           </div>
         </div>
 
+        {/* ✅ HAMBURGER ICON (ONLY MOBILE) */}
+        <div className="md:hidden">
+          {mobileMenu ? (
+            <FaTimes size={22} onClick={() => setMobileMenu(false)} />
+          ) : (
+            <FaBars size={22} onClick={() => setMobileMenu(true)} />
+          )}
+        </div>
+
         {/* CENTER MENU */}
-        <ul className="absolute left-1/2 transform -translate-x-[55%] flex items-center gap-8 font-medium">
+        <ul className="absolute left-1/2 transform -translate-x-[55%] flex items-center gap-8 font-medium hidden md:flex">
 
           {/* COURSES */}
-          <li className="relative group cursor-pointer flex items-center">
+          <li
+            className="relative cursor-pointer flex items-center"
+            onMouseEnter={() => setOpenCourses(true)}
+            onMouseLeave={() => setOpenCourses(false)}
+          >
             <div
               onClick={() => setPage("Courses")}
               className={`flex items-center gap-1 transition ${
@@ -72,37 +92,69 @@ function Navbar({ setPage, Page }) {
               Courses <FaChevronDown className="text-xs mt-[2px]" />
             </div>
 
-            {/* ✅ FIXED DROPDOWN */}
-            <div className="absolute left-0 top-full pt-3 hidden group-hover:block z-50">
-              <div className="bg-gray-900 text-white p-5 rounded-2xl shadow-2xl w-80 space-y-3">
+            {/*  DROPDOWN */}
+            {openCourses && (
+              <div className="absolute left-0 top-full pt-3 z-50">
+                <div className="bg-gray-900 text-white p-5 rounded-2xl shadow-2xl w-80 space-y-3">
 
-                <div onClick={() => setPage("It/Technical")} className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                  <h3 className="font-semibold text-sm">IT / Technical</h3>
-                  <p className="text-xs text-gray-400">Learn programming, development & IT skills</p>
+                  <div
+                    onClick={() => {
+                      setPage("It/Technical");
+                      setOpenCourses(false);
+                    }}
+                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-sm">IT / Technical</h3>
+                    <p className="text-xs text-gray-400">Learn programming, development & IT skills</p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setPage("NonTechnical");
+                      setOpenCourses(false);
+                    }}
+                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-sm">Non Technical</h3>
+                    <p className="text-xs text-gray-400">Business, management & soft skills</p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setPage("Designing");
+                      setOpenCourses(false);
+                    }}
+                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-sm">Designing</h3>
+                    <p className="text-xs text-gray-400">UI/UX, graphic & creative design</p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setPage("Accounting");
+                      setOpenCourses(false);
+                    }}
+                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-sm">Accounting</h3>
+                    <p className="text-xs text-gray-400">Finance, Tally & business accounting</p>
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setPage("Civil");
+                      setOpenCourses(false);
+                    }}
+                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
+                  >
+                    <h3 className="font-semibold text-sm">Civil</h3>
+                    <p className="text-xs text-gray-400">Construction & engineering skills</p>
+                  </div>
+
                 </div>
-
-                <div onClick={() => setPage("NonTechnical")} className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                  <h3 className="font-semibold text-sm">Non Technical</h3>
-                  <p className="text-xs text-gray-400">Business, management & soft skills</p>
-                </div>
-
-                <div onClick={() => setPage("Designing")} className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                  <h3 className="font-semibold text-sm">Designing</h3>
-                  <p className="text-xs text-gray-400">UI/UX, graphic & creative design</p>
-                </div>
-
-                <div onClick={() => setPage("Accounting")} className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                  <h3 className="font-semibold text-sm">Accounting</h3>
-                  <p className="text-xs text-gray-400">Finance, Tally & business accounting</p>
-                </div>
-
-                <div onClick={() => setPage("Civil")} className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer">
-                  <h3 className="font-semibold text-sm">Civil</h3>
-                  <p className="text-xs text-gray-400">Construction & engineering skills</p>
-                </div>
-
               </div>
-            </div>
+            )}
           </li>
 
           {/* ABOUT */}
@@ -128,25 +180,64 @@ function Navbar({ setPage, Page }) {
         </ul>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setPage("Login")}
-            className="bg-blue-500 text-white px-8 py-2 rounded-full hover:bg-blue-600 transition"
-          >
-            Login
-          </button>
-
+        <div className="flex items-center gap-4 hidden md:flex">
           <span
-            onClick={() => setPage("Enroll")}
+            onClick={() => setPage("Login")}
             className={`cursor-pointer font-semibold transition ${
-              Page === "Enroll" ? "text-blue-600" : "hover:text-blue-600"
+              Page === "Login" ? "text-blue-600" : "hover:text-blue-600"
             }`}
           >
-            Enroll
+            Login
           </span>
+
+          <button
+            onClick={() => setPage("Enroll")}
+            className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition"
+          >
+            Enroll Now
+          </button>
         </div>
 
       </div>
+
+      {/* ✅ MOBILE MENU */}
+      {mobileMenu && (
+        <div className="md:hidden bg-white shadow-md px-6 py-4 space-y-4">
+
+          <div onClick={() => setPage("Home")}>Home</div>
+
+          <div>
+            <div
+              onClick={() => setOpenCourses(!openCourses)}
+              className="flex justify-between items-center"
+            >
+              Courses
+              <FaChevronDown className={`${openCourses ? "rotate-180" : ""}`} />
+            </div>
+
+            {openCourses && (
+              <div className="pl-3 mt-2 space-y-2">
+                <div onClick={() => setPage("It/Technical")}>IT / Technical</div>
+                <div onClick={() => setPage("NonTechnical")}>Non Technical</div>
+                <div onClick={() => setPage("Designing")}>Designing</div>
+                <div onClick={() => setPage("Accounting")}>Accounting</div>
+                <div onClick={() => setPage("Civil")}>Civil</div>
+              </div>
+            )}
+          </div>
+
+          <div onClick={() => setPage("About")}>About us</div>
+          <div onClick={() => setPage("Contact")}>Contact us</div>
+          <div onClick={() => setPage("Login")}>Login</div>
+
+          <button
+            onClick={() => setPage("Enroll")}
+            className="w-full bg-blue-500 text-white py-2 rounded-full"
+          >
+            Enroll Now
+          </button>
+        </div>
+      )}
     </div>
   );
 }

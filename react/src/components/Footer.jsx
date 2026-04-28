@@ -65,7 +65,7 @@ function Footer() {
           <div className="max-w-md">
 
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="G-TEC"
               className="h-16 mb-4 object-contain"
             />

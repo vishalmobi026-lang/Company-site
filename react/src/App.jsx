@@ -6,8 +6,9 @@ import Footer from "./components/Footer";
 import Contact from "./Pages/Contact";
 import Login from "./Pages/Login";
 import Courses from "./Pages/Courses";
+import Enroll from "./Pages/Enroll";
 
-// ✅ IMPORT DROPDOWN PAGES
+// IMPORT DROPDOWN PAGES
 import Technical from "./Dropdown/Technical";
 import NonTechnical from "./Dropdown/NonTechnical";
 import Designing from "./Dropdown/Designing";
@@ -16,6 +17,7 @@ import Civil from "./Dropdown/Civil";
 
 function App() {
   const [Page, setPage] = useState("Home");
+  const [openCourses, setOpenCourses] = useState(false);
 
   return (
     <div
@@ -25,12 +27,23 @@ function App() {
         minHeight: "100vh"
       }}
     >
-      {/* ✅ PASS Page also */}
-      <Navbar setPage={setPage} Page={Page} />
+      {/* NAVBAR */}
+      <Navbar
+        setPage={setPage}
+        Page={Page}
+        openCourses={openCourses}
+        setOpenCourses={setOpenCourses}
+      />
 
-      {/* ❌ removed marginTop (since navbar is sticky) */}
+      {/* MAIN CONTENT */}
       <div style={{ flex: 1 }}>
-        {Page === "Home" && <Home />}
+        {Page === "Home" && (
+          <Home
+            setPage={setPage}
+            setOpenCourses={setOpenCourses}
+          />
+        )}
+
         {Page === "Courses" && <Courses />}
         {Page === "It/Technical" && <Technical />}
         {Page === "NonTechnical" && <NonTechnical />}
@@ -40,13 +53,11 @@ function App() {
         {Page === "Contact" && <Contact />}
         {Page === "About" && <About />}
         {Page === "Login" && <Login />}
-      </div>
+        {Page === "Enroll" && <Enroll />}
+      </div>  
 
-      {/* ✅ FOOTER CONTROL */}
-      {(Page === "Home" ||
-        Page === "About" ||
-        Page === "Contact" ||
-        Page === "Courses") && <Footer />}
+      {/*  FOOTER ON ALL PAGES */}
+      <Footer />
     </div>
   );
 }

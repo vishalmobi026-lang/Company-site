@@ -30,7 +30,7 @@ export default function About() {
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white py-24 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-            Building the Future 🚀
+            Building the Future 
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">
             We create modern, scalable, and intelligent digital solutions that
@@ -109,7 +109,7 @@ export default function About() {
       {/* CTA */}
       <section className="bg-black text-white py-20 text-center">
       <h2 className="text-3xl font-bold mb-4">
-  Join Our Courses 🚀
+  Join Our Courses 
 </h2>
        
         <button className="bg-indigo-600 px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
