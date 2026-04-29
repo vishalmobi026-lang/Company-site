@@ -1,121 +1,148 @@
-import { FaPhoneAlt, FaMapMarkerAlt, FaClock, FaEnvelope } from "react-icons/fa";
+import { useState } from "react";
+import { FaPhoneAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 function Contact() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    phone: "",
+    message: ""
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(form);
+    alert("Message sent successfully!");
+  };
+
   return (
-    <div className="bg-gray-100 py-16 px-6">
+    <section className="relative min-h-screen bg-slate-950 text-white py-16 px-6 overflow-hidden">
 
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
+      {/* 🔹 GRID BACKGROUND */}
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-pulse"></div>
 
-        {/*  LEFT SIDE */}
-        <div>
-          <h2 className="text-2xl font-bold text-blue-900 mb-3">
+      {/* 🔹 GLOW EFFECTS */}
+      <div className="absolute w-[500px] h-[500px] bg-purple-500/20 blur-3xl rounded-full top-[-100px] left-[-100px]"></div>
+      <div className="absolute w-[400px] h-[400px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-100px] right-[-100px]"></div>
+
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 relative z-10">
+
+        {/* 🔥 LEFT SIDE */}
+        <motion.div
+          initial={{ opacity: 0, x: -80 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
             Have Any Questions?
           </h2>
 
-          <p className="text-gray-600 mb-8">
-            We offer a free counseling session to help you match your interests
-            with the right technical path. Just visit our institute or give us a call.
+          <p className="text-gray-400 mb-8">
+            Get free counseling and choose the right path for your career growth.
           </p>
 
           {/* ADDRESS */}
-          <div className="bg-white p-5 rounded-xl shadow-md flex gap-4 mb-5 hover:shadow-lg transition">
-            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-              <FaMapMarkerAlt />
-            </div>
+          <div className="bg-white/5 backdrop-blur border border-gray-700 p-5 rounded-xl flex gap-4 mb-5 hover:scale-105 transition">
+            <FaMapMarkerAlt className="text-purple-400 text-xl" />
             <div>
               <h4 className="font-semibold">Address</h4>
-              <p className="text-gray-600 text-sm">
-                NIYAS ARCADE, Opp. Of Mosque,<br />
-                Azhagiyamandapam.
-              </p>
+              <p className="text-sm text-gray-400">Azhagiyamandapam</p>
             </div>
           </div>
 
           {/* PHONE */}
-          <div className="bg-white p-5 rounded-xl shadow-md flex gap-4 mb-5 hover:shadow-lg transition">
-            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-              <FaPhoneAlt />
-            </div>
+          <div className="bg-white/5 backdrop-blur border border-gray-700 p-5 rounded-xl flex gap-4 mb-5 hover:scale-105 transition">
+            <FaPhoneAlt className="text-blue-400 text-xl" />
             <div>
-              <h4 className="font-semibold">Phone Number</h4>
-              <p className="text-gray-600 text-sm">
-                +91 75980 98675, 72002 86091
-              </p>
+              <h4 className="font-semibold">Phone</h4>
+              <p className="text-sm text-gray-400">+91 75980 98675</p>
             </div>
           </div>
 
           {/* HOURS */}
-          <div className="bg-white p-5 rounded-xl shadow-md flex gap-4 hover:shadow-lg transition">
-            <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-              <FaClock />
-            </div>
+          <div className="bg-white/5 backdrop-blur border border-gray-700 p-5 rounded-xl flex gap-4 hover:scale-105 transition">
+            <FaClock className="text-cyan-400 text-xl" />
             <div>
               <h4 className="font-semibold">Working Hours</h4>
-              <p className="text-gray-600 text-sm">
-                Mon - Sat : 09:00 AM - 6:00 PM
-              </p>
+              <p className="text-sm text-gray-400">Mon - Sat</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* 🔵 RIGHT SIDE (FORM) */}
-        <div className="bg-blue-900 text-white p-8 rounded-2xl shadow-xl">
+        {/* 🔥 RIGHT SIDE FORM */}
+        <motion.div
+          initial={{ opacity: 0, x: 80 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="bg-white/5 backdrop-blur border border-gray-700 p-8 rounded-2xl shadow-lg"
+        >
 
-          <h3 className="text-lg font-semibold mb-2">Contact Us</h3>
-          <h1 className="text-3xl font-bold mb-6">GET IN TOUCH</h1>
+          <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            Get In Touch
+          </h1>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* NAME + EMAIL */}
             <div className="grid md:grid-cols-2 gap-4">
               <input
-                type="text"
-                placeholder="Your Name*"
-                className="p-3 rounded-lg bg-white text-black outline-none"
+                name="name"
+                placeholder="Your Name"
+                value={form.name}
+                onChange={handleChange}
+                className="p-3 rounded bg-black/30 border border-gray-600 focus:border-purple-400 outline-none"
               />
+
               <input
-                type="email"
-                placeholder="Email Address*"
-                className="p-3 rounded-lg bg-white text-black outline-none"
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                className="p-3 rounded bg-black/30 border border-gray-600 focus:border-purple-400 outline-none"
               />
             </div>
 
-            {/* SUBJECT + PHONE */}
             <div className="grid md:grid-cols-2 gap-4">
-              <select className="p-3 rounded-lg bg-white text-black outline-none">
+              <select
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
+                className="p-3 rounded bg-black/30 border border-gray-600 focus:border-purple-400 outline-none"
+              >
                 <option>Select Subject</option>
                 <option>Course Inquiry</option>
                 <option>Admission</option>
-                <option>Support</option>
               </select>
 
               <input
-                type="text"
-                placeholder="Phone Number*"
-                className="p-3 rounded-lg bg-white text-black outline-none"
+                name="phone"
+                placeholder="Phone"
+                value={form.phone}
+                onChange={handleChange}
+                className="p-3 rounded bg-black/30 border border-gray-600 focus:border-purple-400 outline-none"
               />
             </div>
 
-            {/* MESSAGE */}
             <textarea
-              rows="5"
-              placeholder="Write your Message*"
-              className="w-full p-3 rounded-lg bg-white text-black outline-none"
+              name="message"
+              placeholder="Message"
+              value={form.message}
+              onChange={handleChange}
+              className="w-full p-3 rounded bg-black/30 border border-gray-600 focus:border-purple-400 outline-none"
             />
 
-            {/* BUTTON */}
-            <button
-              type="submit"
-              className="bg-red-500 px-6 py-3 rounded-full font-semibold hover:bg-red-600 transition"
-            >
+            <button className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-105 transition duration-300 shadow-lg">
               Send Message
             </button>
 
           </form>
-        </div>
+        </motion.div>
 
       </div>
-    </div>
+    </section>
   );
 }
 

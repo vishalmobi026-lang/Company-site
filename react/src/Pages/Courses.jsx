@@ -1,100 +1,117 @@
 import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-export default function Courses({ setPage }) {
+export default function Courses() {
+
+  const navigate = useNavigate();
 
   const courses = [
-    // TECHNICAL
     {
       title: "IT/Technical",
       desc: "Build complete web applications",
       img: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-      page: "It/Technical"
+      path: "/courses/technical"
     },
     {
       title: "Non-Technical",
-      desc: "MongoDB, Express, React, Node",
-      img: "https://miro.medium.com/v2/resize:fit:1400/1*0G5zu7-Cx6h2n1Zb8Z9g7A.png",
-      page: "NonTechnical"
+      desc: "Management, Communication, Business Skills",
+      img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f", // ✅ FIXED
+      path: "/courses/non-technical"
     },
-
-    // NON-TECHNICAL
     {
       title: "Designing",
       desc: "Learn leadership & business strategy",
       img: "https://images.unsplash.com/photo-1552664730-d307ca884978",
-      page: "Designing"
+      path: "/courses/designing"
     },
     {
       title: "Accounting",
       desc: "SEO, Ads & social media growth",
       img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-      page: "Accounting"
+      path: "/courses/accounting"
     },
-
-    // DESIGN
     {
       title: "Civil",
       desc: "Design user-friendly interfaces",
       img: "https://images.unsplash.com/photo-1559028012-481c04fa702d",
-      page: "Civil"
+      path: "/courses/civil"
     }
   ];
 
   return (
-    <div className="bg-gray-100 py-16 px-6">
+    <section className="relative min-h-screen bg-slate-950 text-white py-16 px-6 overflow-hidden">
 
-      <h1 className="text-4xl font-bold text-center mb-12 text-blue-900">
-        All Courses
+      {/* 🔹 Grid Background */}
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-pulse"></div>
+
+      {/* 🔹 Glow Effects */}
+      <div className="absolute w-[500px] h-[500px] bg-purple-500/20 blur-3xl rounded-full top-[-100px] left-[-100px]"></div>
+      <div className="absolute w-[400px] h-[400px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-100px] right-[-100px]"></div>
+
+      {/* 🔹 TITLE */}
+      <h1 className="text-4xl md:text-5xl font-extrabold text-center mb-14 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent relative z-10">
+        Explore Our Courses
       </h1>
 
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-10">
+      {/* 🔹 CARDS */}
+      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-10 relative z-10">
+
         {courses.map((course, index) => (
 
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
+            transition={{ delay: index * 0.08 }}
             whileHover={{ scale: 1.05 }}
-            className="w-[320px] bg-white rounded-2xl shadow-lg overflow-hidden"
+            className="w-[320px] bg-white/5 backdrop-blur border border-gray-700 rounded-2xl overflow-hidden shadow-lg hover:shadow-purple-500/20 transition"
           >
 
-            {/* IMAGE */}
-            <img
-              src={course.img}
-              alt={course.title}
-              className="h-48 w-full object-cover"
-            />
+            {/* 🔹 IMAGE */}
+            <div className="relative">
+              <img
+                src={course.img}
+                alt={course.title}
+                className="h-48 w-full object-cover"
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/400x300?text=Course";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            </div>
 
-            {/* CONTENT */}
+            {/* 🔹 CONTENT */}
             <div className="p-6 text-center">
-              <h2 className="text-xl font-bold mb-2">
+
+              <h2 className="text-xl font-semibold mb-2">
                 {course.title}
               </h2>
 
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-gray-400 text-sm mb-4">
                 {course.desc}
               </p>
 
-              <div className="flex items-center justify-center gap-2 text-green-600 mb-4">
+              <div className="flex items-center justify-center gap-2 text-green-400 mb-4">
                 <FaCheckCircle />
                 <span>Certificate Course</span>
               </div>
 
-              {/*  FIXED BUTTON */}
               <button
-                onClick={() => setPage(course.page)}
-                className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 mx-auto hover:bg-red-600 transition"
+                onClick={() => navigate(course.path)}
+                className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 flex items-center gap-2 mx-auto hover:scale-105 transition duration-300 shadow-md"
               >
                 Enroll Now <FaArrowRight />
               </button>
+
             </div>
 
           </motion.div>
+
         ))}
+
       </div>
 
-    </div>
+    </section>
   );
 }

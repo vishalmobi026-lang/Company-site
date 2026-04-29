@@ -1,90 +1,90 @@
 import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 function Technical() {
+  const navigate = useNavigate();
+
   const courses = [
     {
       title: "Full-Stack Development",
       desc: "Building both the front end and back end of an application.",
-      img: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+      img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "MERN Stack Development",
       desc: "Enables building full-stack web applications using only JavaScript.",
-      img: "https://miro.medium.com/v2/resize:fit:1400/1*0G5zu7-Cx6h2n1Zb8Z9g7A.png"
+      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "MEAN Stack Development",
       desc: "Utilizes JavaScript for both front-end and back-end.",
-      img: "https://miro.medium.com/v2/resize:fit:1400/1*Q5EUk28Xc3s9Zx9lY7yPsg.png"
+      img: "https://images.unsplash.com/photo-1581091870627-3b1c5d6d3b5b?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Python Developer",
-      desc: "Integrates Modern front-end and back-end technologies.",
-      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+      desc: "Integrates modern front-end and back-end technologies.",
+      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Java Developer",
-      desc: "They build scource,scalable, and high-performance applications.",
-      img: "https://images.unsplash.com/photo-1677442136019-21780ecad995"
+      desc: "Build secure, scalable, high-performance applications.",
+      img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "JavaScript",
-      desc: "JavaScript is a powerful scripting language that makes websites interactive, dynamic,and responsive.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
-    },
-     {
-      title: "Html",
-      desc: "HTML is the standard language used to create and structure content on websites.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Makes websites interactive, dynamic and responsive.",
+      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
     },
     {
-      title: "css",
-      desc: "CSS styles your web pages, making them visually appealing and responsive across devices.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      title: "HTML",
+      desc: "Standard language to structure web pages.",
+      img: "https://images.unsplash.com/photo-1581276879432-15a19d654956?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      title: "CSS",
+      desc: "Styles your web pages beautifully.",
+      img: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Machine Learning",
-      desc: "Machine Learning is a subset of AI that enables systems to learn and improve from experience.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Systems that learn from data automatically.",
+      img: "https://images.unsplash.com/photo-1581091012184-7c1b9f2c6c8c?auto=format&fit=crop&w=800&q=80"
     },
-       {
+    {
       title: "Data Science",
-      desc: "Data Science is the field of extracting insights and knowledge from data using various techniques and tools.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Extract insights and knowledge from data.",
+      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=800&q=80"
     },
-    
-       {
+    {
       title: "Artificial Intelligence",
-      desc: "Artificial Intelligence is the simulation of human intelligence in machines.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Simulation of human intelligence in machines.",
+      img: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&w=800&q=80"
     },
-    
-       {
+    {
       title: "PHP Developer",
-      desc: "PHP is a server-side scripting language designed for web development.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Server-side scripting for web development.",
+      img: "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=800&q=80"
     },
-    
-       {
+    {
       title: "MySQL",
-      desc: "MySQL is an open-source relational database management system.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Open-source relational database system.",
+      img: "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80"
     },
-        {
-      title: "SQL 3",
-      desc: "Manage & query databases effectively,powering smaart data decisions.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+    {
+      title: "SQL",
+      desc: "Query and manage databases efficiently.",
+      img: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "MongoDB",
-      desc: "MongoDB is a NoSQL database that stores data in flexible, JSON-like documents.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Flexible NoSQL database.",
+      img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Oracle",
-      desc: "Manage & query databases effectively,powering smaart data decisions.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      desc: "Enterprise-level database system.",
+      img: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=800&q=80"
     },
   ];
 
@@ -102,20 +102,13 @@ function Technical() {
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            
-            whileHover={{
-              rotateX: 5,
-              rotateY: -5,
-              scale: 1.05
-            }}
-
+            whileHover={{ rotateX: 5, rotateY: -5, scale: 1.05 }}
             className="relative w-[320px] rounded-2xl group"
           >
 
-            {/* 🔥 GLOW BORDER */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-md transition duration-500"></div>
+            {/* GLOW */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-md transition"></div>
 
-            {/* CARD */}
             <div className="relative bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden">
 
               {/* IMAGE */}
@@ -123,13 +116,12 @@ function Technical() {
                 <motion.img
                   src={course.img}
                   alt={course.title}
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/400x300?text=Course";
+                  }}
                   className="h-48 w-full object-cover"
                   whileHover={{ scale: 1.15 }}
-                  transition={{ duration: 0.4 }}
                 />
-
-                {/* 🔥 OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
               </div>
 
               {/* CONTENT */}
@@ -142,29 +134,20 @@ function Technical() {
                   {course.desc}
                 </p>
 
-                {/* CERTIFICATE */}
-                <div className="flex items-center justify-center gap-2 text-green-600 mb-4">
+                <div className="flex justify-center gap-2 text-green-600 mb-4">
                   <FaCheckCircle />
                   <span>Certificate Course</span>
                 </div>
 
-                {/* BUTTON */}
+                {/* ✅ ROUTER BUTTON */}
                 <motion.button
+                  onClick={() => navigate("/enroll")}
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
-                  className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold flex items-center justify-center gap-2 mx-auto relative overflow-hidden"
+                  className="bg-red-500 text-white px-8 py-3 rounded-full flex items-center gap-2 mx-auto"
                 >
-                  {/* 🔥 BUTTON GLOW */}
-                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition"></span>
-
-                  Add Now
-
-                  <motion.span
-                    whileHover={{ x: 6 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <FaArrowRight />
-                  </motion.span>
+                  Enroll Now
+                  <FaArrowRight />
                 </motion.button>
               </div>
 

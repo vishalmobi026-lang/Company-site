@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -10,72 +11,84 @@ import {
   FaTimes
 } from "react-icons/fa";
 
-function Navbar({ setPage, Page, openCourses, setOpenCourses }) {
-
-  // ✅ ADDED STATE FOR MOBILE MENU
+function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [openCourses, setOpenCourses] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="w-full sticky top-0 z-50">
+{/* 🔵 TOP BAR */}
+<div className="relative bg-[#030c2a] text-white text-sm px-10 py-4 flex justify-between items-center hidden md:flex overflow-hidden">
 
-      {/* 🔵 TOP BAR */}
-      <div className="bg-blue-900 text-white text-sm px-10 py-4 flex justify-between items-center hidden md:flex">
-        <div className="flex gap-12 items-center">
-          <span className="flex items-center gap-2">
-            <FaPhoneAlt /> +91 75980 98675
-          </span>
+  {/* 🔥 GRID */}
+  <div className="absolute inset-0 opacity-20 
+    bg-[linear-gradient(#1e293b_1px,transparent_1px),linear-gradient(90deg,#1e293b_1px,transparent_1px)] 
+    bg-[size:40px_40px]">
+  </div>
 
-          <span className="w-px h-4 bg-gray-400"></span>
+  {/* 🔥 CONTENT */}
+  <div className="relative z-10 flex justify-between w-full">
 
-          <span className="flex items-center gap-2">
-            <FaEnvelope /> azhagiyamandapam.tn@gteceducation.com
-          </span>
-        </div>
+    <div className="flex gap-12 items-center">
+      <span className="flex items-center gap-2">
+        <FaPhoneAlt /> +91 75980 98675
+      </span>
 
-        <div className="flex items-center gap-3">
-          <span>Follow us:</span>
-          <FaInstagram className="cursor-pointer" />
-          <FaFacebookF className="cursor-pointer" />
-          <FaLinkedinIn className="cursor-pointer" />
-        </div>
-      </div>
+      <span className="w-px h-4 bg-gray-500"></span>
 
+      <span className="flex items-center gap-2">
+        <FaEnvelope /> azhagiyamandapam.tn@gteceducation.com
+      </span>
+    </div>
+
+    <div className="flex items-center gap-3">
+      <span className="text-gray-300">Follow us:</span>
+      <FaInstagram className="hover:text-pink-400 cursor-pointer" />
+      <FaFacebookF className="hover:text-blue-400 cursor-pointer" />
+      <FaLinkedinIn className="hover:text-cyan-400 cursor-pointer" />
+    </div>
+
+  </div>
+</div>
       {/* ⚪ MAIN NAVBAR */}
       <div className="bg-white shadow-md px-6 py-1 flex justify-between items-center">
 
         {/* LEFT */}
-        <div className="flex items-center gap-6" onClick={() => setPage("Home")}>
-          <div className="flex flex-col items-center cursor-pointer">
-            <div className="bg-blue-800 p-3.5 rounded-2xl shadow-lg w-38 flex justify-center">
-              <img src="/logo.webp" alt="logo" className="h-12 object-contain" />
+        <div className="flex items-center gap-6 cursor-pointer" onClick={() => navigate("/")}>
+          <div className="flex flex-col items-center">
+            <div className="bg-blue-800 p-3.5 rounded-2xl shadow-lg">
+              <img src="/logo.webp" alt="logo" className="h-12" />
             </div>
 
             <a
-              href="https://www.gteceducation.com"
+              href="https://www.gtech-Nagercoil.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-48 text-center text-xs text-gray-600 mt-1 leading-none block hover:text-blue-600"
+              className="text-xs text-gray-600 mt-1 hover:text-blue-600"
             >
-              www.gteceducation.com
+              www.gtech-Nagercoil.com
             </a>
           </div>
 
-          <div className="text-gray-700 text-xl font-medium whitespace-nowrap mt-4 -ml-8">
+          <div className="text-gray-700 text-xl font-medium">
             Azhagiyamandapam
           </div>
         </div>
 
-        {/* ✅ HAMBURGER ICON (ONLY MOBILE) */}
+        {/* MOBILE ICON */}
         <div className="md:hidden">
           {mobileMenu ? (
-            <FaTimes size={22} onClick={() => setMobileMenu(false)} />
+            <FaTimes onClick={() => setMobileMenu(false)} />
           ) : (
-            <FaBars size={22} onClick={() => setMobileMenu(true)} />
+            <FaBars onClick={() => setMobileMenu(true)} />
           )}
         </div>
 
         {/* CENTER MENU */}
-        <ul className="absolute left-1/2 transform -translate-x-[55%] flex items-center gap-8 font-medium hidden md:flex">
+        <ul className="absolute left-1/2 transform -translate-x-[55%] flex items-center gap-8 hidden md:flex">
 
           {/* COURSES */}
           <li
@@ -84,74 +97,24 @@ function Navbar({ setPage, Page, openCourses, setOpenCourses }) {
             onMouseLeave={() => setOpenCourses(false)}
           >
             <div
-              onClick={() => setPage("Courses")}
-              className={`flex items-center gap-1 transition ${
-                Page === "Courses" ? "text-blue-600" : "hover:text-blue-600"
+              onClick={() => navigate("/courses")}
+              className={`flex items-center gap-1 ${
+                location.pathname === "/courses"
+                  ? "text-blue-600"
+                  : "hover:text-blue-600"
               }`}
             >
-              Courses <FaChevronDown className="text-xs mt-[2px]" />
+              Courses <FaChevronDown />
             </div>
 
-            {/*  DROPDOWN */}
             {openCourses && (
               <div className="absolute left-0 top-full pt-3 z-50">
-                <div className="bg-gray-900 text-white p-5 rounded-2xl shadow-2xl w-80 space-y-3">
-
-                  <div
-                    onClick={() => {
-                      setPage("It/Technical");
-                      setOpenCourses(false);
-                    }}
-                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-sm">IT / Technical</h3>
-                    <p className="text-xs text-gray-400">Learn programming, development & IT skills</p>
-                  </div>
-
-                  <div
-                    onClick={() => {
-                      setPage("NonTechnical");
-                      setOpenCourses(false);
-                    }}
-                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-sm">Non Technical</h3>
-                    <p className="text-xs text-gray-400">Business, management & soft skills</p>
-                  </div>
-
-                  <div
-                    onClick={() => {
-                      setPage("Designing");
-                      setOpenCourses(false);
-                    }}
-                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-sm">Designing</h3>
-                    <p className="text-xs text-gray-400">UI/UX, graphic & creative design</p>
-                  </div>
-
-                  <div
-                    onClick={() => {
-                      setPage("Accounting");
-                      setOpenCourses(false);
-                    }}
-                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-sm">Accounting</h3>
-                    <p className="text-xs text-gray-400">Finance, Tally & business accounting</p>
-                  </div>
-
-                  <div
-                    onClick={() => {
-                      setPage("Civil");
-                      setOpenCourses(false);
-                    }}
-                    className="p-3 rounded-lg hover:bg-gray-800 cursor-pointer"
-                  >
-                    <h3 className="font-semibold text-sm">Civil</h3>
-                    <p className="text-xs text-gray-400">Construction & engineering skills</p>
-                  </div>
-
+                <div className="bg-gray-900 text-white p-5 rounded-2xl w-80 space-y-3">
+                  <div onClick={() => navigate("/courses/technical")} className="p-3 hover:bg-gray-800 rounded">IT / Technical</div>
+                  <div onClick={() => navigate("/courses/non-technical")} className="p-3 hover:bg-gray-800 rounded">Non Technical</div>
+                  <div onClick={() => navigate("/courses/designing")} className="p-3 hover:bg-gray-800 rounded">Designing</div>
+                  <div onClick={() => navigate("/courses/accounting")} className="p-3 hover:bg-gray-800 rounded">Accounting</div>
+                  <div onClick={() => navigate("/courses/civil")} className="p-3 hover:bg-gray-800 rounded">Civil</div>
                 </div>
               </div>
             )}
@@ -159,9 +122,11 @@ function Navbar({ setPage, Page, openCourses, setOpenCourses }) {
 
           {/* ABOUT */}
           <li
-            onClick={() => setPage("About")}
-            className={`cursor-pointer transition ${
-              Page === "About" ? "text-blue-600" : "hover:text-blue-600"
+            onClick={() => navigate("/about")}
+            className={`cursor-pointer ${
+              location.pathname === "/about"
+                ? "text-blue-600"
+                : "hover:text-blue-600"
             }`}
           >
             About us
@@ -169,69 +134,59 @@ function Navbar({ setPage, Page, openCourses, setOpenCourses }) {
 
           {/* CONTACT */}
           <li
-            onClick={() => setPage("Contact")}
-            className={`cursor-pointer transition ${
-              Page === "Contact" ? "text-blue-600" : "hover:text-blue-600"
+            onClick={() => navigate("/contact")}
+            className={`cursor-pointer ${
+              location.pathname === "/contact"
+                ? "text-blue-600"
+                : "hover:text-blue-600"
             }`}
           >
             Contact us
           </li>
-
         </ul>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-4 hidden md:flex">
-          <span
-            onClick={() => setPage("Login")}
-            className={`cursor-pointer font-semibold transition ${
-              Page === "Login" ? "text-blue-600" : "hover:text-blue-600"
-            }`}
-          >
+        <div className="hidden md:flex items-center gap-4">
+          <span onClick={() => navigate("/login")} className="cursor-pointer hover:text-blue-600">
             Login
           </span>
 
           <button
-            onClick={() => setPage("Enroll")}
-            className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition"
+            onClick={() => navigate("/enroll")}
+            className="bg-blue-500 text-white px-6 py-2 rounded-full"
           >
             Enroll Now
           </button>
         </div>
-
       </div>
 
-      {/* ✅ MOBILE MENU */}
+      {/* MOBILE MENU */}
       {mobileMenu && (
-        <div className="md:hidden bg-white shadow-md px-6 py-4 space-y-4">
-
-          <div onClick={() => setPage("Home")}>Home</div>
+        <div className="md:hidden bg-white px-6 py-4 space-y-4">
+          <div onClick={() => navigate("/")}>Home</div>
 
           <div>
-            <div
-              onClick={() => setOpenCourses(!openCourses)}
-              className="flex justify-between items-center"
-            >
-              Courses
-              <FaChevronDown className={`${openCourses ? "rotate-180" : ""}`} />
+            <div onClick={() => setOpenCourses(!openCourses)} className="flex justify-between">
+              Courses <FaChevronDown />
             </div>
 
             {openCourses && (
               <div className="pl-3 mt-2 space-y-2">
-                <div onClick={() => setPage("It/Technical")}>IT / Technical</div>
-                <div onClick={() => setPage("NonTechnical")}>Non Technical</div>
-                <div onClick={() => setPage("Designing")}>Designing</div>
-                <div onClick={() => setPage("Accounting")}>Accounting</div>
-                <div onClick={() => setPage("Civil")}>Civil</div>
+                <div onClick={() => navigate("/courses/technical")}>IT / Technical</div>
+                <div onClick={() => navigate("/courses/non-technical")}>Non Technical</div>
+                <div onClick={() => navigate("/courses/designing")}>Designing</div>
+                <div onClick={() => navigate("/courses/accounting")}>Accounting</div>
+                <div onClick={() => navigate("/courses/civil")}>Civil</div>
               </div>
             )}
           </div>
 
-          <div onClick={() => setPage("About")}>About us</div>
-          <div onClick={() => setPage("Contact")}>Contact us</div>
-          <div onClick={() => setPage("Login")}>Login</div>
+          <div onClick={() => navigate("/about")}>About us</div>
+          <div onClick={() => navigate("/contact")}>Contact us</div>
+          <div onClick={() => navigate("/login")}>Login</div>
 
           <button
-            onClick={() => setPage("Enroll")}
+            onClick={() => navigate("/enroll")}
             className="w-full bg-blue-500 text-white py-2 rounded-full"
           >
             Enroll Now

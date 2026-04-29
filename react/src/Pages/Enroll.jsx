@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 
-function Enroll({ setPage }) {
+function Enroll() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -26,85 +29,104 @@ function Enroll({ setPage }) {
     setTouched({ ...touched, [e.target.name]: true });
   };
 
+  const isInvalid = (field) => touched[field] && !form[field];
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 🔥 REQUIRED CHECK
+    if (!form.name || !form.email || !form.phone) {
+      alert("Please fill all required fields!");
+      return;
+    }
+
     console.log(form);
     alert("Enrollment Submitted Successfully!");
   };
 
-  const isInvalid = (field) => touched[field] && !form[field];
-
   return (
-    <div className="bg-gray-100 min-h-screen px-4 py-12">
+    <div className="bg-slate-950 min-h-screen px-4 py-12 text-white">
 
-      {/* BACK */}
-    
+      {/* 🔙 BACK BUTTON */}
+      <div className="max-w-4xl mx-auto mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-purple-400 hover:underline"
+        >
+          <FaArrowLeft /> Back
+        </button>
+      </div>
 
       {/* TITLE */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold text-gray-800">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
           Student Enrollment
         </h1>
-        <p className="text-gray-500 mt-2">
-          Complete the form below to begin your learning journey with us
+        <p className="text-gray-400 mt-2">
+          Complete the form below to begin your learning journey
         </p>
       </div>
 
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="max-w-4xl mx-auto bg-white p-10 rounded-2xl shadow-xl space-y-8"
+        className="max-w-4xl mx-auto bg-white/5 backdrop-blur border border-gray-700 p-10 rounded-2xl shadow-xl space-y-8"
       >
 
         {/* PERSONAL INFO */}
         <div>
-          <h2 className="text-lg font-semibold text-blue-900 mb-4">
+          <h2 className="text-lg font-semibold text-purple-300 mb-4">
             Personal Information
           </h2>
 
           <div className="space-y-5">
 
+            {/* NAME */}
             <div>
-              <label className="font-medium">Full Name *</label>
+              <label>Full Name *</label>
               <input
                 type="text"
                 name="name"
-                placeholder="Enter your full name"
                 value={form.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`w-full mt-2 p-3 rounded-lg border 
-                ${isInvalid("name") ? "border-red-500" : "border-gray-300"}
-                focus:ring-2 focus:ring-blue-500 outline-none`}
+                className={`w-full mt-2 p-3 rounded-lg bg-black/30 border 
+                ${isInvalid("name") ? "border-red-500" : "border-gray-600"}
+                focus:border-purple-400 outline-none`}
               />
+              {isInvalid("name") && <p className="text-red-400 text-sm">Name is required</p>}
             </div>
 
+            {/* EMAIL */}
             <div>
-              <label className="font-medium">Email Address *</label>
+              <label>Email *</label>
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
                 value={form.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`w-full mt-2 p-3 rounded-lg border 
-                ${isInvalid("email") ? "border-red-500" : "border-gray-300"}
-                focus:ring-2 focus:ring-blue-500 outline-none`}
+                className={`w-full mt-2 p-3 rounded-lg bg-black/30 border 
+                ${isInvalid("email") ? "border-red-500" : "border-gray-600"}
+                focus:border-purple-400 outline-none`}
               />
+              {isInvalid("email") && <p className="text-red-400 text-sm">Email is required</p>}
             </div>
 
+            {/* PHONE */}
             <div>
-              <label className="font-medium">Phone Number *</label>
+              <label>Phone *</label>
               <input
                 type="text"
                 name="phone"
-                placeholder="+91 XXXXX XXXXX"
                 value={form.phone}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className="w-full mt-2 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+                className={`w-full mt-2 p-3 rounded-lg bg-black/30 border 
+                ${isInvalid("phone") ? "border-red-500" : "border-gray-600"}
+                focus:border-purple-400 outline-none`}
               />
+              {isInvalid("phone") && <p className="text-red-400 text-sm">Phone is required</p>}
             </div>
 
           </div>
@@ -112,98 +134,47 @@ function Enroll({ setPage }) {
 
         {/* EDUCATION */}
         <div>
-          <h2 className="text-lg font-semibold text-blue-900 mb-4">
+          <h2 className="text-lg font-semibold text-purple-300 mb-4">
             Education Details
           </h2>
 
           <div className="grid md:grid-cols-2 gap-5">
-
-            <input
-              type="text"
-              name="college"
-              placeholder="College / School Name"
-              value={form.college}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
-            <input
-              type="text"
-              name="year"
-              placeholder="Year of Study"
-              value={form.year}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
+            <input name="college" placeholder="College" value={form.college} onChange={handleChange} className="p-3 rounded bg-black/30 border border-gray-600" />
+            <input name="year" placeholder="Year" value={form.year} onChange={handleChange} className="p-3 rounded bg-black/30 border border-gray-600" />
           </div>
         </div>
 
         {/* ADDRESS */}
         <div>
-          <h2 className="text-lg font-semibold text-blue-900 mb-4">
+          <h2 className="text-lg font-semibold text-purple-300 mb-4">
             Address Details
           </h2>
 
           <textarea
             name="address"
-            placeholder="Enter your full address"
             value={form.address}
             onChange={handleChange}
-            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full p-3 rounded bg-black/30 border border-gray-600"
           />
 
           <div className="grid md:grid-cols-2 gap-5 mt-4">
-
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={form.country}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
-            <input
-              type="text"
-              name="state"
-              placeholder="State"
-              value={form.state}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
-            <input
-              type="text"
-              name="district"
-              placeholder="District"
-              value={form.district}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
-            <input
-              type="text"
-              name="pincode"
-              placeholder="Pincode"
-              value={form.pincode}
-              onChange={handleChange}
-              className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-
+            <input name="country" placeholder="Country" value={form.country} onChange={handleChange} className="p-3 border rounded bg-black/30 border-gray-600" />
+            <input name="state" placeholder="State" value={form.state} onChange={handleChange} className="p-3 border rounded bg-black/30 border-gray-600" />
+            <input name="district" placeholder="District" value={form.district} onChange={handleChange} className="p-3 border rounded bg-black/30 border-gray-600" />
+            <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} className="p-3 border rounded bg-black/30 border-gray-600" />
           </div>
         </div>
 
         {/* COURSE */}
         <div>
-          <h2 className="text-lg font-semibold text-blue-900 mb-2">
+          <h2 className="text-lg font-semibold text-purple-300 mb-2">
             Selected Course
           </h2>
           <input
             type="text"
             value={form.course}
             readOnly
-            className="w-full p-3 rounded-lg bg-gray-100 font-semibold"
+            className="w-full p-3 rounded bg-gray-800 font-semibold"
           />
         </div>
 
@@ -211,13 +182,7 @@ function Enroll({ setPage }) {
         <div className="text-center pt-6">
           <button
             type="submit"
-            disabled={!form.name || !form.email}
-            className={`px-14 py-3 rounded-full text-lg font-semibold transition
-              ${
-                !form.name || !form.email
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-red-500 hover:bg-red-600 text-white shadow-lg"
-              }`}
+            className="px-14 py-3 rounded-full text-lg font-semibold bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-105 transition"
           >
             Submit Enrollment
           </button>

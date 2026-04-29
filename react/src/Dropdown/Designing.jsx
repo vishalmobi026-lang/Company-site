@@ -1,37 +1,40 @@
 import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 function Designing() {
+  const navigate = useNavigate();
+
   const courses = [
     {
       title: "Full-Stack Development",
       desc: "Building both the front end and back end of an application.",
-      img: "https://images.unsplash.com/photo-1518770660439-4636190af475"
+      img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "MERN Stack Development",
-      desc: "Enables building full-stack web applications using only JavaScript.",
-      img: "https://miro.medium.com/v2/resize:fit:1400/1*0G5zu7-Cx6h2n1Zb8Z9g7A.png"
+      desc: "Build full-stack apps using JavaScript.",
+      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "MEAN Stack Development",
-      desc: "Utilizes JavaScript for both front-end and back-end.",
-      img: "https://miro.medium.com/v2/resize:fit:1400/1*Q5EUk28Xc3s9Zx9lY7yPsg.png"
+      desc: "JavaScript-based front-end & back-end.",
+      img: "https://images.unsplash.com/photo-1581091870627-3b1c5d6d3b5b?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Data Science",
       desc: "Turn raw data into actionable insights.",
-      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "Artificial Intelligence",
       desc: "Machines that learn and adapt.",
-      img: "https://images.unsplash.com/photo-1677442136019-21780ecad995"
+      img: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&w=800&q=80"
     },
     {
       title: "PHP Developer",
       desc: "Build dynamic web applications.",
-      img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c"
+      img: "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=800&q=80"
     }
   ];
 
@@ -43,23 +46,17 @@ function Designing() {
 
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-10">
         {courses.map((course, index) => (
-          
+
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            
-            whileHover={{
-              rotateX: 5,
-              rotateY: -5,
-              scale: 1.05
-            }}
-
+            whileHover={{ rotateX: 5, rotateY: -5, scale: 1.05 }}
             className="relative w-[320px] rounded-2xl group"
           >
 
-            {/* 🔥 GLOW BORDER */}
+            {/* GLOW BORDER */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-md transition duration-500"></div>
 
             {/* CARD */}
@@ -70,12 +67,15 @@ function Designing() {
                 <motion.img
                   src={course.img}
                   alt={course.title}
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/400x300?text=Course";
+                  }}
                   className="h-48 w-full object-cover"
                   whileHover={{ scale: 1.15 }}
                   transition={{ duration: 0.4 }}
                 />
 
-                {/* 🔥 OVERLAY */}
+                {/* OVERLAY */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
               </div>
 
@@ -95,16 +95,16 @@ function Designing() {
                   <span>Certificate Course</span>
                 </div>
 
-                {/* BUTTON */}
+                {/* ✅ ROUTER BUTTON */}
                 <motion.button
+                  onClick={() => navigate("/enroll")}
                   whileTap={{ scale: 0.9 }}
                   whileHover={{ scale: 1.05 }}
                   className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold flex items-center justify-center gap-2 mx-auto relative overflow-hidden"
                 >
-                  {/* 🔥 BUTTON GLOW */}
                   <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition"></span>
 
-                  Add Now
+                  Enroll Now
 
                   <motion.span
                     whileHover={{ x: 6 }}

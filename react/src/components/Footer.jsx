@@ -22,38 +22,54 @@ function Footer() {
 
           <div className="space-y-6 mt-6">
 
+            {/* PHONE */}
             <div className="flex items-start gap-4">
               <div className="bg-gray-800 p-3 rounded-full">
                 <FaPhoneAlt />
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Call us any time:</p>
-                <p className="font-semibold text-lg">+91 75980 98675</p>
+                <a
+                  href="tel:+917598098675"
+                  className="font-semibold text-lg hover:text-blue-400"
+                >
+                  +91 75980 98675
+                </a>
               </div>
             </div>
 
+            {/* EMAIL */}
             <div className="flex items-start gap-4">
               <div className="bg-gray-800 p-3 rounded-full">
                 <FaEnvelope />
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Email us:</p>
-                <p className="font-semibold">
+                <a
+                  href="mailto:azhagiyamandapam.tn@gteceducation.com"
+                  className="font-semibold hover:text-blue-400"
+                >
                   azhagiyamandapam.tn@gteceducation.com
-                </p>
+                </a>
               </div>
             </div>
 
+            {/* LOCATION */}
             <div className="flex items-start gap-4">
               <div className="bg-gray-800 p-3 rounded-full">
                 <FaMapMarkerAlt />
               </div>
               <div>
                 <p className="text-gray-400 text-sm">Location:</p>
-                <p className="font-semibold">
+                <a
+                  href="https://www.google.com/maps"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold hover:text-blue-400"
+                >
                   NIYAS ARCADE, Opp. Of Mosque,<br />
                   Azhagiyamandapam.
-                </p>
+                </a>
               </div>
             </div>
 
@@ -77,24 +93,30 @@ function Footer() {
             <p className="text-gray-400 mb-6">
               G-TEC empowers students with practical skills and global exposure,
               preparing them for successful careers in IT, finance, business,
-              and emerging technologies across the world.
+              and emerging technologies.
             </p>
 
             <h4 className="font-semibold mb-3">FOLLOW US ON:</h4>
 
+            {/* SOCIAL LINKS */}
             <div className="flex gap-4">
-              <div className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
+
+              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
                 <FaInstagram />
-              </div>
-              <div className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
+              </a>
+
+              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
                 <FaFacebookF />
-              </div>
-              <div className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
+              </a>
+
+              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
                 <FaLinkedinIn />
-              </div>
-              <div className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
+              </a>
+
+              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-gray-700">
                 <FaXTwitter />
-              </div>
+              </a>
+
             </div>
 
           </div>
@@ -102,6 +124,7 @@ function Footer() {
 
       </div>
 
+      {/* BOTTOM */}
       <div className="border-t border-gray-700 mt-12 pt-6 text-center text-gray-400">
         © 2026 G-TEC Education | All Rights Reserved
       </div>
