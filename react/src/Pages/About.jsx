@@ -1,145 +1,230 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  FaArrowRight,
+  FaBookOpen,
+  FaBriefcase,
+  FaCheckCircle,
+  FaLaptopCode,
+  FaRocket,
+  FaUserGraduate,
+} from "react-icons/fa";
 
 const stats = [
-  { name: "Offices", value: "12+" },
-  { name: "Employees", value: "300+" },
-  { name: "Projects", value: "120+" },
-  { name: "Experience", value: "5 Years" },
+  { name: "Learners Guided", value: "10K+" },
+  { name: "Career Courses", value: "25+" },
+  { name: "Live Projects", value: "100+" },
+  { name: "Training Support", value: "3-6 Months" },
 ];
 
-const team = [
+const values = [
   {
-    name: "John Doe",
-    role: "CEO",
-    img: "https://randomuser.me/api/portraits/men/1.jpg",
+    icon: <FaLaptopCode />,
+    title: "Practical Learning",
+    text: "Students learn by building, practicing, and solving real problems.",
   },
   {
-    name: "Sara Lee",
-    role: "CTO",
-    img: "https://randomuser.me/api/portraits/women/2.jpg",
+    icon: <FaBriefcase />,
+    title: "Career Focus",
+    text: "Training is shaped around job-ready skills and interview confidence.",
   },
   {
-    name: "David Kim",
-    role: "Lead Developer",
-    img: "https://randomuser.me/api/portraits/men/3.jpg",
+    icon: <FaUserGraduate />,
+    title: "Mentor Guidance",
+    text: "Learners get guidance from trainers who understand industry needs.",
   },
+];
+
+const steps = [
+  "Choose the right course",
+  "Learn with guided practice",
+  "Build live projects",
+  "Prepare for career growth",
 ];
 
 export default function About() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen bg-slate-950 text-white py-16 px-6 overflow-hidden">
+    <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
-      {/* 🔹 BACKGROUND GRID */}
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-pulse"></div>
+      <div className="absolute w-[520px] h-[520px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-140px]"></div>
+      <div className="absolute w-[420px] h-[420px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
 
-      {/* 🔹 GLOW EFFECTS */}
-      <div className="absolute w-[500px] h-[500px] bg-purple-500/20 blur-3xl rounded-full top-[-100px] left-[-100px]"></div>
-      <div className="absolute w-[400px] h-[400px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-100px] right-[-100px]"></div>
-
-      {/* 🔥 HERO */}
-      <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-16 relative z-10"
-      >
-        <h1 className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent">
-          Building the Future
-        </h1>
-        <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-          We create modern, scalable, and intelligent digital solutions that empower businesses worldwide.
-        </p>
-      </motion.div>
-
-      {/* 🔥 ABOUT CONTENT */}
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center mb-20 relative z-10">
-
-        <motion.img
-          initial={{ opacity: 0, x: -80 }}
-          animate={{ opacity: 1, x: 0 }}
-          src="https://images.unsplash.com/photo-1552664730-d307ca884978"
-          alt="team"
-          className="rounded-2xl shadow-2xl hover:scale-105 transition duration-500"
-        />
-
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* HERO */}
         <motion.div
-          initial={{ opacity: 0, x: 80 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 45 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.75 }}
+          className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold mb-4 text-purple-300">Who We Are</h2>
-          <p className="text-gray-300 mb-4">
-            We are a passionate team of developers, designers, and innovators focused on delivering high-quality digital products.
-          </p>
-          <p className="text-gray-400">
-            Our mission is to simplify technology and create impactful experiences through modern web and mobile solutions.
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
+            <FaBookOpen />
+            About G-TEC Education
+          </span>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-blue-100 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+            Building Skills That Build Careers
+          </h1>
+
+          <p className="text-gray-300 max-w-3xl mx-auto text-base sm:text-lg leading-relaxed mt-5">
+            We help students turn interest into ability through practical training, mentor support,
+            and career-focused learning paths.
           </p>
         </motion.div>
-      </div>
 
-      {/* 🔥 STATS */}
-      <div className="max-w-6xl mx-auto grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-20 relative z-10">
-        {stats.map((stat, index) => (
+        {/* ABOUT CONTENT */}
+        <div className="grid lg:grid-cols-[1fr_0.9fr] gap-8 lg:gap-10 items-stretch mb-12">
           <motion.div
-            key={stat.name}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-            className="bg-white/5 backdrop-blur border border-gray-700 p-6 rounded-xl text-center shadow-lg"
-          >
-            <h3 className="text-3xl font-bold text-purple-400">{stat.value}</h3>
-            <p className="text-gray-400">{stat.name}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* 🔥 TEAM */}
-      <div className="text-center mb-12 relative z-10">
-        <h2 className="text-3xl font-bold">Meet Our Team</h2>
-        <p className="text-gray-400 mt-2">The people behind our success</p>
-      </div>
-
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto mb-20 relative z-10">
-        {team.map((member, index) => (
-          <motion.div
-            key={member.name}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-            className="bg-white/5 backdrop-blur border border-gray-700 p-6 rounded-xl text-center shadow-lg"
+            initial={{ opacity: 0, x: -60, scale: 0.96 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.75 }}
+            className="relative overflow-hidden rounded-3xl border border-slate-700 bg-white/5 p-5 sm:p-7 backdrop-blur-xl shadow-2xl"
           >
             <img
-              src={member.img}
-              alt={member.name}
-              className="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-purple-400"
+              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+              alt="students learning"
+              className="h-72 w-full rounded-2xl object-cover"
             />
-            <h3 className="font-semibold text-lg">{member.name}</h3>
-            <p className="text-gray-400">{member.role}</p>
+
+            <div className="mt-6">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent">
+                Who We Are
+              </h2>
+
+              <p className="text-gray-300 leading-relaxed mb-4">
+                G-TEC Education focuses on practical, structured training for students who want
+                useful skills, stronger confidence, and better career direction.
+              </p>
+
+              <p className="text-gray-400 leading-relaxed">
+                From IT and technical courses to business, design, accounting, and career guidance,
+                our goal is to make learning clear, useful, and connected to real opportunities.
+              </p>
+            </div>
           </motion.div>
-        ))}
-      </div>
 
-      {/* 🔥 CTA */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center relative z-10"
-      >
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          Join Our Courses
-        </h2>
+          <motion.div
+            initial={{ opacity: 0, x: 60, scale: 0.96 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.75 }}
+            className="rounded-3xl border border-slate-700 bg-white/5 p-5 sm:p-7 backdrop-blur-xl shadow-2xl"
+          >
+            <div className="mb-6 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 p-5">
+              <p className="text-sm text-cyan-200">Our approach</p>
+              <h3 className="mt-2 text-2xl font-bold">
+                Learn. Practice. Build. Grow.
+              </h3>
+              <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+                Every student needs more than theory. Our training is designed to help learners
+                understand concepts, apply them, and build confidence step by step.
+              </p>
+            </div>
 
-        <button
-          onClick={() => navigate("/contact")}
-          className="px-8 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 hover:scale-105 transition duration-300 shadow-lg"
+            <div className="space-y-4">
+              {steps.map((step, index) => (
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, x: 25 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, amount: 0.25 }}
+                  transition={{ duration: 0.45, delay: index * 0.1 }}
+                  className="flex items-center gap-4 rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-400 text-slate-950 font-bold">
+                    {index + 1}
+                  </div>
+                  <span className="font-medium text-gray-200">{step}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* STATS */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.name}
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.55, delay: index * 0.1 }}
+              whileHover={{ y: -8, scale: 1.03 }}
+              className="rounded-2xl border border-slate-700 bg-white/5 p-6 text-center backdrop-blur-xl shadow-lg"
+            >
+              <h3 className="text-3xl font-extrabold text-cyan-300">
+                {stat.value}
+              </h3>
+              <p className="mt-2 text-gray-400 text-sm">{stat.name}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* VALUES */}
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          {values.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 45, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.65, delay: index * 0.12 }}
+              whileHover={{ y: -10, scale: 1.03 }}
+              className="rounded-3xl border border-slate-700 bg-white/5 p-6 text-center backdrop-blur-xl shadow-xl"
+            >
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-2xl text-cyan-300">
+                {item.icon}
+              </div>
+              <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                {item.text}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 35, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.7 }}
+          className="overflow-hidden rounded-3xl border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
         >
-          Contact Us
-        </button>
-      </motion.div>
+          <div className="grid md:grid-cols-[1fr_auto] items-center gap-6 p-6 sm:p-8">
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-cyan-300">
+                <FaRocket />
+                <span className="font-semibold">Start with the right path</span>
+              </div>
 
+              <h2 className="text-2xl sm:text-3xl font-bold">
+                Not sure which course fits you?
+              </h2>
+
+              <p className="mt-2 text-gray-400">
+                Talk to our team and get guidance based on your goal, interest, and current skill level.
+              </p>
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/contact")}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-900 to-blue-500 px-7 py-3 font-semibold shadow-lg shadow-blue-900/30"
+            >
+              Contact Us
+              <FaArrowRight />
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }

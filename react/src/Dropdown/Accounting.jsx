@@ -1,125 +1,169 @@
-import { FaCheckCircle, FaArrowRight } from "react-icons/fa";
+import { useState } from "react";
+import {
+  FaCheckCircle,
+  FaArrowRight,
+  FaCalculator,
+  FaFileInvoiceDollar,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+
+function CourseCard({ course, index, navigate }) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, scale: 0.94 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: false, amount: 0.2 }}
+      transition={{
+        duration: 0.6,
+        delay: (index % 3) * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={{ y: -10, scale: 1.03 }}
+      className="group overflow-hidden rounded-2xl border border-slate-700 bg-white/5 backdrop-blur-xl shadow-xl transition hover:border-cyan-400/50"
+    >
+      <div className="relative h-48 overflow-hidden bg-slate-900">
+        {!imageError ? (
+          <img
+            src={course.img}
+            alt={course.title}
+            loading="lazy"
+            onError={() => setImageError(true)}
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,rgba(14,165,233,.25),rgba(15,23,42,.95)),linear-gradient(#334155_1px,transparent_1px),linear-gradient(90deg,#334155_1px,transparent_1px)] bg-[size:auto,28px_28px,28px_28px]">
+            <div className="text-center">
+              <FaCalculator className="mx-auto mb-3 text-4xl text-cyan-300" />
+              <p className="text-sm font-semibold text-cyan-100">
+                {course.title}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/25 to-transparent"></div>
+
+        <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/70 px-3 py-1 text-xs text-cyan-200 backdrop-blur">
+          {course.tag}
+        </div>
+      </div>
+
+      <div className="p-5">
+        <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-300">
+          <FaFileInvoiceDollar />
+        </div>
+
+        <h2 className="text-lg font-bold mb-2">{course.title}</h2>
+
+        <p className="text-gray-400 text-sm mb-4 leading-relaxed min-h-[60px]">
+          {course.desc}
+        </p>
+
+        <div className="flex items-center gap-2 text-cyan-300 mb-5 text-sm">
+          <FaCheckCircle />
+          <span>Certificate Course</span>
+        </div>
+
+        <motion.button
+          onClick={() => navigate("/enroll", { state: { course: course.title } })}
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
+          className="w-full bg-gradient-to-r from-blue-900 to-blue-500 text-white px-5 py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30"
+        >
+          Enroll Now
+          <FaArrowRight />
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
 
 function Accounting() {
   const navigate = useNavigate();
 
   const courses = [
     {
-      title: "Full-Stack Development",
-      desc: "Building both the front end and back end of an application.",
-      img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+      title: "Tally Prime",
+      desc: "Learn company creation, vouchers, GST, inventory, and reports.",
+      img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
+      tag: "Accounting",
     },
     {
-      title: "MERN Stack Development",
-      desc: "Build full-stack apps using JavaScript.",
-      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
+      title: "GST Accounting",
+      desc: "Understand GST billing, tax entries, returns, and practical filing basics.",
+      img: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=800&q=80",
+      tag: "Tax",
     },
     {
-      title: "MEAN Stack Development",
-      desc: "JavaScript-based front-end & back-end.",
-      img: "https://images.unsplash.com/photo-1581091870627-3b1c5d6d3b5b?auto=format&fit=crop&w=800&q=80"
+      title: "Excel for Accounts",
+      desc: "Use formulas, tables, reports, and data tools for office accounting.",
+      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+      tag: "Excel",
     },
     {
-      title: "Data Science",
-      desc: "Turn raw data into actionable insights.",
-      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+      title: "Payroll Management",
+      desc: "Learn salary calculation, attendance, deductions, and payroll records.",
+      img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
+      tag: "Payroll",
     },
     {
-      title: "Artificial Intelligence",
-      desc: "Machines that learn and adapt.",
-      img: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&w=800&q=80"
+      title: "Business Accounting",
+      desc: "Learn ledger, journal, balance sheet, profit and loss, and billing basics.",
+      img: "https://images.unsplash.com/photo-1554224154-22dec7ec8818?auto=format&fit=crop&w=800&q=80",
+      tag: "Finance",
     },
     {
-      title: "PHP Developer",
-      desc: "Build dynamic web applications.",
-      img: "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=800&q=80"
-    }
+      title: "Advanced Tally",
+      desc: "Practice GST, inventory, banking, reports, and real business accounting.",
+      img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80",
+      tag: "Advanced",
+    },
   ];
 
   return (
-    <div className="bg-gray-100 py-16 px-6">
-      <h1 className="text-4xl font-bold text-center mb-12 text-blue-900">
-        Software Courses
-      </h1>
+    <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-10">
-        {courses.map((course, index) => (
+      <div className="absolute w-[520px] h-[520px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-140px]"></div>
+      <div className="absolute w-[420px] h-[420px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
 
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ rotateX: 5, rotateY: -5, scale: 1.05 }}
-            className="relative w-[320px] rounded-2xl group"
-          >
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 45 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 0.75 }}
+          className="text-center mb-12"
+        >
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
+            <FaCalculator />
+            Accounting Training
+          </span>
 
-            {/* GLOW BORDER */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-md transition duration-500"></div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-100 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+            Accounting Courses
+          </h1>
 
-            {/* CARD */}
-            <div className="relative bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg overflow-hidden">
+          <p className="mt-5 max-w-2xl mx-auto text-gray-400 text-base sm:text-lg leading-relaxed">
+            Learn Tally, GST, payroll, Excel, billing, and practical business accounting skills.
+          </p>
+        </motion.div>
 
-              {/* IMAGE */}
-              <div className="relative overflow-hidden">
-                <motion.img
-                  src={course.img}
-                  alt={course.title}
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/400x300?text=Course";
-                  }}
-                  className="h-48 w-full object-cover"
-                  whileHover={{ scale: 1.15 }}
-                  transition={{ duration: 0.4 }}
-                />
-
-                {/* OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-              </div>
-
-              {/* CONTENT */}
-              <div className="p-6 text-center">
-                <h2 className="text-xl font-bold mb-2">
-                  {course.title}
-                </h2>
-
-                <p className="text-gray-600 text-sm mb-4">
-                  {course.desc}
-                </p>
-
-                {/* CERTIFICATE */}
-                <div className="flex items-center justify-center gap-2 text-green-600 mb-4">
-                  <FaCheckCircle />
-                  <span>Certificate Course</span>
-                </div>
-
-                {/* ✅ ROUTER BUTTON */}
-                <motion.button
-                  onClick={() => navigate("/enroll")}
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold flex items-center justify-center gap-2 mx-auto relative overflow-hidden"
-                >
-                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition"></span>
-
-                  Enroll Now
-
-                  <motion.span
-                    whileHover={{ x: 6 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <FaArrowRight />
-                  </motion.span>
-                </motion.button>
-              </div>
-
-            </div>
-          </motion.div>
-        ))}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course, index) => (
+            <CourseCard
+              key={course.title}
+              course={course}
+              index={index}
+              navigate={navigate}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

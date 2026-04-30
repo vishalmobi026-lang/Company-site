@@ -60,7 +60,7 @@ function Navbar() {
         <div className="flex items-center gap-6 cursor-pointer" onClick={() => navigate("/")}>
           <div className="flex flex-col items-center">
             <div className="bg-blue-800 p-3.5 rounded-2xl shadow-lg">
-              <img src="/logo.webp" alt="logo" className="h-12" />
+             <img src="/logo.webp" alt="logo" className="h-12 w-25" />
             </div>
 
             <a
@@ -153,7 +153,7 @@ function Navbar() {
 
           <button
             onClick={() => navigate("/enroll")}
-            className="bg-blue-500 text-white px-6 py-2 rounded-full"
+            className="bg-gradient-to-r from-blue-900 to-blue-500 text-white px-5 py-2 rounded-full hover:from-blue-600 hover:to-cyan-500"
           >
             Enroll Now
           </button>
