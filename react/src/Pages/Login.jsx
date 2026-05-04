@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   FaEnvelope,
   FaLock,
@@ -38,27 +39,38 @@ export default function Login() {
     if (form.password.length < 4) return "Password must be at least 4 characters";
     return "";
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const validationError = validate();
 
-    const validationError = validate();
+  if (validationError) {
+    setError(validationError);
+    return;
+  }
 
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  setError("");
+  setLoading(true);
 
-    setError("");
-    setLoading(true);
+  try {
+    const res = await axios.post(
+      "http://127.0.0.1:8000/auth/login",
+      {
+        email: form.email,
+        password: form.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    setTimeout(() => {
-      setLoading(false);
-      alert("Login Successful!");
-      navigate("/");
-    }, 1500);
-  };
-
+    setLoading(false);
+    navigate("/");
+  } catch (err) {
+    setLoading(false);
+    setError("Invalid email or password");
+  }
+};
   return (
     <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
       {/* BACKGROUND */}

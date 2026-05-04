@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import ChatWidget from "./components/ChatWidget";
 
 import Home from "./Pages/Home/Home";
 import About from "./Pages/About";
@@ -22,7 +23,7 @@ function App() {
   return (
     <BrowserRouter>
 
-      {/* ✅ SCROLL FIX */}
+      {/*  SCROLL FIX */}
       <ScrollToTop />
 
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -49,6 +50,8 @@ function App() {
 
         {/* FOOTER */}
         <Footer />
+
+         <ChatWidget />  {/* this will visible to all pages*/}
 
       </div>
     </BrowserRouter>
