@@ -10,11 +10,12 @@ def seed_pricing():
             {"course_name": "Python", "standard_price": "11,999", "offer_price": "7,999"}
         ]
         
+        # Clear existing pricing to ensure we have the correct ones
+        db.query(Pricing).delete()
+        
         for p in initial_pricing:
-            existing = db.query(Pricing).filter(Pricing.course_name == p["course_name"]).first()
-            if not existing:
-                new_price = Pricing(**p)
-                db.add(new_price)
+            new_price = Pricing(**p)
+            db.add(new_price)
                 
         db.commit()
         print("Pricing seeded successfully!")

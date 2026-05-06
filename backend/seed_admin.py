@@ -6,10 +6,10 @@ def seed():
     db = SessionLocal()
     try:
         # Check if admin already exists
-        if not db.query(User).filter(User.username == "admin_user").first():
-            hashed_pw = hash_password("admin1234") # Change this to your desired test password
+        if not db.query(User).filter(User.username == "G-Tech").first():
+            hashed_pw = hash_password("reo007") # New admin password
             admin_user = User(
-                username="admin_user", 
+                username="G-Tech", 
                 hashed_password=hashed_pw,
                 role="admin"
             )

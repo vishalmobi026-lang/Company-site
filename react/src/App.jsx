@@ -72,20 +72,19 @@ function App() {
             />
           </Routes>
 
-          {/* Inline conditional rendering on any page */}
-          {isAuthenticated && (
-            <div style={{ padding: 16 }}>
-              <EnrolledStudentDetail />
-              <ContactDetail />
-            </div>
-          )}
         </div>
 
         <Footer />
         <ChatWidget />
       </div>
+
     </BrowserRouter>
   );
 }
+
+
+
+
+
 
 export default App;
