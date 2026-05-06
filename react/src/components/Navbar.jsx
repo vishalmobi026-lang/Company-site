@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "../context/AuthContext";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -18,6 +19,7 @@ function Navbar() {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, logout } = useContext(AuthContext);
 
   const handleMobileNavigate = (path) => {
     navigate(path);
@@ -152,6 +154,29 @@ function Navbar() {
             )}
           </li>
 
+          {isAuthenticated && (
+            <>
+              <li
+                onClick={() => navigate("/admin/enrollments")}
+                className={`cursor-pointer ${location.pathname === "/admin/enrollments" ? "text-blue-600" : "hover:text-blue-600"}`}
+              >
+                Enrollments
+              </li>
+              <li
+                onClick={() => navigate("/admin/contacts")}
+                className={`cursor-pointer ${location.pathname === "/admin/contacts" ? "text-blue-600" : "hover:text-blue-600"}`}
+              >
+                Messages
+              </li>
+              <li
+                onClick={() => navigate("/admin/pricing")}
+                className={`cursor-pointer ${location.pathname === "/admin/pricing" ? "text-blue-600" : "hover:text-blue-600"}`}
+              >
+                Pricing Manager
+              </li>
+            </>
+          )}
+
           {/* ABOUT */}
           <li
             onClick={() => navigate("/about")}
@@ -179,12 +204,24 @@ function Navbar() {
 
         {/* RIGHT */}
         <div className="hidden md:flex items-center gap-4">
-          <span
-            onClick={() => navigate("/login")}
-            className="cursor-pointer hover:text-blue-600"
-          >
-            Login
-          </span>
+          {isAuthenticated ? (
+            <span
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+              className="cursor-pointer hover:text-blue-600"
+            >
+              Logout
+            </span>
+          ) : (
+            <span
+              onClick={() => navigate("/login")}
+              className="cursor-pointer hover:text-blue-600"
+            >
+              Login
+            </span>
+          )}
 
           <button
             onClick={() => navigate("/enroll")}
@@ -263,6 +300,38 @@ function Navbar() {
               </AnimatePresence>
             </motion.div>
 
+            {isAuthenticated && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, x: -25 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: 0.12 }}
+                  onClick={() => handleMobileNavigate("/admin/enrollments")}
+                  className="hover:cursor-pointer hover:text-blue-600"
+                >
+                  Enrollments
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -25 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: 0.13 }}
+                  onClick={() => handleMobileNavigate("/admin/contacts")}
+                  className="hover:cursor-pointer hover:text-blue-600"
+                >
+                  Messages
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -25 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: 0.14 }}
+                  onClick={() => handleMobileNavigate("/admin/pricing")}
+                  className="hover:cursor-pointer hover:text-blue-600"
+                >
+                  Pricing Manager
+                </motion.div>
+              </>
+            )}
+
             <motion.div
               initial={{ opacity: 0, x: -25 }}
               animate={{ opacity: 1, x: 0 }}
@@ -283,15 +352,30 @@ function Navbar() {
               Contact us
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: -25 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.35, delay: 0.25 }}
-              onClick={() => handleMobileNavigate("/login")}
-              className="hover:cursor-pointer hover:text-blue-600"
-            >
-              Login
-            </motion.div>
+            {isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0, x: -25 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, delay: 0.25 }}
+                onClick={() => {
+                  logout();
+                  handleMobileNavigate("/");
+                }}
+                className="hover:cursor-pointer hover:text-blue-600"
+              >
+                Logout
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, x: -25 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, delay: 0.25 }}
+                onClick={() => handleMobileNavigate("/login")}
+                className="hover:cursor-pointer hover:text-blue-600"
+              >
+                Login
+              </motion.div>
+            )}
 
             <motion.button
               initial={{ opacity: 0, y: 20 }}

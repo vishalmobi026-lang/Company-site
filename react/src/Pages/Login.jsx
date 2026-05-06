@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 import {
   FaEnvelope,
   FaLock,
@@ -14,9 +15,10 @@ import { motion } from "framer-motion";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: "",
     remember: false,
   });
@@ -35,7 +37,7 @@ export default function Login() {
   };
 
   const validate = () => {
-    if (!form.email.includes("@")) return "Enter valid email";
+    if (!form.username.trim()) return "Enter valid username";
     if (form.password.length < 4) return "Password must be at least 4 characters";
     return "";
   };
@@ -54,9 +56,9 @@ const handleSubmit = async (e) => {
 
   try {
     const res = await axios.post(
-      "http://127.0.0.1:8000/auth/login",
+      "http://127.0.0.1:8000/admin/login",
       {
-        email: form.email,
+        username: form.username,
         password: form.password,
       },
       {
@@ -64,11 +66,15 @@ const handleSubmit = async (e) => {
       }
     );
 
+    if (res.data) {
+      login(res.data);
+    }
+
     setLoading(false);
     navigate("/");
   } catch (err) {
     setLoading(false);
-    setError("Invalid email or password");
+    setError(err.response?.data?.detail || "Invalid username or password");
   }
 };
   return (
@@ -173,15 +179,15 @@ const handleSubmit = async (e) => {
 
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="mb-2 block text-sm text-gray-300">Email Address</label>
+        <label className="mb-2 block text-sm text-gray-300">Username</label>
         <div className="relative">
           <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
 
           <input
-            type="email"
-            name="email"
-            placeholder="admin@example.com"
-            value={form.email}
+            type="text"
+            name="username"
+            placeholder="admin_user"
+            value={form.username}
             onChange={handleChange}
             className="w-full pl-11 pr-4 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
           />
