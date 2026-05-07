@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   FaPhoneAlt,
   FaMapMarkerAlt,
@@ -8,6 +8,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { AuthContext } from "../context/AuthContext";
 
 function Contact() {
   const [form, setForm] = useState({
@@ -18,14 +19,53 @@ function Contact() {
     message: "",
   });
 
+  const { isAuthenticated, addContact } = useContext(AuthContext);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
-    alert("Message sent successfully!");
+
+    // Basic validation
+    if (!form.name || !form.email || !form.phone) {
+      alert("Please fill name, email and phone.");
+      return;
+    }
+
+    // Build contact object
+    const contact = {
+      id: Date.now().toString(),
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      subject: form.subject,
+      message: form.message,
+      createdAt: new Date().toISOString(),
+    };
+
+    if (isAuthenticated) {
+      // Persist to authenticated user's contacts via AuthContext
+      addContact(contact);
+      alert("Message sent and contact saved to your account.");
+    } else {
+      // Guest flow: save locally and inform user to login to persist
+      const guestKey = "guest_contacts";
+      const existing = JSON.parse(localStorage.getItem(guestKey) || "[]");
+      existing.push(contact);
+      localStorage.setItem(guestKey, JSON.stringify(existing));
+      alert("Message sent. Saved locally — login to persist to your account.");
+    }
+
+    // Reset form
+    setForm({
+      name: "",
+      email: "",
+      subject: "",
+      phone: "",
+      message: "",
+    });
   };
 
   const contactInfo = [
@@ -203,6 +243,7 @@ function Contact() {
               />
 
               <motion.button
+                type="submit"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.96 }}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-900 to-blue-500 transition duration-300 shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2 font-semibold"

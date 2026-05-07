@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCheck } from "react-icons/fa";
 import Lottie, { useLottie } from "lottie-react";
 import touchAnimation from "../../assets/touch.json";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 function Hero4() {
   const { View } = useLottie({
@@ -13,7 +14,38 @@ function Hero4() {
   });
 
   const [offer, setOffer] = useState("Standard");
+  const [pricing, setPricing] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/pricing");
+        const pricingMap = {};
+        res.data.forEach(item => {
+          pricingMap[item.course_name] = item;
+        });
+        setPricing(pricingMap);
+      } catch (err) {
+        console.error("Failed to fetch pricing", err);
+      }
+    };
+    fetchPricing();
+  }, []);
+
+  const getPrice = (courseName, type) => {
+    const course = pricing[courseName];
+    if (!course) {
+        // Fallback to hardcoded defaults if backend fails
+        const defaults = {
+            "Full Stack": { standard_price: "14,999", offer_price: "9,999" },
+            "MERN Stack": { standard_price: "19,999", offer_price: "12,999" },
+            "Python": { standard_price: "11,999", offer_price: "7,999" }
+        };
+        return type === "Offer" ? defaults[courseName].offer_price : defaults[courseName].standard_price;
+    }
+    return type === "Offer" ? course.offer_price : course.standard_price;
+  };
 
   return (
     <>
@@ -108,7 +140,7 @@ function Hero4() {
                 transition={{ duration: 0.3 }}
                 className="text-3xl font-bold mb-6"
               >
-                ₹{offer === "Offer" ? "9,999" : "14,999"}
+                ₹{getPrice("Full Stack", offer)}
               </motion.h3>
 
               <button
@@ -145,7 +177,7 @@ function Hero4() {
                 transition={{ duration: 0.3 }}
                 className="text-3xl font-bold mb-6"
               >
-                ₹{offer === "Offer" ? "12,999" : "19,999"}
+                ₹{getPrice("MERN Stack", offer)}
               </motion.h3>
 
               <button
@@ -185,7 +217,7 @@ function Hero4() {
                 transition={{ duration: 0.3 }}
                 className="text-3xl font-bold mb-6"
               >
-                ₹{offer === "Offer" ? "7,999" : "11,999"}
+                ₹{getPrice("Python", offer)}
               </motion.h3>
 
               <button

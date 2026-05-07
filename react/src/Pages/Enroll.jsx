@@ -11,6 +11,7 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 function Enroll() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function Enroll() {
 
   const selectedCourse = location.state?.course || "Full-Stack Development";
   const [courseOpen, setCourseOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const courses = {
     [selectedCourse]: "Selected course from your chosen category.",
@@ -86,8 +88,42 @@ function Enroll() {
   const [touched, setTouched] = useState({});
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Year of qualification: 4 digit number only
+    if (name === "year") {
+      const numericValue = value.replace(/\D/g, "");
+      if (numericValue.length > 4) return;
+      setForm({ ...form, [name]: numericValue });
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
+
+    // Pincode auto-fill logic
+    if (name === "pincode" && value.length === 6) {
+      fetchLocation(value);
+    }
   };
+
+
+  const fetchLocation = async (pincode) => {
+    try {
+      const res = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+      if (res.data[0].Status === "Success") {
+        const postOffice = res.data[0].PostOffice[0];
+        setForm((prev) => ({
+          ...prev,
+          district: postOffice.District,
+          state: postOffice.State,
+          country: "India", // Most pincode APIs are country-specific
+        }));
+      }
+    } catch (err) {
+      console.error("Pincode fetch failed", err);
+    }
+  };
+
 
   const handleBlur = (e) => {
     setTouched({ ...touched, [e.target.name]: true });
@@ -104,7 +140,7 @@ function Enroll() {
   const normalInputClass =
     "w-full p-3 rounded-lg bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition text-white placeholder:text-gray-500";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const requiredFields = ["name", "email", "phone"];
@@ -120,8 +156,17 @@ function Enroll() {
       return;
     }
 
-    console.log(form);
-    alert("Enrollment Submitted Successfully!");
+    setLoading(true);
+    try {
+      await axios.post("http://localhost:8000/enrollments", form);
+      alert("Enrollment Submitted Successfully!");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit enrollment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -253,11 +298,13 @@ function Enroll() {
 
                 <input
                   name="year"
-                  placeholder="Year / Qualification"
+                  placeholder="Year (e.g. 2024)"
                   value={form.year}
                   onChange={handleChange}
                   className={normalInputClass}
+                  maxLength={4}
                 />
+
               </div>
             </div>
 
@@ -328,12 +375,13 @@ function Enroll() {
               </p>
 
               <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                disabled={loading}
+                whileHover={!loading ? { scale: 1.05, y: -2 } : {}}
+                whileTap={!loading ? { scale: 0.95 } : {}}
                 type="submit"
-                className="w-full md:w-auto px-14 py-3 rounded-full text-lg font-semibold bg-gradient-to-r from-blue-900 to-blue-500 shadow-lg shadow-blue-900/30"
+                className={`w-full md:w-auto px-14 py-3 rounded-full text-lg font-semibold bg-gradient-to-r from-blue-900 to-blue-500 shadow-lg shadow-blue-900/30 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Submit Enrollment
+                {loading ? "Submitting..." : "Submit Enrollment"}
               </motion.button>
             </div>
           </motion.form>

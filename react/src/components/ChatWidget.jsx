@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLottie } from "lottie-react";
 import successAnimation from "../Assets/Success.json";
 import failAnimation from "../Assets/Fail.json";
+import axios from "axios";
 
 /* ================= TOAST (ALERT) COMPONENT ================= */
 
@@ -137,13 +138,7 @@ export default function ChatWidget() {
 
     setLoading(true);
     try {
-      // --- SIMULATED BACKEND ---
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const backendError = false; 
-          backendError ? reject() : resolve();
-        }, 1500);
-      });
+      await axios.post("http://localhost:8000/contacts", form);
 
       addToast("Information received! We will be in touch shortly.", "success");
       setForm({ name: "", phone: "", email: "" });
@@ -151,6 +146,7 @@ export default function ChatWidget() {
       // Close the widget after the animation has had time to shine
       setTimeout(() => setOpen(false), 4000);
     } catch (err) {
+      console.error(err);
       addToast("Connection failed. Please check your network.", "error");
     } finally {
       setLoading(false);

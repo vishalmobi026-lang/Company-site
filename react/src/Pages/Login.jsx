@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 import {
   FaUser,
   FaLock,
@@ -14,6 +15,7 @@ import { motion } from "framer-motion";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     username: "",
@@ -34,7 +36,7 @@ export default function Login() {
   };
 
   const validate = () => {
-    if (!form.username) return "Username is required";
+    if (!form.username.trim()) return "Username is required";
     if (form.password.length < 4) return "Password must be at least 4 characters";
     return "";
   };
@@ -52,24 +54,30 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/auth/login",
+        "http://127.0.0.1:8000/admin/login",
         {
           username: form.username,
           password: form.password,
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        }
       );
+
+      if (res.data) {
+        login(res.data);
+      }
 
       setLoading(false);
       navigate("/");
     } catch (err) {
       setLoading(false);
-
-      setError("Invalid username or password");
+      setError(err.response?.data?.detail || "Invalid username or password");
     }
   };
+
   return (
-    <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
+   <>  <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
       {/* BACKGROUND */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
@@ -170,34 +178,20 @@ export default function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="mb-2 block text-sm text-gray-300">Username</label> {/* Fixed from Email Address */}
+                <label className="mb-2 block text-sm text-gray-300">Username</label>
                 <div className="relative">
-                  <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" /> {/* Fixed from FaEnvelope */}
+                  <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
 
                   <input
                     type="text"
                     name="username"
-                    placeholder="admin_core"
+                    placeholder="admin_user"
                     value={form.username}
                     onChange={handleChange}
                     className="w-full pl-11 pr-4 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
                   />
                 </div>
               </div>
-
-              <div>
-                <label className="mb-2 block text-sm text-gray-300">Password</label>
-                <div className="relative">
-                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Enter secure password"
-                    value={form.password}
-                    onChange={handleChange}
-                    className="w-full pl-11 pr-12 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
-                  />
 
                   <button
                     type="button"
@@ -259,5 +253,6 @@ export default function Login() {
 
       </div>
     </section>
+    </>
   );
 }
