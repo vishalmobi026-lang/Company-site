@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  FaEnvelope,
+  FaUser,
   FaLock,
   FaEye,
   FaEyeSlash,
@@ -16,7 +16,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    email: "",
+    username: "",
     password: "",
     remember: false,
   });
@@ -27,7 +27,6 @@ export default function Login() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
     setForm({
       ...form,
       [name]: type === "checkbox" ? checked : value,
@@ -35,42 +34,40 @@ export default function Login() {
   };
 
   const validate = () => {
-    if (!form.email.includes("@")) return "Enter valid email";
+    if (!form.username) return "Username is required";
     if (form.password.length < 4) return "Password must be at least 4 characters";
     return "";
   };
-const handleSubmit = async (e) => {
-  e.preventDefault();
 
-  const validationError = validate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
-  if (validationError) {
-    setError(validationError);
-    return;
-  }
+    setError("");
+    setLoading(true);
 
-  setError("");
-  setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:8000/auth/login",
+        {
+          username: form.username,
+          password: form.password,
+        },
+        { withCredentials: true }
+      );
 
-  try {
-    const res = await axios.post(
-      "http://127.0.0.1:8000/auth/login",
-      {
-        email: form.email,
-        password: form.password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+      setLoading(false);
+      navigate("/");
+    } catch (err) {
+      setLoading(false);
 
-    setLoading(false);
-    navigate("/");
-  } catch (err) {
-    setLoading(false);
-    setError("Invalid email or password");
-  }
-};
+      setError("Invalid username or password");
+    }
+  };
   return (
     <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
       {/* BACKGROUND */}
@@ -127,139 +124,138 @@ const handleSubmit = async (e) => {
             </motion.div>
           </motion.div>
         </div>
-{/* LOGIN CARD */}
-<motion.div
-  initial={{ opacity: 0, x: 70 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.7 }}
-  className="relative w-full max-w-lg mx-auto lg:-translate-y-15 overflow-hidden rounded-[28px] border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
+        {/* LOGIN CARD */}
+        <motion.div
+          initial={{ opacity: 0, x: 70 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
+          className="relative w-full max-w-lg mx-auto lg:-translate-y-15 overflow-hidden rounded-[28px] border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
 
->
-  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-900 via-cyan-400 to-blue-500"></div>
+        >
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-900 via-cyan-400 to-blue-500"></div>
 
-  <div className="border-b border-slate-800 bg-slate-950/60 px-6 py-4">
-    <div className="flex items-center gap-2">
-      <span className="h-3 w-3 rounded-full bg-red-500"></span>
-      <span className="h-3 w-3 rounded-full bg-yellow-400"></span>
-      <span className="h-3 w-3 rounded-full bg-green-500"></span>
-      <span className="ml-3 text-xs text-gray-400">admin-login.secure</span>
-    </div>
-  </div>
+          <div className="border-b border-slate-800 bg-slate-950/60 px-6 py-4">
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full bg-red-500"></span>
+              <span className="h-3 w-3 rounded-full bg-yellow-400"></span>
+              <span className="h-3 w-3 rounded-full bg-green-500"></span>
+              <span className="ml-3 text-xs text-gray-400">admin-login.secure</span>
+            </div>
+          </div>
 
-  <div className="p-6 sm:p-9">
-    <div className="mb-7 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-3xl text-cyan-300 shadow-lg shadow-cyan-400/10">
-        <FaLock />
-      </div>
+          <div className="p-6 sm:p-9">
+            <div className="mb-7 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-3xl text-cyan-300 shadow-lg shadow-cyan-400/10">
+                <FaLock />
+              </div>
 
-      <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent">
-        Admin Login
-      </h1>
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-200 to-cyan-300 bg-clip-text text-transparent">
+                Admin Login
+              </h1>
 
-      <p className="text-center text-gray-400 mt-2 text-sm">
-        Authorized dashboard access only
-      </p>
-    </div>
+              <p className="text-center text-gray-400 mt-2 text-sm">
+                Authorized dashboard access only
+              </p>
+            </div>
 
-    {error && (
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-red-500/15 border border-red-500/50 text-red-300 text-sm p-3 rounded-xl mb-4 text-center"
-      >
-        {error}
-      </motion.div>
-    )}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-500/15 border border-red-500/50 text-red-300 text-sm p-3 rounded-xl mb-4 text-center"
+              >
+                {error}
+              </motion.div>
+            )}
 
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="mb-2 block text-sm text-gray-300">Email Address</label>
-        <div className="relative">
-          <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">Username</label> {/* Fixed from Email Address */}
+                <div className="relative">
+                  <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" /> {/* Fixed from FaEnvelope */}
 
-          <input
-            type="email"
-            name="email"
-            placeholder="admin@example.com"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full pl-11 pr-4 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
-          />
-        </div>
-      </div>
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="admin_core"
+                    value={form.username}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-4 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
+                  />
+                </div>
+              </div>
 
-      <div>
-        <label className="mb-2 block text-sm text-gray-300">Password</label>
-        <div className="relative">
-          <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">Password</label>
+                <div className="relative">
+                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
 
-          <input
-            type={showPassword ? "text" : "password"}
-            name="password"
-            placeholder="Enter secure password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full pl-11 pr-12 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
-          />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter secure password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-12 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
+                  />
 
-          <button
-            type="button"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-300 transition"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />}
-          </button>
-        </div>
-      </div>
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-300 transition"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
 
-      <div className="flex items-center justify-between gap-4 text-sm text-gray-400">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            name="remember"
-            checked={form.remember}
-            onChange={handleChange}
-            className="accent-cyan-400"
-          />
-          Remember me
-        </label>
+              <div className="flex items-center justify-between gap-4 text-sm text-gray-400">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="remember"
+                    checked={form.remember}
+                    onChange={handleChange}
+                    className="accent-cyan-400"
+                  />
+                  Remember me
+                </label>
 
-        <span className="text-cyan-300">Secure mode</span>
-      </div>
+                <span className="text-cyan-300">Secure mode</span>
+              </div>
 
-      <motion.button
-        type="submit"
-        disabled={loading}
-        whileHover={!loading ? { scale: 1.02, y: -2 } : undefined}
-        whileTap={!loading ? { scale: 0.96 } : undefined}
-        className={`w-full py-4 rounded-xl font-semibold transition duration-300 ${
-          loading
-            ? "bg-slate-700 text-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-blue-900 to-blue-500 shadow-lg shadow-blue-900/30"
-        }`}
-      >
-        {loading ? "Verifying Access..." : "Login to Dashboard"}
-      </motion.button>
-    </form>
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileHover={!loading ? { scale: 1.02, y: -2 } : undefined}
+                whileTap={!loading ? { scale: 0.96 } : undefined}
+                className={`w-full py-4 rounded-xl font-semibold transition duration-300 ${loading
+                    ? "bg-slate-700 text-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-900 to-blue-500 shadow-lg shadow-blue-900/30"
+                  }`}
+              >
+                {loading ? "Verifying Access..." : "Login to Dashboard"}
+              </motion.button>
+            </form>
 
-    <div className="mt-6 grid grid-cols-3 gap-3 text-center">
-      <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-        <p className="text-xs text-gray-400">Role</p>
-        <p className="text-sm font-semibold text-cyan-300">Admin</p>
-      </div>
+            <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                <p className="text-xs text-gray-400">Role</p>
+                <p className="text-sm font-semibold text-cyan-300">Admin</p>
+              </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-        <p className="text-xs text-gray-400">Status</p>
-        <p className="text-sm font-semibold text-cyan-300">Secure</p>
-      </div>
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                <p className="text-xs text-gray-400">Status</p>
+                <p className="text-sm font-semibold text-cyan-300">Secure</p>
+              </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-        <p className="text-xs text-gray-400">Access</p>
-        <p className="text-sm font-semibold text-cyan-300">Private</p>
-      </div>
-    </div>
-  </div>
-</motion.div>
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                <p className="text-xs text-gray-400">Access</p>
+                <p className="text-sm font-semibold text-cyan-300">Private</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
       </div>
     </section>
