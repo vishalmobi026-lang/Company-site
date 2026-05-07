@@ -5,9 +5,9 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import ChatWidget from "./components/ChatWidget";
 import EnrolledStudentDetail from "./components/EnrolledStudentDetail";
-import ContactDetail from "./components/ContactDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
+import Info from "./Pages/Admin/Info";
 import PricingManager from "./Pages/Admin/PricingManager";
 
 import Home from "./Pages/Home/Home";
@@ -49,7 +49,7 @@ function App() {
             <Route
               path="/admin/enrollments"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <EnrolledStudentDetail />
                 </ProtectedRoute>
               }
@@ -57,15 +57,15 @@ function App() {
             <Route
               path="/admin/contacts"
               element={
-                <ProtectedRoute>
-                  <ContactDetail />
+                <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                  <Info />
                 </ProtectedRoute>
               }
             />
             <Route
               path="/admin/pricing"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={["admin"]}>
                   <PricingManager />
                 </ProtectedRoute>
               }
@@ -81,10 +81,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
-
-
-
-
 
 export default App;

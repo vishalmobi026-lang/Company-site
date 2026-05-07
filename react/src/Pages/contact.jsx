@@ -25,47 +25,71 @@ function Contact() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!form.name || !form.email || !form.phone) {
-      alert("Please fill name, email and phone.");
+    // --- ENHANCED VALIDATION ---
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!form.name.trim()) {
+      alert("Please enter your name.");
+      return;
+    }
+    if (!emailRegex.test(form.email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (!phoneRegex.test(form.phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+    if (!form.subject) {
+      alert("Please select a subject.");
+      return;
+    }
+    if (!form.message.trim()) {
+      alert("Please enter your message.");
       return;
     }
 
-    // Build contact object
-    const contact = {
-      id: Date.now().toString(),
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      subject: form.subject,
-      message: form.message,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      // Build contact object for API
+      const contactData = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        subject: form.subject,
+        message: form.message.trim(),
+      };
 
-    if (isAuthenticated) {
-      // Persist to authenticated user's contacts via AuthContext
-      addContact(contact);
-      alert("Message sent and contact saved to your account.");
-    } else {
-      // Guest flow: save locally and inform user to login to persist
-      const guestKey = "guest_contacts";
-      const existing = JSON.parse(localStorage.getItem(guestKey) || "[]");
-      existing.push(contact);
-      localStorage.setItem(guestKey, JSON.stringify(existing));
-      alert("Message sent. Saved locally — login to persist to your account.");
+      // Call Backend API
+      const response = await fetch("http://localhost:8000/contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contactData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      alert("Message sent successfully! We will get back to you soon.");
+
+      // Reset form
+      setForm({
+        name: "",
+        email: "",
+        subject: "",
+        phone: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      alert("Something went wrong. Please try again later.");
     }
-
-    // Reset form
-    setForm({
-      name: "",
-      email: "",
-      subject: "",
-      phone: "",
-      message: "",
-    });
   };
 
   const contactInfo = [

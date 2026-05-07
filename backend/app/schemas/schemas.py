@@ -34,6 +34,9 @@ class ContactMessageCreate(BaseModel):
     name: str
     phone: str
     email: str
+    subject: Optional[str] = None
+    message: Optional[str] = None
+    status: Optional[str] = "Active"
 
 class ContactMessageResponse(ContactMessageCreate):
     id: int

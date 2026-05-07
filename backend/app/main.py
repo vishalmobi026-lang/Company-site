@@ -1,12 +1,18 @@
 from fastapi import FastAPI, Depends, HTTPException
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from sqlalchemy.orm import Session
 import bcrypt
-import os
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 from app.db import models, database
@@ -70,6 +76,50 @@ def get_admin_user(current_user: models.User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return current_user
+
+def get_staff_or_admin_user(current_user: models.User = Depends(get_current_user)):
+    if current_user.role not in ["admin", "staff"]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    return current_user
+
+def send_contact_email(name, email, phone, subject, message):
+    target_email = os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
+    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+
+    if not smtp_user or not smtp_password or "your-email" in smtp_user or "your-app-password" in smtp_password:
+        print("SMTP credentials not configured or using placeholders. Skipping email.")
+        return
+
+    msg = MIMEMultipart()
+    msg['From'] = smtp_user
+    msg['To'] = target_email
+    msg['Subject'] = f"New Contact Message: {subject or 'No Subject'}"
+
+    body = f"""
+    New message from your website:
+    
+    Name: {name}
+    Email: {email}
+    Phone: {phone}
+    Subject: {subject}
+    
+    Message:
+    {message}
+    """
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.send_message(msg)
+        server.quit()
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
 
 @app.post("/admin/register", response_model=schemas.UserResponse)
@@ -138,20 +188,48 @@ def update_pricing(
         db.refresh(db_price)
     return updated_pricings
 
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+
 @app.post("/contacts", response_model=schemas.ContactMessageResponse)
-def create_contact(message: schemas.ContactMessageCreate, db: Session = Depends(database.get_db)):
-    new_message = models.ContactMessage(**message.dict())
-    db.add(new_message)
-    db.commit()
-    db.refresh(new_message)
-    return new_message
+def create_contact(message: schemas.ContactMessageCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
+    try:
+        new_message = models.ContactMessage(**message.dict())
+        db.add(new_message)
+        db.commit()
+        db.refresh(new_message)
+        
+        # Send email in background
+        background_tasks.add_task(
+            send_contact_email,
+            new_message.name, 
+            new_message.email, 
+            new_message.phone, 
+            new_message.subject, 
+            new_message.message
+        )
+        
+        return new_message
+    except Exception as e:
+        print(f"Error in create_contact: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/admin/contacts", response_model=List[schemas.ContactMessageResponse])
-def get_contacts(db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+def get_contacts(db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
     return db.query(models.ContactMessage).all()
 
+@app.put("/admin/contacts/{id}/status")
+def update_contact_status(id: int, status_data: dict, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
+    msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
+    if not msg:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    msg.status = status_data.get("status", "Active")
+    db.commit()
+    db.refresh(msg)
+    return msg
+
 @app.delete("/admin/contacts/{id}")
-def delete_contact(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+def delete_contact(id: int, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
     msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="Message not found")

@@ -24,6 +24,9 @@ class ContactMessage(Base):
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False)
     email = Column(String, nullable=False)
+    subject = Column(String)
+    message = Column(String)
+    status = Column(String, default="Active")
 
 class Enrollment(Base):
     __tablename__ = "enrollments"

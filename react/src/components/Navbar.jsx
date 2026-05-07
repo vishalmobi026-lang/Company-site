@@ -19,7 +19,7 @@ function Navbar() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
 
   const handleMobileNavigate = (path) => {
     navigate(path);
@@ -29,16 +29,16 @@ function Navbar() {
 
   return (
     <div className="w-full sticky top-0 z-50">
-      {/* 🔵 TOP BAR */}
+      {/*  TOP BAR */}
       <div className="relative bg-[#030c2a] text-white text-sm px-10 py-4 justify-between items-center hidden md:flex overflow-hidden">
-        {/* 🔥 GRID */}
+        {/*  GRID */}
         <div
           className="absolute inset-0 opacity-20 
           bg-[linear-gradient(#1e293b_1px,transparent_1px),linear-gradient(90deg,#1e293b_1px,transparent_1px)] 
           bg-[size:40px_40px]"
         ></div>
 
-        {/* 🔥 CONTENT */}
+        {/*  CONTENT */}
         <div className="relative z-10 flex justify-between w-full">
           <div className="flex gap-12 items-center">
             <span className="flex items-center gap-2">
@@ -107,11 +107,10 @@ function Navbar() {
           >
             <div
               onClick={() => navigate("/courses")}
-              className={`flex items-center gap-1 ${
-                location.pathname === "/courses"
+              className={`flex items-center gap-1 ${location.pathname === "/courses"
                   ? "text-blue-600"
                   : "hover:text-blue-600"
-              }`}
+                }`}
             >
               Courses <FaChevronDown />
             </div>
@@ -156,35 +155,40 @@ function Navbar() {
 
           {isAuthenticated && (
             <>
-              <li
-                onClick={() => navigate("/admin/enrollments")}
-                className={`cursor-pointer ${location.pathname === "/admin/enrollments" ? "text-blue-600" : "hover:text-blue-600"}`}
-              >
-                Enrollments
-              </li>
-              <li
-                onClick={() => navigate("/admin/contacts")}
-                className={`cursor-pointer ${location.pathname === "/admin/contacts" ? "text-blue-600" : "hover:text-blue-600"}`}
-              >
-                Messages
-              </li>
-              <li
-                onClick={() => navigate("/admin/pricing")}
-                className={`cursor-pointer ${location.pathname === "/admin/pricing" ? "text-blue-600" : "hover:text-blue-600"}`}
-              >
-                Pricing Manager
-              </li>
+              {user?.user?.role === "admin" && (
+                <li
+                  onClick={() => navigate("/admin/enrollments")}
+                  className={`cursor-pointer ${location.pathname === "/admin/enrollments" ? "text-blue-600" : "hover:text-blue-600"}`}
+                >
+                  Enrollments
+                </li>
+              )}
+              {(user?.user?.role === "admin" || user?.user?.role === "staff") && (
+                <li
+                  onClick={() => navigate("/admin/contacts")}
+                  className={`cursor-pointer ${location.pathname === "/admin/contacts" ? "text-blue-600" : "hover:text-blue-600"}`}
+                >
+                  Messages
+                </li>
+              )}
+              {user?.user?.role === "admin" && (
+                <li
+                  onClick={() => navigate("/admin/pricing")}
+                  className={`cursor-pointer ${location.pathname === "/admin/pricing" ? "text-blue-600" : "hover:text-blue-600"}`}
+                >
+                  Pricing Manager
+                </li>
+              )}
             </>
           )}
 
           {/* ABOUT */}
           <li
             onClick={() => navigate("/about")}
-            className={`cursor-pointer ${
-              location.pathname === "/about"
+            className={`cursor-pointer ${location.pathname === "/about"
                 ? "text-blue-600"
                 : "hover:text-blue-600"
-            }`}
+              }`}
           >
             About us
           </li>
@@ -192,11 +196,10 @@ function Navbar() {
           {/* CONTACT */}
           <li
             onClick={() => navigate("/contact")}
-            className={`cursor-pointer ${
-              location.pathname === "/contact"
+            className={`cursor-pointer ${location.pathname === "/contact"
                 ? "text-blue-600"
                 : "hover:text-blue-600"
-            }`}
+              }`}
           >
             Contact us
           </li>
@@ -302,33 +305,39 @@ function Navbar() {
 
             {isAuthenticated && (
               <>
-                <motion.div
-                  initial={{ opacity: 0, x: -25 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.35, delay: 0.12 }}
-                  onClick={() => handleMobileNavigate("/admin/enrollments")}
-                  className="hover:cursor-pointer hover:text-blue-600"
-                >
-                  Enrollments
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: -25 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.35, delay: 0.13 }}
-                  onClick={() => handleMobileNavigate("/admin/contacts")}
-                  className="hover:cursor-pointer hover:text-blue-600"
-                >
-                  Messages
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: -25 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.35, delay: 0.14 }}
-                  onClick={() => handleMobileNavigate("/admin/pricing")}
-                  className="hover:cursor-pointer hover:text-blue-600"
-                >
-                  Pricing Manager
-                </motion.div>
+                {user?.user?.role === "admin" && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -25 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.35, delay: 0.12 }}
+                    onClick={() => handleMobileNavigate("/admin/enrollments")}
+                    className="hover:cursor-pointer hover:text-blue-600"
+                  >
+                    Enrollments
+                  </motion.div>
+                )}
+                {(user?.user?.role === "admin" || user?.user?.role === "staff") && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -25 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.35, delay: 0.13 }}
+                    onClick={() => handleMobileNavigate("/admin/contacts")}
+                    className="hover:cursor-pointer hover:text-blue-600"
+                  >
+                    Messages
+                  </motion.div>
+                )}
+                {user?.user?.role === "admin" && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -25 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.35, delay: 0.14 }}
+                    onClick={() => handleMobileNavigate("/admin/pricing")}
+                    className="hover:cursor-pointer hover:text-blue-600"
+                  >
+                    Pricing Manager
+                  </motion.div>
+                )}
               </>
             )}
 
@@ -337,7 +346,7 @@ function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.35, delay: 0.15 }}
               onClick={() => handleMobileNavigate("/about")}
-               className="hover:cursor-pointer hover:text-blue-600"
+              className="hover:cursor-pointer hover:text-blue-600"
             >
               About us
             </motion.div>
@@ -347,7 +356,7 @@ function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.35, delay: 0.2 }}
               onClick={() => handleMobileNavigate("/contact")}
-               className="hover:cursor-pointer hover:text-blue-600"
+              className="hover:cursor-pointer hover:text-blue-600"
             >
               Contact us
             </motion.div>
