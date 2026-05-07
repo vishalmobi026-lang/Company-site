@@ -77,7 +77,7 @@ export default function Login() {
   };
 
   return (
-   <>  <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
+    <section className="relative min-h-screen bg-slate-950 px-4 sm:px-6 py-12 flex items-center overflow-hidden text-white">
       {/* BACKGROUND */}
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
@@ -138,7 +138,6 @@ export default function Login() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }}
           className="relative w-full max-w-lg mx-auto lg:-translate-y-15 overflow-hidden rounded-[28px] border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
-
         >
           <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-900 via-cyan-400 to-blue-500"></div>
 
@@ -192,6 +191,20 @@ export default function Login() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">Password</label>
+                <div className="relative">
+                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter secure password"
+                    value={form.password}
+                    onChange={handleChange}
+                    className="w-full pl-11 pr-12 py-4 rounded-xl bg-slate-950/70 border border-slate-700 text-gray-200 placeholder:text-gray-500 focus:border-cyan-400 outline-none transition"
+                  />
 
                   <button
                     type="button"
@@ -250,9 +263,7 @@ export default function Login() {
             </div>
           </div>
         </motion.div>
-
       </div>
     </section>
-    </>
   );
 }
