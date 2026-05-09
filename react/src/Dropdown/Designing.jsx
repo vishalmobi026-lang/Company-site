@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaCheckCircle,
   FaArrowRight,
@@ -83,45 +84,28 @@ function CourseCard({ course, index, navigate }) {
 
 function Designing() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      title: "Graphic Designing",
-      desc: "Learn posters, branding, typography, layouts, and visual communication.",
-      img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=800&q=80",
-      tag: "Creative",
-    },
-    {
-      title: "UI/UX Designing",
-      desc: "Design user-friendly interfaces, wireframes, prototypes, and app screens.",
-      img: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=800&q=80",
-      tag: "Product Design",
-    },
-    {
-      title: "Photoshop",
-      desc: "Master photo editing, retouching, posters, thumbnails, and digital artwork.",
-      img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80",
-      tag: "Editing",
-    },
-    {
-      title: "Illustrator",
-      desc: "Create logos, vector graphics, icons, illustrations, and brand assets.",
-      img: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=800&q=80",
-      tag: "Vector",
-    },
-    {
-      title: "Video Editing",
-      desc: "Learn cuts, transitions, reels, color correction, and content editing basics.",
-      img: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80",
-      tag: "Media",
-    },
-    {
-      title: "Motion Graphics",
-      desc: "Create animated titles, visual effects, social media motion, and promos.",
-      img: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=800&q=80",
-      tag: "Animation",
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/courses?category=Designing");
+        const formatted = res.data.map(c => ({
+          title: c.title,
+          desc: c.description,
+          img: c.image_url,
+          tag: c.tag
+        }));
+        setCourses(formatted);
+      } catch (err) {
+        console.error("Failed to fetch designing courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">

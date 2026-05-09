@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaCheckCircle,
   FaArrowRight,
@@ -81,45 +82,28 @@ function CourseCard({ course, index, navigate }) {
 
 function Civil() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      title: "AutoCAD Civil",
-      desc: "Learn 2D drafting, plans, layouts, dimensions, and civil drawing basics.",
-      img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
-      tag: "Drafting",
-    },
-    {
-      title: "Revit Architecture",
-      desc: "Create building models, elevations, sections, sheets, and BIM workflows.",
-      img: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80",
-      tag: "BIM",
-    },
-    {
-      title: "STAAD Pro",
-      desc: "Learn structural analysis, load calculations, and design workflow basics.",
-      img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
-      tag: "Structure",
-    },
-    {
-      title: "3ds Max",
-      desc: "Create architectural 3D models, interiors, exteriors, and visual presentations.",
-      img: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80",
-      tag: "3D Design",
-    },
-    {
-      title: "SketchUp",
-      desc: "Design quick 3D building concepts, interiors, layouts, and visual models.",
-      img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-      tag: "Modeling",
-    },
-    {
-      title: "Quantity Surveying",
-      desc: "Learn estimation, costing, measurement, BOQ, and project documentation.",
-      img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
-      tag: "Estimation",
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/courses?category=Civil");
+        const formatted = res.data.map(c => ({
+          title: c.title,
+          desc: c.description,
+          img: c.image_url,
+          tag: c.tag
+        }));
+        setCourses(formatted);
+      } catch (err) {
+        console.error("Failed to fetch civil courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">

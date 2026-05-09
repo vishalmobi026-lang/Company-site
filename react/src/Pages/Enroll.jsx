@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -9,72 +9,45 @@ import {
   FaCheckCircle,
   FaPhoneAlt,
   FaEnvelope,
+  FaCalendarAlt,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
 function Enroll() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const selectedCourse = location.state?.course || "Full-Stack Development";
   const [courseOpen, setCourseOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [allCourses, setAllCourses] = useState([]);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
 
-  const courses = {
-    [selectedCourse]: "Selected course from your chosen category.",
-    "Full-Stack Development": "Frontend and backend development fundamentals.",
-    "MERN Stack Development": "MongoDB, Express, React, and Node project training.",
-    "MEAN Stack Development": "MongoDB, Express, Angular, and Node project training.",
-    "Python Developer": "Python programming for applications and automation.",
-    "Java Developer": "Secure and scalable application development with Java.",
-    JavaScript: "Interactive website development with JavaScript.",
-    HTML: "Web page structure and HTML fundamentals.",
-    CSS: "Modern styling, layouts, and responsive design.",
-    "Machine Learning": "Machine learning concepts and prediction basics.",
-    "Data Science": "Data analysis, visualization, and insights.",
-    "Artificial Intelligence": "AI concepts and intelligent systems.",
-    "PHP Developer": "Server-side web development with PHP.",
-    MySQL: "Relational database design and queries.",
-    SQL: "Query and manage database records.",
-    MongoDB: "Flexible NoSQL database structures.",
-    Oracle: "Enterprise database systems.",
+  useEffect(() => {
+    const fetchAllCourses = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/courses");
+        setAllCourses(res.data);
+      } catch (err) {
+        console.error("Failed to fetch courses for enrollment", err);
+      }
+    };
+    fetchAllCourses();
+  }, []);
 
-    "Office Administration": "Office workflow, documents, and operations.",
-    "Business Communication": "Professional speaking, writing, and presentations.",
-    "Digital Marketing": "SEO, social media, ads, and online growth.",
-    "Human Resource Basics": "Recruitment, HR records, and workplace policy.",
-    Entrepreneurship: "Business planning, sales, and growth strategy.",
-    "Spoken English": "Fluency, vocabulary, grammar, and interview speaking.",
-
-    "Graphic Designing": "Branding, posters, layouts, and visual communication.",
-    "UI/UX Designing": "Wireframes, prototypes, and user-friendly interfaces.",
-    Photoshop: "Photo editing, retouching, and digital artwork.",
-    Illustrator: "Logos, vectors, icons, and illustrations.",
-    "Video Editing": "Cuts, transitions, reels, and content editing.",
-    "Motion Graphics": "Animated titles, promos, and visual effects.",
-
-    "AutoCAD Civil": "2D drafting, plans, layouts, and civil drawings.",
-    "Revit Architecture": "Building models, elevations, sections, and BIM.",
-    "STAAD Pro": "Structural analysis and design workflow.",
-    "3ds Max": "Architectural 3D models and visual presentations.",
-    SketchUp: "3D building concepts, interiors, and layouts.",
-    "Quantity Surveying": "Estimation, costing, BOQ, and documentation.",
-
-    "Tally Prime": "Company creation, vouchers, GST, inventory, and reports.",
-    "GST Accounting": "GST billing, tax entries, returns, and filing basics.",
-    "Excel for Accounts": "Formulas, reports, and accounting data tools.",
-    "Payroll Management": "Salary, attendance, deductions, and payroll records.",
-    "Business Accounting": "Ledger, journal, balance sheet, and billing basics.",
-    "Advanced Tally": "GST, inventory, banking, and business accounting.",
-  };
-
-  const courseList = Object.keys(courses);
+  const selectedCourseName = location.state?.course || "Full-Stack Development";
+  
+  const courseList = allCourses.length > 0 ? allCourses.map(c => c.title) : [selectedCourseName];
+  const courseDescriptions = allCourses.reduce((acc, c) => {
+    acc[c.title] = c.description;
+    return acc;
+  }, {});
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
+    dob: "",
     college: "",
     year: "",
     address: "",
@@ -82,30 +55,67 @@ function Enroll() {
     state: "",
     district: "",
     pincode: "",
-    course: selectedCourse,
+    course: selectedCourseName,
   });
 
+  const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "name":
+        if (!value) error = "Full name is required";
+        else if (value.length < 3) error = "Name must be at least 3 characters";
+        break;
+      case "email":
+        if (!value) error = "Email address is required";
+        else if (!/\S+@\S+\.\S+/.test(value)) error = "Please enter a valid email";
+        break;
+      case "phone":
+        if (!value) error = "Phone number is required";
+        else if (!/^\d{10}$/.test(value)) error = "Enter a valid 10-digit number";
+        break;
+      case "dob":
+        if (!value) error = "Date of Birth is required";
+        break;
+      case "college":
+        if (!value) error = "College/Institution name is required";
+        break;
+      case "pincode":
+        if (value && !/^\d{6}$/.test(value)) error = "Invalid pincode (6 digits)";
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Year of qualification: 4 digit number only
-    if (name === "year") {
-      const numericValue = value.replace(/\D/g, "");
-      if (numericValue.length > 4) return;
-      setForm({ ...form, [name]: numericValue });
-      return;
+    
+    // Formatting specific fields
+    let formattedValue = value;
+    if (name === "year" || name === "pincode" || name === "phone") {
+        formattedValue = value.replace(/\D/g, "");
+        if (name === "year" && formattedValue.length > 4) return;
+        if (name === "pincode" && formattedValue.length > 6) return;
+        if (name === "phone" && formattedValue.length > 10) return;
     }
 
-    setForm({ ...form, [name]: value });
+    setForm(prev => ({ ...prev, [name]: formattedValue }));
 
-    // Pincode auto-fill logic
-    if (name === "pincode" && value.length === 6) {
-      fetchLocation(value);
+    // Real-time validation
+    if (touched[name]) {
+      const error = validateField(name, formattedValue);
+      setErrors(prev => ({ ...prev, [name]: error }));
+    }
+
+    // Pincode auto-fill
+    if (name === "pincode" && formattedValue.length === 6) {
+      fetchLocation(formattedValue);
     }
   };
-
 
   const fetchLocation = async (pincode) => {
     try {
@@ -116,54 +126,65 @@ function Enroll() {
           ...prev,
           district: postOffice.District,
           state: postOffice.State,
-          country: "India", // Most pincode APIs are country-specific
+          country: "India",
         }));
+        setErrors(prev => ({ ...prev, pincode: "" }));
+      } else {
+        setErrors(prev => ({ ...prev, pincode: "Invalid pincode" }));
       }
     } catch (err) {
       console.error("Pincode fetch failed", err);
     }
   };
 
-
   const handleBlur = (e) => {
-    setTouched({ ...touched, [e.target.name]: true });
+    const { name, value } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const error = validateField(name, value);
+    setErrors(prev => ({ ...prev, [name]: error }));
   };
 
-  const isInvalid = (field) => touched[field] && !form[field];
-
-  const inputClass = (field) =>
-    `w-full mt-2 p-3 rounded-lg bg-slate-950/70 border outline-none transition text-white placeholder:text-gray-500 ${isInvalid(field)
-      ? "border-red-500 focus:border-red-400"
-      : "border-slate-700 focus:border-cyan-400"
+  const inputClass = (name) => {
+    const hasError = errors[name] && touched[name];
+    return `w-full mt-2 p-3.5 rounded-xl bg-slate-900/80 border transition-all duration-300 outline-none text-white placeholder:text-slate-600 shadow-inner ${
+      hasError 
+        ? "border-red-500/50 focus:border-red-500 bg-red-500/5 ring-4 ring-red-500/10" 
+        : "border-slate-700 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10"
     }`;
-
-  const normalInputClass =
-    "w-full p-3 rounded-lg bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition text-white placeholder:text-gray-500";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ["name", "email", "phone"];
-    const newTouched = requiredFields.reduce((acc, field) => {
-      acc[field] = true;
-      return acc;
-    }, {});
+    // Final validation check
+    const requiredFields = ["name", "email", "phone", "dob", "college"];
+    const newErrors = {};
+    const newTouched = {};
+    
+    requiredFields.forEach(field => {
+      const error = validateField(field, form[field]);
+      if (error) newErrors[field] = error;
+      newTouched[field] = true;
+    });
 
-    setTouched({ ...touched, ...newTouched });
+    setErrors(newErrors);
+    setTouched(newTouched);
 
-    if (!form.name || !form.email || !form.phone) {
-      alert("Please fill all required fields!");
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const element = document.getElementsByName(firstErrorField)[0];
+      if (element) element.focus();
       return;
     }
 
     setLoading(true);
     try {
       await axios.post("http://localhost:8000/enrollments", form);
-      alert("Enrollment Submitted Successfully!");
-      navigate("/");
+      setSubmitStatus('success');
+      setTimeout(() => navigate("/"), 2500);
     } catch (err) {
       console.error(err);
-      alert("Failed to submit enrollment. Please try again.");
+      setSubmitStatus('error');
     } finally {
       setLoading(false);
     }
@@ -180,7 +201,7 @@ function Enroll() {
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-cyan-300 hover:text-cyan-200 transition"
+            className="flex items-center gap-2 text-cyan-300 hover:text-cyan-200 transition font-bold"
           >
             <FaArrowLeft /> Back
           </button>
@@ -190,250 +211,319 @@ function Enroll() {
           initial={{ opacity: 0, y: 35 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-center mb-8"
+          className="text-center mb-10"
         >
-          <span className="inline-flex items-center gap-2 mb-4 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
+          <span className="inline-flex items-center gap-2 mb-4 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur font-bold">
             <FaCheckCircle />
             Start your learning journey
           </span>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text text-transparent pb-2">
             Student Enrollment
           </h1>
 
-          <p className="text-gray-400 mt-3">
+          <p className="text-slate-400 mt-4 text-lg font-medium">
             Complete the form below and our team will contact you shortly.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
+        <div className="grid lg:grid-cols-[1fr_360px] gap-10 items-start">
           <motion.form
             onSubmit={handleSubmit}
             initial={{ opacity: 0, x: -45 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75 }}
-            className="bg-white/5 backdrop-blur-xl border border-slate-700 p-5 md:p-8 rounded-2xl shadow-2xl space-y-7"
+            className="bg-white/5 backdrop-blur-2xl border border-slate-800 p-6 md:p-10 rounded-[2.5rem] shadow-2xl space-y-10 relative overflow-hidden"
           >
-            <div className="grid sm:grid-cols-3 gap-4">
+            {/* Status Overlay */}
+            <AnimatePresence>
+                {submitStatus === 'success' && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-10">
+                        <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20">
+                            <FaCheckCircle className="text-white text-4xl" />
+                        </div>
+                        <h2 className="text-3xl font-black text-white mb-2">Registration Successful!</h2>
+                        <p className="text-slate-400 font-medium">Thank you for choosing G-Tech. Our academic counselor will reach out to you within 24 hours.</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="grid sm:grid-cols-3 gap-6">
               {["Personal", "Education", "Course"].map((step, index) => (
                 <div
                   key={step}
-                  className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"
+                  className={`rounded-2xl border p-5 transition-all duration-500 ${
+                    index === 0 ? "border-cyan-400/30 bg-cyan-400/5 shadow-lg shadow-cyan-400/5" : "border-slate-800 bg-slate-950/40"
+                  }`}
                 >
-                  <p className="text-xs text-gray-400">Step {index + 1}</p>
-                  <h3 className="font-semibold text-cyan-300">{step}</h3>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Step 0{index + 1}</p>
+                  <h3 className={`font-bold ${index === 0 ? "text-cyan-300" : "text-slate-400"}`}>{step}</h3>
                 </div>
               ))}
             </div>
 
-            <div>
-              <h2 className="flex items-center gap-3 text-lg font-semibold text-cyan-300 mb-5">
-                <FaUser /> Personal Information
+            {/* SECTION 1: PERSONAL */}
+            <div className="space-y-6">
+              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
+                <div className="p-2 bg-cyan-400/10 rounded-lg"><FaUser size={18} /></div> 
+                Personal Information
               </h2>
 
-              <div className="grid md:grid-cols-3 gap-5">
-                <div>
-                  <label>Full Name *</label>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Full Name *</label>
                   <input
-                    type="text"
                     name="name"
-                    placeholder="Enter your name"
+                    placeholder="e.g. John Doe"
                     value={form.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className={inputClass("name")}
                   />
-                  {isInvalid("name") && (
-                    <p className="text-red-400 text-sm mt-1">Name is required</p>
-                  )}
+                  {errors.name && touched.name && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.name}</p>}
                 </div>
 
-                <div>
-                  <label>Email *</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Date of Birth *</label>
+                  <div className="relative">
+                    <input
+                        type="date"
+                        name="dob"
+                        value={form.dob}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className={`${inputClass("dob")} appearance-none`}
+                    />
+                    {!form.dob && <FaCalendarAlt className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />}
+                  </div>
+                  {errors.dob && touched.dob && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.dob}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Email Address *</label>
                   <input
                     type="email"
                     name="email"
-                    placeholder="Enter your email"
+                    placeholder="john@example.com"
                     value={form.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className={inputClass("email")}
                   />
-                  {isInvalid("email") && (
-                    <p className="text-red-400 text-sm mt-1">Email is required</p>
-                  )}
+                  {errors.email && touched.email && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.email}</p>}
                 </div>
 
-                <div>
-                  <label>Phone *</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Phone Number *</label>
                   <input
-                    type="text"
                     name="phone"
-                    placeholder="Enter your phone"
+                    placeholder="10-digit mobile number"
                     value={form.phone}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className={inputClass("phone")}
                   />
-                  {isInvalid("phone") && (
-                    <p className="text-red-400 text-sm mt-1">Phone is required</p>
-                  )}
+                  {errors.phone && touched.phone && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.phone}</p>}
                 </div>
               </div>
             </div>
 
-            <div>
-              <h2 className="flex items-center gap-3 text-lg font-semibold text-cyan-300 mb-5">
-                <FaGraduationCap /> Education Details
+            {/* SECTION 2: EDUCATION */}
+            <div className="space-y-6">
+              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
+                <div className="p-2 bg-cyan-400/10 rounded-lg"><FaGraduationCap size={18} /></div> 
+                Academic Details
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <input
-                  name="college"
-                  placeholder="College / Institution"
-                  value={form.college}
-                  onChange={handleChange}
-                  className={normalInputClass}
-                />
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">College / University *</label>
+                    <input
+                        name="college"
+                        placeholder="Name of your current or last institution"
+                        value={form.college}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className={inputClass("college")}
+                    />
+                    {errors.college && touched.college && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.college}</p>}
+                </div>
 
-                <input
-                  name="year"
-                  placeholder="Year (e.g. 2024)"
-                  value={form.year}
-                  onChange={handleChange}
-                  className={normalInputClass}
-                  maxLength={4}
-                />
-
+                <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Year of Passing</label>
+                    <input
+                        name="year"
+                        placeholder="YYYY"
+                        value={form.year}
+                        onChange={handleChange}
+                        className={inputClass("year")}
+                    />
+                </div>
               </div>
             </div>
 
-            <div>
-              <h2 className="flex items-center gap-3 text-lg font-semibold text-cyan-300 mb-5">
-                <FaMapMarkerAlt /> Address Details
+            {/* SECTION 3: ADDRESS */}
+            <div className="space-y-6">
+              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
+                <div className="p-2 bg-cyan-400/10 rounded-lg"><FaMapMarkerAlt size={18} /></div> 
+                Communication Address
               </h2>
 
-              <textarea
-                name="address"
-                placeholder="Full Address"
-                rows="3"
-                value={form.address}
-                onChange={handleChange}
-                className={`${normalInputClass} resize-none`}
-              />
+              <div className="space-y-1">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Street Address</label>
+                <textarea
+                    name="address"
+                    placeholder="Door No, Street Name, Landmark"
+                    rows="2"
+                    value={form.address}
+                    onChange={handleChange}
+                    className={`${inputClass("address")} resize-none`}
+                />
+              </div>
 
-              <div className="grid md:grid-cols-2 gap-5 mt-5">
-                <input name="country" placeholder="Country" value={form.country} onChange={handleChange} className={normalInputClass} />
-                <input name="state" placeholder="State" value={form.state} onChange={handleChange} className={normalInputClass} />
-                <input name="district" placeholder="District" value={form.district} onChange={handleChange} className={normalInputClass} />
-                <input name="pincode" placeholder="Pincode" value={form.pincode} onChange={handleChange} className={normalInputClass} />
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Pincode</label>
+                    <input name="pincode" placeholder="600001" value={form.pincode} onChange={handleChange} onBlur={handleBlur} className={inputClass("pincode")} />
+                    {errors.pincode && touched.pincode && <p className="text-red-400 text-[10px] font-bold mt-1 ml-1 uppercase">{errors.pincode}</p>}
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">District</label>
+                    <input name="district" placeholder="District" value={form.district} onChange={handleChange} className={inputClass("district")} />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">State</label>
+                    <input name="state" placeholder="State" value={form.state} onChange={handleChange} className={inputClass("state")} />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-wider ml-1">Country</label>
+                    <input name="country" placeholder="Country" value={form.country} onChange={handleChange} className={inputClass("country")} />
+                </div>
               </div>
             </div>
 
-            <div>
-              <h2 className="flex items-center gap-3 text-lg font-semibold text-cyan-300 mb-5">
-                <FaBookOpen /> Selected Course
+            {/* SECTION 4: COURSE */}
+            <div className="space-y-6">
+              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
+                <div className="p-2 bg-cyan-400/10 rounded-lg"><FaBookOpen size={18} /></div> 
+                Selected Program
               </h2>
 
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setCourseOpen(!courseOpen)}
-                  className="w-full p-3 rounded-lg bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition text-white text-left flex items-center justify-between"
+                  className="w-full p-4 rounded-xl bg-slate-900 border border-slate-700 focus:border-cyan-400 outline-none transition text-white text-left flex items-center justify-between font-bold"
                 >
                   <span>{form.course}</span>
-                  <span className="text-cyan-300">{courseOpen ? "▲" : "▼"}</span>
+                  <span className={`text-cyan-400 transition-transform duration-300 ${courseOpen ? 'rotate-180' : ''}`}>▼</span>
                 </button>
 
-                {courseOpen && (
-                  <div className="absolute z-50 bottom-full mb-2 w-full max-h-[220px] overflow-y-auto rounded-xl border border-cyan-400/40 bg-slate-900 shadow-2xl">
-                    {courseList.map((course) => (
-                      <button
-                        key={course}
-                        type="button"
-                        onClick={() => {
-                          setForm({ ...form, course });
-                          setCourseOpen(false);
-                        }}
-                        className={`block w-full px-4 py-3 text-left text-sm transition hover:bg-cyan-400 hover:text-slate-950 ${form.course === course
-                            ? "bg-blue-600 text-white"
-                            : "text-gray-200"
-                          }`}
-                      >
-                        {course}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <AnimatePresence>
+                    {courseOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute z-50 bottom-full mb-3 w-full max-h-[250px] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl custom-scrollbar"
+                    >
+                        {courseList.map((course) => (
+                        <button
+                            key={course}
+                            type="button"
+                            onClick={() => {
+                            setForm({ ...form, course });
+                            setCourseOpen(false);
+                            }}
+                            className={`block w-full px-5 py-4 text-left text-sm font-bold transition-all ${form.course === course
+                                ? "bg-blue-600 text-white"
+                                : "text-slate-300 hover:bg-slate-800"
+                            }`}
+                        >
+                            {course}
+                        </button>
+                        ))}
+                    </motion.div>
+                    )}
+                </AnimatePresence>
               </div>
-
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-5 pt-6 border-t border-slate-700">
-              <p className="text-sm text-gray-400">
-                Fields marked with * are required.
-              </p>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-10 border-t border-slate-800">
+              <div className="flex items-center gap-3 text-slate-500">
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                <p className="text-xs font-black uppercase tracking-widest">Secure Enrollment</p>
+              </div>
 
               <motion.button
                 disabled={loading}
-                whileHover={!loading ? { scale: 1.05, y: -2 } : {}}
-                whileTap={!loading ? { scale: 0.95 } : {}}
+                whileHover={!loading ? { scale: 1.02, y: -2 } : {}}
+                whileTap={!loading ? { scale: 0.98 } : {}}
                 type="submit"
-                className={`w-full md:w-auto px-14 py-3 rounded-full text-lg font-semibold bg-gradient-to-r from-blue-900 to-blue-500 shadow-lg shadow-blue-900/30 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`w-full md:w-auto px-12 py-5 rounded-2xl text-lg font-black bg-gradient-to-r from-blue-900 to-blue-600 shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {loading ? "Submitting..." : "Submit Enrollment"}
+                {loading ? (
+                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Submitting...</>
+                ) : (
+                    "Submit Enrollment Application"
+                )}
               </motion.button>
             </div>
+
+            {submitStatus === 'error' && (
+                <p className="text-red-400 text-center font-bold text-sm mt-4">Failed to submit application. Please check your connection and try again.</p>
+            )}
           </motion.form>
 
+          {/* SIDEBAR */}
           <motion.aside
             initial={{ opacity: 0, x: 45 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
-            className="lg:sticky lg:top-6 rounded-2xl border border-slate-700 bg-white/5 p-6 backdrop-blur-xl shadow-2xl"
+            className="lg:sticky lg:top-10 space-y-6"
           >
-            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-2xl text-cyan-300">
-              <FaBookOpen />
-            </div>
-
-            <p className="text-sm text-gray-400">Selected Course</p>
-
-            <h2 className="mt-1 text-2xl font-bold text-cyan-300">
-              {form.course}
-            </h2>
-
-            <p className="mt-3 text-sm text-gray-400 leading-relaxed">
-              {courses[form.course] || "Selected course from your chosen category."}
-            </p>
-
-            <div className="my-6 border-t border-slate-700"></div>
-
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <FaPhoneAlt className="mt-1 text-cyan-300" />
-                <div>
-                  <p className="font-semibold">Need guidance?</p>
-                  <p className="text-sm text-gray-400">+91 75980 98675</p>
+            <div className="rounded-[2rem] border border-slate-800 bg-slate-900/50 p-8 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 blur-3xl rounded-full"></div>
+                
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-2xl text-cyan-300">
+                    <FaBookOpen />
                 </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <FaEnvelope className="mt-1 text-cyan-300" />
-                <div>
-                  <p className="font-semibold">Email support</p>
-                  <p className="text-sm text-gray-400 break-all">
-                    azhagiyamandapam.tn@gteceducation.com
-                  </p>
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Selected Program</p>
+                <h2 className="text-2xl font-black text-cyan-300 mb-4">{form.course}</h2>
+
+                <p className="text-sm text-slate-400 font-medium leading-relaxed">
+                    {courseDescriptions[form.course] || "Master job-ready skills with our professional certification program designed for the industry."}
+                </p>
+
+                <div className="my-8 h-px bg-slate-800/50 w-full"></div>
+
+                <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                        <div className="mt-1 p-2 bg-cyan-400/10 rounded-lg text-cyan-300"><FaPhoneAlt size={14} /></div>
+                        <div>
+                            <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Assistance</p>
+                            <p className="font-bold text-slate-200">+91 75980 98675</p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                        <div className="mt-1 p-2 bg-cyan-400/10 rounded-lg text-cyan-300"><FaEnvelope size={14} /></div>
+                        <div>
+                            <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Support Email</p>
+                            <p className="font-bold text-slate-200 text-sm break-all leading-tight">azhagiyamandapam.tn@gteceducation.com</p>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="mt-6 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 p-4">
-              <p className="text-sm text-cyan-200">What happens next?</p>
-              <p className="mt-2 text-sm text-gray-400">
-                After submitting, our team will contact you with course timing,
-                fees, and admission details.
-              </p>
+                <div className="mt-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+                    <p className="text-xs font-black text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div> Next Steps
+                    </p>
+                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                        Our academic team will process your application and contact you within 24 hours with schedule details.
+                    </p>
+                </div>
             </div>
           </motion.aside>
         </div>

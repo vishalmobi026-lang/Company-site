@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaCheckCircle,
   FaArrowRight,
@@ -83,45 +84,28 @@ function CourseCard({ course, index, navigate }) {
 
 function Accounting() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      title: "Tally Prime",
-      desc: "Learn company creation, vouchers, GST, inventory, and reports.",
-      img: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80",
-      tag: "Accounting",
-    },
-    {
-      title: "GST Accounting",
-      desc: "Understand GST billing, tax entries, returns, and practical filing basics.",
-      img: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=800&q=80",
-      tag: "Tax",
-    },
-    {
-      title: "Excel for Accounts",
-      desc: "Use formulas, tables, reports, and data tools for office accounting.",
-      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-      tag: "Excel",
-    },
-    {
-      title: "Payroll Management",
-      desc: "Learn salary calculation, attendance, deductions, and payroll records.",
-      img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
-      tag: "Payroll",
-    },
-    {
-      title: "Business Accounting",
-      desc: "Learn ledger, journal, balance sheet, profit and loss, and billing basics.",
-      img: "https://images.unsplash.com/photo-1554224154-22dec7ec8818?auto=format&fit=crop&w=800&q=80",
-      tag: "Finance",
-    },
-    {
-      title: "Advanced Tally",
-      desc: "Practice GST, inventory, banking, reports, and real business accounting.",
-      img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=80",
-      tag: "Advanced",
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/courses?category=Accounting");
+        const formatted = res.data.map(c => ({
+          title: c.title,
+          desc: c.description,
+          img: c.image_url,
+          tag: c.tag
+        }));
+        setCourses(formatted);
+      } catch (err) {
+        console.error("Failed to fetch accounting courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">

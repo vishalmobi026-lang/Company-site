@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaCheckCircle,
   FaArrowRight,
@@ -83,45 +84,28 @@ function CourseCard({ course, index, navigate }) {
 
 function NonTechnical() {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      title: "Office Administration",
-      desc: "Learn office workflow, documentation, communication, and daily operations.",
-      img: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80",
-      tag: "Office Skills",
-    },
-    {
-      title: "Business Communication",
-      desc: "Improve professional speaking, writing, presentation, and workplace confidence.",
-      img: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
-      tag: "Communication",
-    },
-    {
-      title: "Digital Marketing",
-      desc: "Learn SEO, social media, ads, content strategy, and online brand growth.",
-      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-      tag: "Marketing",
-    },
-    {
-      title: "Human Resource Basics",
-      desc: "Understand recruitment, employee management, HR records, and workplace policy.",
-      img: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=800&q=80",
-      tag: "HR",
-    },
-    {
-      title: "Entrepreneurship",
-      desc: "Learn business planning, customer understanding, sales basics, and growth strategy.",
-      img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
-      tag: "Business",
-    },
-    {
-      title: "Spoken English",
-      desc: "Build fluency, vocabulary, grammar confidence, and interview communication.",
-      img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
-      tag: "Language",
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/courses?category=NonTechnical");
+        const formatted = res.data.map(c => ({
+          title: c.title,
+          desc: c.description,
+          img: c.image_url,
+          tag: c.tag
+        }));
+        setCourses(formatted);
+      } catch (err) {
+        console.error("Failed to fetch non-technical courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">

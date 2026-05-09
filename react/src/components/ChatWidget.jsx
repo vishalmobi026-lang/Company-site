@@ -32,37 +32,38 @@ function Toast({ toast, removeToast }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className={`relative w-[90vw] sm:w-85 max-w-sm rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.4)] text-white p-8 flex flex-col items-center text-center pointer-events-auto overflow-hidden
-      ${toast.type === "success" 
-          ? "bg-gradient-to-br from-emerald-400 via-green-500 to-green-600" 
-          : "bg-gradient-to-br from-rose-500 via-red-500 to-red-700"}`}
+      className="relative w-[90vw] sm:w-[480px] max-w-lg rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] bg-white border border-slate-100 p-12 flex flex-col items-center text-center pointer-events-auto overflow-hidden"
     >
-      {/* BEACON EFFECT - Independent Animation */}
-      <div className="relative w-28 h-28 mb-4 flex items-center justify-center">
-        <motion.div variants={ringVariants} animate="animate" className="absolute inset-0 rounded-full bg-white/40" />
+      {/* BEACON EFFECT - Neutral Theme */}
+      <div className="relative w-36 h-36 mb-6 flex items-center justify-center">
+        <motion.div 
+          variants={ringVariants} 
+          animate="animate" 
+          className="absolute inset-0 rounded-full bg-slate-100/80" 
+        />
         <motion.div 
           variants={ringVariants} 
           animate="animate" 
           transition={{ ...ringVariants.animate.transition, delay: 0.7 }} 
-          className="absolute inset-0 rounded-full bg-white/20" 
+          className="absolute inset-0 rounded-full bg-slate-50/60" 
         />
-        <div className="relative z-10 w-24 h-24 drop-shadow-xl">
+        <div className="relative z-10 w-28 h-28 drop-shadow-md">
           {View}
         </div>
       </div>
 
-      <h3 className="text-2xl font-black mb-2 tracking-tight uppercase">
+      <h3 className={`text-3xl font-black mb-3 tracking-tight uppercase ${toast.type === "success" ? "text-emerald-600" : "text-rose-600"}`}>
         {toast.type === "success" ? "Success!" : "Submission Error"}
       </h3>
-      <p className="text-white/90 font-medium mb-8 text-sm sm:text-base leading-relaxed">
+      <p className="text-slate-500 font-bold mb-10 text-base sm:text-lg leading-relaxed max-w-xs">
         {toast.message}
       </p>
 
       <motion.button
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => removeToast(toast.id)}
-        className="bg-white text-gray-900 px-10 py-3 rounded-2xl font-bold shadow-lg text-sm tracking-wide"
+        className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl shadow-slate-200 text-sm tracking-widest uppercase"
       >
         DISMISS
       </motion.button>

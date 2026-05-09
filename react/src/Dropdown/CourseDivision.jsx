@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaCheckCircle, FaArrowRight, FaLaptopCode, FaCode } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CourseCard({ course, index, navigate }) {
   const [imageError, setImageError] = useState(false);
@@ -77,31 +77,44 @@ function CourseCard({ course, index, navigate }) {
   );
 }
 
-function Technical() {
+function CourseDivision() {
   const navigate = useNavigate();
+  const { categorySlug } = useParams();
   const [courses, setCourses] = useState([]);
+  const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchCoursesAndCategory = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/courses?category=Technical");
-        // Map backend fields to frontend props
-        const formatted = res.data.map(c => ({
-          title: c.title,
-          desc: c.description,
-          img: c.image_url,
-          tag: c.tag
-        }));
-        setCourses(formatted);
+        setLoading(true);
+        // 1. Fetch categories to find the name for this slug
+        const catRes = await axios.get("http://localhost:8000/categories");
+        const currentCat = catRes.data.find(c => c.slug === categorySlug);
+        
+        if (currentCat) {
+          setCategoryName(currentCat.name);
+          // 2. Fetch courses for this category
+          // Note: Backend stores category name in 'category' field
+          const res = await axios.get(`http://localhost:8000/courses?category=${encodeURIComponent(currentCat.name)}`);
+          const formatted = res.data.map(c => ({
+            title: c.title,
+            desc: c.description,
+            img: c.image_url,
+            tag: c.tag
+          }));
+          setCourses(formatted);
+        } else {
+          setCategoryName("Courses");
+        }
       } catch (err) {
-        console.error("Failed to fetch technical courses", err);
+        console.error("Failed to fetch courses", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourses();
-  }, []);
+    fetchCoursesAndCategory();
+  }, [categorySlug]);
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">
@@ -112,39 +125,49 @@ function Technical() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
+          key={categorySlug}
           initial={{ opacity: 0, y: 45 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.25 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75 }}
           className="text-center mb-12"
         >
           <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
             <FaLaptopCode />
-            Technical Training
+            {categoryName} Training
           </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-100 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
-            Software Courses
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-100 via-cyan-300 to-blue-500 bg-clip-text text-transparent pb-2 leading-tight">
+            {categoryName} Courses
           </h1>
 
           <p className="mt-5 max-w-2xl mx-auto text-gray-400 text-base sm:text-lg leading-relaxed">
-            Learn programming, web development, databases, and AI skills with practical training paths.
+            Professional training paths designed to build your skills in {categoryName}.
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {courses.map((course, index) => (
-            <CourseCard
-              key={course.title}
-              course={course}
-              index={index}
-              navigate={navigate}
-            />
-          ))}
-        </div>
+        {loading ? (
+            <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+            </div>
+        ) : courses.length === 0 ? (
+            <div className="text-center py-20 text-gray-400">
+                No courses found in this category yet. Check back soon!
+            </div>
+        ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {courses.map((course, index) => (
+                <CourseCard
+                key={course.title}
+                course={course}
+                index={index}
+                navigate={navigate}
+                />
+            ))}
+            </div>
+        )}
       </div>
     </section>
   );
 }
 
-export default Technical;
+export default CourseDivision;

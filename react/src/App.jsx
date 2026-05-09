@@ -16,11 +16,7 @@ import Contact from "./Pages/Contact";
 import Login from "./Pages/Login";
 import Courses from "./Pages/Courses";
 import Enroll from "./Pages/Enroll";
-import Technical from "./Dropdown/Technical";
-import NonTechnical from "./Dropdown/NonTechnical";
-import Designing from "./Dropdown/Designing";
-import Accounting from "./Dropdown/Accounting";
-import Civil from "./Dropdown/Civil";
+import CourseDivision from "./Dropdown/CourseDivision";
 
 function App() {
   const { isAuthenticated } = useContext(AuthContext);
@@ -35,11 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/technical" element={<Technical />} />
-            <Route path="/courses/non-technical" element={<NonTechnical />} />
-            <Route path="/courses/designing" element={<Designing />} />
-            <Route path="/courses/accounting" element={<Accounting />} />
-            <Route path="/courses/civil" element={<Civil />} />
+            <Route path="/courses/:categorySlug" element={<CourseDivision />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />

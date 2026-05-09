@@ -63,7 +63,7 @@ export default function Courses() {
             Choose your learning path
           </span>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text text-transparent pb-2 leading-tight">
             Explore Our Courses
           </h1>
 

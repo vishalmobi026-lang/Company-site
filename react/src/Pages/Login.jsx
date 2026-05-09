@@ -65,7 +65,7 @@ export default function Login() {
       );
 
       if (res.data) {
-        login(res.data);
+        login(res.data, form.remember);
       }
 
       setLoading(false);

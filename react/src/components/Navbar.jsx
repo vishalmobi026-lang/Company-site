@@ -1,5 +1,6 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -16,10 +17,23 @@ import {
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/categories");
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleMobileNavigate = (path) => {
     navigate(path);
@@ -29,7 +43,7 @@ function Navbar() {
 
   return (
     <div className="w-full sticky top-0 z-50">
-      {/*  TOP BAR */}
+      {/* ... (keep top bar as is) ... */}
       <div className="relative bg-[#030c2a] text-white text-sm px-10 py-4 justify-between items-center hidden md:flex overflow-hidden">
         {/*  GRID */}
         <div
@@ -117,37 +131,17 @@ function Navbar() {
 
             {openCourses && (
               <div className="absolute left-0 top-full pt-3 z-50">
-                <div className="bg-gray-900 text-white p-5 rounded-2xl w-80 space-y-3">
-                  <div
-                    onClick={() => navigate("/courses/technical")}
-                    className="p-3 hover:bg-gray-800 rounded"
-                  >
-                    IT / Technical
-                  </div>
-                  <div
-                    onClick={() => navigate("/courses/non-technical")}
-                    className="p-3 hover:bg-gray-800 rounded"
-                  >
-                    Non Technical
-                  </div>
-                  <div
-                    onClick={() => navigate("/courses/designing")}
-                    className="p-3 hover:bg-gray-800 rounded"
-                  >
-                    Designing
-                  </div>
-                  <div
-                    onClick={() => navigate("/courses/accounting")}
-                    className="p-3 hover:bg-gray-800 rounded"
-                  >
-                    Accounting
-                  </div>
-                  <div
-                    onClick={() => navigate("/courses/civil")}
-                    className="p-3 hover:bg-gray-800 rounded"
-                  >
-                    Civil
-                  </div>
+                <div className="bg-gray-900 text-white p-5 rounded-2xl w-80 space-y-3 shadow-2xl">
+                  {categories.map(cat => (
+                    <div
+                      key={cat.id}
+                      onClick={() => navigate(`/courses/${cat.slug}`)}
+                      className="p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium"
+                    >
+                      {cat.name}
+                    </div>
+                  ))}
+                  {categories.length === 0 && <div className="p-3 text-gray-500 italic">No categories yet</div>}
                 </div>
               </div>
             )}
@@ -176,7 +170,7 @@ function Navbar() {
                   onClick={() => navigate("/admin/pricing")}
                   className={`cursor-pointer ${location.pathname === "/admin/pricing" ? "text-blue-600" : "hover:text-blue-600"}`}
                 >
-                  Pricing Manager
+                  Management
                 </li>
               )}
             </>
@@ -283,21 +277,16 @@ function Navbar() {
                     className="overflow-hidden pl-3 mt-2 space-y-2 cursor-pointer text-sm "
 
                   >
-                    <div className="cursor-pointer hover:text-blue-700" onClick={() => handleMobileNavigate("/courses/technical")}>
-                      IT / Technical
-                    </div>
-                    <div className="cursor-pointer hover:text-blue-700" onClick={() => handleMobileNavigate("/courses/non-technical")}>
-                      Non Technical
-                    </div>
-                    <div className="cursor-pointer hover:text-blue-700" onClick={() => handleMobileNavigate("/courses/designing")}>
-                      Designing
-                    </div>
-                    <div className="cursor-pointer hover:text-blue-700" onClick={() => handleMobileNavigate("/courses/accounting")}>
-                      Accounting
-                    </div>
-                    <div className="cursor-pointer hover:text-blue-700" onClick={() => handleMobileNavigate("/courses/civil")}>
-                      Civil
-                    </div>
+                    {categories.map(cat => (
+                      <div 
+                        key={cat.id}
+                        className="cursor-pointer hover:text-blue-700 py-1" 
+                        onClick={() => handleMobileNavigate(`/courses/${cat.slug}`)}
+                      >
+                        {cat.name}
+                      </div>
+                    ))}
+                    {categories.length === 0 && <div className="text-gray-400 italic">No categories</div>}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -335,7 +324,7 @@ function Navbar() {
                     onClick={() => handleMobileNavigate("/admin/pricing")}
                     className="hover:cursor-pointer hover:text-blue-600"
                   >
-                    Pricing Manager
+                    Management
                   </motion.div>
                 )}
               </>
