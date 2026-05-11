@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
-import { FaTrash, FaUser, FaPhone, FaEnvelope, FaClock, FaTag, FaCommentAlt } from "react-icons/fa";
+import { FaTrash, FaUser, FaPhone, FaEnvelope, FaClock, FaTag, FaCommentAlt, FaCommentDots, FaSave, FaHistory, FaUndo, FaChevronDown, FaChevronUp, FaTrashAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Info() {
   const { user, isAuthenticated } = useContext(AuthContext);
+  const location = useLocation();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +39,7 @@ export default function Info() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this message?")) return;
+    if (!window.confirm("Are you sure you want to move this message to trash?")) return;
 
     try {
       await axios.delete(`http://localhost:8000/admin/contacts/${id}`, {
@@ -46,6 +48,7 @@ export default function Info() {
         }
       });
       setContacts(contacts.filter(c => c.id !== id));
+      if (user?.role === "admin") fetchDeletedContacts();
     } catch (err) {
       console.error(err);
       alert("Failed to delete message.");
@@ -63,6 +66,21 @@ export default function Info() {
     } catch (err) {
       console.error(err);
       alert("Failed to update status.");
+    }
+  };
+
+  const handleFeedbackUpdate = async (id, feedback) => {
+    try {
+      await axios.put(`http://localhost:8000/admin/contacts/${id}/status`, { feedback }, {
+        headers: {
+          Authorization: `Bearer ${user?.access_token}`
+        }
+      });
+      setContacts(contacts.map(c => c.id === id ? { ...c, feedback } : c));
+      alert("Feedback saved successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update feedback.");
     }
   };
 
@@ -187,6 +205,30 @@ export default function Info() {
                           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-sm text-slate-600 leading-relaxed italic">
                             "{c.message || "No message content provided."}"
                           </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3 pt-2">
+                        <FaCommentDots className="text-blue-400 mt-1 shrink-0" />
+                        <div className="w-full">
+                          <div className="flex justify-between items-center mb-1">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Staff Feedback</p>
+                            <button 
+                              onClick={() => handleFeedbackUpdate(c.id, c.feedback)}
+                              className="text-[10px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 uppercase tracking-tight"
+                            >
+                              <FaSave size={10} /> Save
+                            </button>
+                          </div>
+                          <textarea 
+                            className="w-full p-4 bg-blue-50/30 rounded-2xl border border-blue-100 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all min-h-[80px] resize-none"
+                            placeholder="Type staff feedback here..."
+                            value={c.feedback || ""}
+                            onChange={(e) => {
+                              const newFeedback = e.target.value;
+                              setContacts(contacts.map(item => item.id === c.id ? { ...item, feedback: newFeedback } : item));
+                            }}
+                          />
                         </div>
                       </div>
                     </div>

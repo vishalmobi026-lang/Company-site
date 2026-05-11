@@ -17,6 +17,7 @@ import {
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
+  const [openMessages, setOpenMessages] = useState(false);
   const [categories, setCategories] = useState([]);
 
   const navigate = useNavigate();
@@ -159,10 +160,36 @@ function Navbar() {
               )}
               {(user?.user?.role === "admin" || user?.user?.role === "staff") && (
                 <li
-                  onClick={() => navigate("/admin/contacts")}
-                  className={`cursor-pointer ${location.pathname === "/admin/contacts" ? "text-blue-600" : "hover:text-blue-600"}`}
+                  className="relative cursor-pointer flex items-center"
+                  onMouseEnter={() => user?.user?.role === "admin" && setOpenMessages(true)}
+                  onMouseLeave={() => setOpenMessages(false)}
                 >
-                  Messages
+                  <div
+                    onClick={() => navigate("/admin/contacts")}
+                    className={`flex items-center gap-1 ${location.pathname === "/admin/contacts"
+                        ? "text-blue-600"
+                        : "hover:text-blue-600"
+                      }`}
+                  >
+                    Messages {user?.user?.role === "admin" && <FaChevronDown className="text-[10px]" />}
+                  </div>
+
+                  {openMessages && user?.user?.role === "admin" && (
+                    <div className="absolute left-0 top-full pt-3 z-50">
+                      <div className="bg-gray-900 text-white p-4 rounded-2xl w-64 space-y-2 shadow-2xl border border-gray-800">
+                        <div
+                          onClick={() => {
+                            navigate("/admin/contacts/archived");
+                            setOpenMessages(false);
+                          }}
+                          className={`p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium flex items-center justify-between ${location.pathname === "/admin/contacts/archived" ? "text-blue-400 bg-gray-800" : ""}`}
+                        >
+                          Archived Inquiries
+                          <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full">Admin</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </li>
               )}
               {user?.user?.role === "admin" && (
@@ -310,10 +337,47 @@ function Navbar() {
                     initial={{ opacity: 0, x: -25 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.35, delay: 0.13 }}
-                    onClick={() => handleMobileNavigate("/admin/contacts")}
-                    className="hover:cursor-pointer hover:text-blue-600"
                   >
-                    Messages
+                    <div
+                      onClick={() => user?.user?.role === "admin" ? setOpenMessages(!openMessages) : handleMobileNavigate("/admin/contacts")}
+                      className="flex justify-between cursor-pointer hover:text-blue-700"
+                    >
+                      Messages
+                      {user?.user?.role === "admin" && (
+                        <motion.span
+                          animate={{ rotate: openMessages ? 180 : 0 }}
+                          transition={{ duration: 0.25 }}
+                        >
+                          <FaChevronDown />
+                        </motion.span>
+                      )}
+                    </div>
+
+                    <AnimatePresence>
+                      {openMessages && user?.user?.role === "admin" && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, y: -10 }}
+                          animate={{ opacity: 1, height: "auto", y: 0 }}
+                          exit={{ opacity: 0, height: 0, y: -10 }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          className="overflow-hidden pl-3 mt-2 space-y-2 cursor-pointer text-sm"
+                        >
+                          <div 
+                            className="cursor-pointer hover:text-blue-700 py-1" 
+                            onClick={() => handleMobileNavigate("/admin/contacts")}
+                          >
+                            Inbox Inquiries
+                          </div>
+                          <div 
+                            className="cursor-pointer hover:text-blue-700 py-1 flex items-center justify-between" 
+                            onClick={() => handleMobileNavigate("/admin/contacts/archived")}
+                          >
+                            Archived Inquiries
+                            <span className="text-[9px] bg-blue-50 text-blue-500 px-1.5 rounded-md">Admin Only</span>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 )}
                 {user?.user?.role === "admin" && (
