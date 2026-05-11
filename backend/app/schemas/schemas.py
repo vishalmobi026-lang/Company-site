@@ -42,6 +42,8 @@ class ContactMessageCreate(BaseModel):
     subject: Optional[str] = None
     message: Optional[str] = None
     status: Optional[str] = "Active"
+    feedback: Optional[str] = None
+    is_deleted: Optional[bool] = False
 
 class ContactMessageResponse(ContactMessageCreate):
     id: int
