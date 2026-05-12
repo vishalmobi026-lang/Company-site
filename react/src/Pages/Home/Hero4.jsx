@@ -63,7 +63,7 @@ function Hero4() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mb-12 inline-flex bg-gray-100 border border-gray-300 rounded-full p-1"
+            className="mb-6 inline-flex bg-gray-100 border border-gray-300 rounded-full p-1"
           >
             <button
               onClick={() => setOffer("Standard")}
@@ -102,7 +102,7 @@ function Hero4() {
             {View}
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 -mt-8">
             {(() => {
                 const featured = pricing.filter(p => p.is_featured);
                 const nonFeatured = pricing.filter(p => !p.is_featured);
