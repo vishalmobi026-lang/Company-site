@@ -31,6 +31,10 @@ class ContactMessage(Base):
     subject = Column(String)
     message = Column(String)
     status = Column(String, default="Active")
+    feedback = Column(String) # Staff feedback field
+    is_deleted = Column(Boolean, default=False)
+
+
 
 class Enrollment(Base):
     __tablename__ = "enrollments"

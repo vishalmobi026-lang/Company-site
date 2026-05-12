@@ -39,13 +39,13 @@ export default function PricingManager() {
         axios.get("http://localhost:8000/courses"),
         axios.get("http://localhost:8000/categories")
       ]);
-      
+
       setPricings(pricingRes.data.length > 0 ? pricingRes.data : [
         { course_name: "Full Stack Development", standard_price: 35000, offer_price: 30000, is_featured: 1, accent_color: "#2563eb", border_color: "#e2e8f0" },
         { course_name: "Backend Development", standard_price: 25000, offer_price: 20000, is_featured: 1, accent_color: "#2563eb", border_color: "#e2e8f0" },
         { course_name: "Frontend Development", standard_price: 20000, offer_price: 15000, is_featured: 1, accent_color: "#2563eb", border_color: "#e2e8f0" }
       ]);
-      
+
       setCourses(courseRes.data);
       setCategories(catRes.data);
       if (catRes.data.length > 0) {
@@ -178,7 +178,7 @@ export default function PricingManager() {
   return (
     <div className="min-h-screen bg-slate-50 pt-24 px-4 sm:px-6 pb-20 text-slate-900 selection:bg-blue-100">
       <div className="max-w-7xl mx-auto space-y-10">
-        
+
         {/* HEADER SECTION */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-4">
           <div>
@@ -192,7 +192,7 @@ export default function PricingManager() {
             </div>
             <p className="text-slate-500 font-medium ml-1">Control course pricing, manage divisions, and update your academic offerings in real-time.</p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -242,23 +242,22 @@ export default function PricingManager() {
 
           <div className="grid lg:grid-cols-3 gap-8">
             {pricings.slice(0, 3).map((pricing, index) => (
-              <div 
-                key={pricing.id || index} 
+              <div
+                key={pricing.id || index}
                 style={{ borderColor: pricing.is_featured ? (pricing.accent_color || '#3b82f6') : '#f1f5f9' }}
-                className={`group bg-white border-2 p-8 rounded-[2rem] transition-all duration-500 shadow-xl shadow-slate-200/40 relative ${
-                    pricing.is_featured ? "ring-8 ring-slate-50" : "hover:border-slate-300"
-                }`}
+                className={`group bg-white border-2 p-8 rounded-[2rem] transition-all duration-500 shadow-xl shadow-slate-200/40 relative ${pricing.is_featured ? "ring-8 ring-slate-50" : "hover:border-slate-300"
+                  }`}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2 space-y-2">
                     <div className="flex justify-between items-center px-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Program Name</label>
-                        {pricing.is_featured === 1 && (
-                            <span style={{ color: pricing.accent_color }} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-                                Featured on Home
-                            </span>
-                        )}
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Academic Program Name</label>
+                      {pricing.is_featured === 1 && (
+                        <span style={{ color: pricing.accent_color }} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                          Featured on Home
+                        </span>
+                      )}
                     </div>
                     <input
                       type="text"
@@ -287,40 +286,38 @@ export default function PricingManager() {
                   </div>
                   <div className="md:col-span-2 pt-6 border-t border-slate-50 flex flex-wrap items-center justify-between gap-8 mt-4">
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Home Page Presence</label>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                                const isActivating = !pricing.is_featured;
-                                handlePricingChange(index, 'is_featured', isActivating);
-                                // Default to Royal Blue when enabling
-                                if (isActivating) {
-                                    handlePricingChange(index, 'accent_color', '#2563eb');
-                                    handlePricingChange(index, 'border_color', '#dbeafe');
-                                }
-                            }}
-                            className={`group relative px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all duration-500 flex items-center gap-4 ${
-                                pricing.is_featured 
-                                ? "bg-slate-100 text-blue-600 shadow-[inset_6px_6px_12px_#cbd5e1,inset_-6px_-6px_12px_#ffffff]" 
-                                : "bg-slate-100 text-slate-400 shadow-[8px_8px_16px_#cbd5e1,-8px_-8px_16px_#ffffff] hover:text-slate-600"
-                            }`}
-                        >
-                            <div className={`w-3.5 h-3.5 rounded-full transition-all duration-700 ${
-                                pricing.is_featured 
-                                    ? "bg-blue-600 shadow-[0_0_15px_#2563eb] scale-110" 
-                                    : "bg-slate-300"
-                            }`}></div>
-                            {pricing.is_featured ? "Featured Now" : "Enable Slot"}
-                        </motion.button>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Home Page Presence</label>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const isActivating = !pricing.is_featured;
+                          handlePricingChange(index, 'is_featured', isActivating);
+                          // Default to Royal Blue when enabling
+                          if (isActivating) {
+                            handlePricingChange(index, 'accent_color', '#2563eb');
+                            handlePricingChange(index, 'border_color', '#dbeafe');
+                          }
+                        }}
+                        className={`group relative px-10 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all duration-500 flex items-center gap-4 ${pricing.is_featured
+                            ? "bg-slate-100 text-blue-600 shadow-[inset_6px_6px_12px_#cbd5e1,inset_-6px_-6px_12px_#ffffff]"
+                            : "bg-slate-100 text-slate-400 shadow-[8px_8px_16px_#cbd5e1,-8px_-8px_16px_#ffffff] hover:text-slate-600"
+                          }`}
+                      >
+                        <div className={`w-3.5 h-3.5 rounded-full transition-all duration-700 ${pricing.is_featured
+                            ? "bg-blue-600 shadow-[0_0_15px_#2563eb] scale-110"
+                            : "bg-slate-300"
+                          }`}></div>
+                        {pricing.is_featured ? "Featured Now" : "Enable Slot"}
+                      </motion.button>
                     </div>
                   </div>
-                  
+
                   {/* FEATURES EDITING */}
                   <div className="md:col-span-2 space-y-3 mt-2">
                     <div className="flex justify-between items-center">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Program Highlights / Features</label>
-                      <button 
+                      <button
                         onClick={() => handleAddFeature(index)}
                         className="text-blue-600 hover:text-blue-700 font-bold text-xs flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg"
                       >
@@ -330,13 +327,13 @@ export default function PricingManager() {
                     <div className="flex flex-wrap gap-2">
                       {(pricing.features || "").split(",").filter(f => f.trim() !== "").map((feature, fIndex) => (
                         <div key={fIndex} className="flex items-center gap-2 bg-white border border-slate-200 pl-3 pr-1 py-1 rounded-xl shadow-sm">
-                          <input 
+                          <input
                             type="text"
                             value={feature}
                             onChange={(e) => handleFeatureChange(index, fIndex, e.target.value)}
                             className="bg-transparent border-none outline-none text-xs font-bold text-slate-600 w-32"
                           />
-                          <button 
+                          <button
                             onClick={() => handleRemoveFeature(index, fIndex)}
                             className="p-1.5 text-slate-300 hover:text-red-500 rounded-lg transition-colors"
                           >
@@ -367,7 +364,7 @@ export default function PricingManager() {
                 Add, edit, or remove courses from the public enrollment divisions. Manage your educational categories to organize courses in the main menu.
               </p>
             </div>
-            
+
             <div className="flex flex-wrap gap-3 w-full lg:w-auto">
               <button
                 onClick={() => setShowCatManager(!showCatManager)}
@@ -375,7 +372,7 @@ export default function PricingManager() {
               >
                 {showCatManager ? <><FaTimes /> Close Divisions</> : <><FaLayerGroup /> Manage Divisions</>}
               </button>
-              <button 
+              <button
                 onClick={() => setShowAddCourse(!showAddCourse)}
                 className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold transition-all shadow-lg ${showAddCourse ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200'}`}
               >
@@ -392,7 +389,7 @@ export default function PricingManager() {
                   <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-2">
                     <FaLayerGroup className="text-blue-600" /> Educational Divisions (Navbar Menu)
                   </h3>
-                  
+
                   <div className="grid md:grid-cols-2 gap-10">
                     <div className="space-y-4">
                       <p className="text-sm text-slate-500 font-bold">Create a new category for your courses. This will immediately appear in the Navbar dropdown.</p>
@@ -424,7 +421,7 @@ export default function PricingManager() {
                             <p className="font-black text-slate-900">{cat.name}</p>
                             <p className="text-[10px] font-mono font-bold text-slate-400">/courses/{cat.slug}</p>
                           </div>
-                          <button 
+                          <button
                             onClick={() => handleDeleteCategory(cat.id)}
                             className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                           >
@@ -447,20 +444,20 @@ export default function PricingManager() {
                   <div className="space-y-5">
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Academic Course Title</label>
-                      <input 
+                      <input
                         required
                         className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold text-slate-800"
                         placeholder="e.g. Master in Artificial Intelligence"
                         value={newCourse.title}
-                        onChange={e => setNewCourse({...newCourse, title: e.target.value})}
+                        onChange={e => setNewCourse({ ...newCourse, title: e.target.value })}
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Assigned Division</label>
-                      <select 
+                      <select
                         className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-700"
                         value={newCourse.category}
-                        onChange={e => setNewCourse({...newCourse, category: e.target.value})}
+                        onChange={e => setNewCourse({ ...newCourse, category: e.target.value })}
                       >
                         {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
                       </select>
@@ -469,11 +466,11 @@ export default function PricingManager() {
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Visual Cover URL</label>
                       <div className="relative">
                         <FaImage className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input 
+                        <input
                           className="w-full pl-12 pr-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-500 text-sm"
                           placeholder="https://images.unsplash.com/..."
                           value={newCourse.image_url}
-                          onChange={e => setNewCourse({...newCourse, image_url: e.target.value})}
+                          onChange={e => setNewCourse({ ...newCourse, image_url: e.target.value })}
                         />
                       </div>
                     </div>
@@ -481,22 +478,22 @@ export default function PricingManager() {
                   <div className="space-y-5">
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Classification Tag</label>
-                      <input 
+                      <input
                         className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none font-bold text-slate-800"
                         placeholder="e.g. Certification, Advanced, Job Oriented"
                         value={newCourse.tag}
-                        onChange={e => setNewCourse({...newCourse, tag: e.target.value})}
+                        onChange={e => setNewCourse({ ...newCourse, tag: e.target.value })}
                       />
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Academic Overview</label>
-                      <textarea 
+                      <textarea
                         required
                         rows={4}
                         className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none resize-none font-medium text-slate-600"
                         placeholder="Briefly describe what students will learn in this curriculum..."
                         value={newCourse.description}
-                        onChange={e => setNewCourse({...newCourse, description: e.target.value})}
+                        onChange={e => setNewCourse({ ...newCourse, description: e.target.value })}
                       />
                     </div>
                     <button type="submit" className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-lg hover:bg-black transition-all shadow-xl shadow-slate-200 active:scale-[0.98]">
@@ -511,64 +508,40 @@ export default function PricingManager() {
           {/* COURSE GRID CONTAINER */}
 <div className="h-[500px] overflow-y-auto pr-2">
 
-  {/* COURSE GRID DISPLAY */}
-  <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
+          {/* COURSE GRID DISPLAY */}
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
+            {courses.map(course => (
+              <div key={course.id} className="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex flex-col hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 group relative">
+                <div className="relative h-56 rounded-[2rem] overflow-hidden mb-6 shadow-md">
+                  <img src={course.image_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute top-5 right-5 px-4 py-1.5 bg-white/95 backdrop-blur rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm">
+                    {course.category}
+                  </div>
+                </div>
+                
+                <div className="flex-1 px-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-8 h-px bg-blue-600"></span>
+                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{course.tag || 'Academic'}</span>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">{course.title}</h3>
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-6">{course.description}</p>
+                </div>
 
-    {courses.map(course => (
-      <div
-        key={course.id}
-        className="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex flex-col hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 group relative"
-      >
-
-        <div className="relative h-56 rounded-[2rem] overflow-hidden mb-6 shadow-md">
-          <img
-            src={course.image_url}
-            alt={course.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          />
-
-          <div className="absolute top-5 right-5 px-4 py-1.5 bg-white/95 backdrop-blur rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm">
-            {course.category}
+                <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto px-2">
+                  <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+                    <FaBookOpen className="text-blue-600" /> ID: {course.id}
+                  </div>
+                  <button 
+                    onClick={() => handleDeleteCourse(course.id)}
+                    className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
+                  >
+                    <FaTrash size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-
-        <div className="flex-1 px-2">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="w-8 h-px bg-blue-600"></span>
-
-            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
-              {course.tag || 'Academic'}
-            </span>
-          </div>
-
-          <h3 className="text-xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
-            {course.title}
-          </h3>
-
-          <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-6">
-            {course.description}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto px-2">
-          <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
-            <FaBookOpen className="text-blue-600" />
-            ID: {course.id}
-          </div>
-
-          <button
-            onClick={() => handleDeleteCourse(course.id)}
-            className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
-          >
-            <FaTrash size={16} />
-          </button>
-        </div>
-
-      </div>
-    ))}
-
-  </div>
-</div>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import EnrolledStudentDetail from "./components/EnrolledStudentDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
 import Info from "./Pages/Admin/Info";
+import ArchivedInfo from "./Pages/Admin/ArchivedInfo";
 import PricingManager from "./Pages/Admin/PricingManager";
 
 import Home from "./Pages/Home/Home";
@@ -51,6 +52,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["admin", "staff"]}>
                   <Info />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/contacts/archived"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <ArchivedInfo />
                 </ProtectedRoute>
               }
             />

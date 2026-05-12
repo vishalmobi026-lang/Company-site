@@ -350,15 +350,23 @@ def create_contact(message: schemas.ContactMessageCreate, background_tasks: Back
 
 @app.get("/admin/contacts", response_model=List[schemas.ContactMessageResponse])
 def get_contacts(db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
-    return db.query(models.ContactMessage).all()
+    return db.query(models.ContactMessage).filter(models.ContactMessage.is_deleted == False).all()
+
+@app.get("/admin/contacts/deleted", response_model=List[schemas.ContactMessageResponse])
+def get_deleted_contacts(db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    return db.query(models.ContactMessage).filter(models.ContactMessage.is_deleted == True).all()
 
 @app.put("/admin/contacts/{id}/status")
-def update_contact_status(id: int, status_data: dict, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
+def update_contact_status(id: int, update_data: dict, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
     msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="Message not found")
     
-    msg.status = status_data.get("status", "Active")
+    if "status" in update_data:
+        msg.status = update_data["status"]
+    if "feedback" in update_data:
+        msg.feedback = update_data["feedback"]
+        
     db.commit()
     db.refresh(msg)
     return msg
@@ -368,9 +376,31 @@ def delete_contact(id: int, db: Session = Depends(database.get_db), user: models
     msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
     if not msg:
         raise HTTPException(status_code=404, detail="Message not found")
+    
+    # Soft delete
+    msg.is_deleted = True
+    db.commit()
+    return {"detail": "Message moved to trash"}
+
+@app.put("/admin/contacts/{id}/restore")
+def restore_contact(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
+    if not msg:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    msg.is_deleted = False
+    db.commit()
+    return {"detail": "Message restored"}
+
+@app.delete("/admin/contacts/{id}/permanent")
+def permanent_delete_contact(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    msg = db.query(models.ContactMessage).filter(models.ContactMessage.id == id).first()
+    if not msg:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
     db.delete(msg)
     db.commit()
-    return {"detail": "Message deleted"}
+    return {"detail": "Message permanently deleted"}
 
 @app.post("/enrollments", response_model=schemas.EnrollmentResponse)
 def create_enrollment(enrollment: schemas.EnrollmentCreate, db: Session = Depends(database.get_db)):
