@@ -508,40 +508,67 @@ export default function PricingManager() {
             )}
           </AnimatePresence>
 
-          {/* COURSE GRID DISPLAY */}
-          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
-            {courses.map(course => (
-              <div key={course.id} className="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex flex-col hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 group relative">
-                <div className="relative h-56 rounded-[2rem] overflow-hidden mb-6 shadow-md">
-                  <img src={course.image_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute top-5 right-5 px-4 py-1.5 bg-white/95 backdrop-blur rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm">
-                    {course.category}
-                  </div>
-                </div>
-                
-                <div className="flex-1 px-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-8 h-px bg-blue-600"></span>
-                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{course.tag || 'Academic'}</span>
-                  </div>
-                  <h3 className="text-xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">{course.title}</h3>
-                  <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-6">{course.description}</p>
-                </div>
+          {/* COURSE GRID CONTAINER */}
+<div className="h-[500px] overflow-y-auto pr-2">
 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto px-2">
-                  <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
-                    <FaBookOpen className="text-blue-600" /> ID: {course.id}
-                  </div>
-                  <button 
-                    onClick={() => handleDeleteCourse(course.id)}
-                    className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
-                  >
-                    <FaTrash size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
+  {/* COURSE GRID DISPLAY */}
+  <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
+
+    {courses.map(course => (
+      <div
+        key={course.id}
+        className="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex flex-col hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500 group relative"
+      >
+
+        <div className="relative h-56 rounded-[2rem] overflow-hidden mb-6 shadow-md">
+          <img
+            src={course.image_url}
+            alt={course.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          />
+
+          <div className="absolute top-5 right-5 px-4 py-1.5 bg-white/95 backdrop-blur rounded-full text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm">
+            {course.category}
           </div>
+        </div>
+
+        <div className="flex-1 px-2">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-8 h-px bg-blue-600"></span>
+
+            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+              {course.tag || 'Academic'}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-black text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+            {course.title}
+          </h3>
+
+          <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-6">
+            {course.description}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-auto px-2">
+          <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+            <FaBookOpen className="text-blue-600" />
+            ID: {course.id}
+          </div>
+
+          <button
+            onClick={() => handleDeleteCourse(course.id)}
+            className="p-3 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
+          >
+            <FaTrash size={16} />
+          </button>
+        </div>
+
+      </div>
+    ))}
+
+  </div>
+</div>
         </div>
       </div>
     </div>

@@ -26,9 +26,9 @@ def fix_pricing_table():
             except Exception as e:
                 trans.rollback() # Reset the transaction if it fails
                 if "already exists" in str(e).lower():
-                    print(f"ℹ️ Column '{col_name}' already exists.")
+                    print(f"ℹ Column '{col_name}' already exists.")
                 else:
-                    print(f"❌ Error adding '{col_name}': {e}")
+                    print(f" Error adding '{col_name}': {e}")
         
         print("\nFixing data types if necessary...")
         trans = conn.begin()
@@ -36,7 +36,7 @@ def fix_pricing_table():
             # Ensure is_featured is boolean if it was integer
             conn.execute(text("ALTER TABLE pricing ALTER COLUMN is_featured TYPE BOOLEAN USING is_featured::boolean"))
             trans.commit()
-            print("✅ Verified 'is_featured' is BOOLEAN.")
+            print(" Verified 'is_featured' is BOOLEAN.")
         except Exception as e:
              trans.rollback()
              print(f"ℹ️ Note on 'is_featured' type: {e}")
