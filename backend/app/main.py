@@ -13,6 +13,7 @@ from fastapi.security import OAuth2PasswordBearer
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 
 
 from app.db import models, database
@@ -182,23 +183,165 @@ def send_contact_email(name, email, phone, subject, message):
         print("SMTP credentials not configured or using placeholders. Skipping email.")
         return
 
-    msg = MIMEMultipart()
+    msg = MIMEMultipart('related')
     msg['From'] = smtp_user
     msg['To'] = target_email
-    msg['Subject'] = f"New Contact Message: {subject or 'No Subject'}"
+    msg['Subject'] = f"\U0001f4ec New Inquiry: {subject or 'No Subject'}"
 
-    body = f"""
-    New message from your website:
-    
-    Name: {name}
-    Email: {email}
-    Phone: {phone}
-    Subject: {subject}
-    
-    Message:
-    {message}
-    """
-    msg.attach(MIMEText(body, 'plain'))
+    # Try to embed logo
+    logo_cid = "gtec_logo"
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'react', 'public', 'logo.webp')
+    logo_tag = f'<img src="cid:{logo_cid}" alt="G-Tech" style="height:64px;width:auto;object-fit:contain;display:block;margin:0 auto 20px;" />'
+
+    html_body = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Contact Message</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 36px;text-align:center;">
+              {logo_tag}
+              <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:7px 22px;margin-bottom:14px;">
+                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tech Azhagiyamandapam</span>
+              </div>
+              <h1 style="margin:0 0 8px;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">New Contact Inquiry</h1>
+              <p style="margin:0;color:#93c5fd;font-size:13px;font-weight:500;">Someone reached out via your website contact form</p>
+            </td>
+          </tr>
+
+          <!-- Accent Bar -->
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background:#ffffff;padding:40px;">
+
+              <!-- Subject Badge -->
+              <div style="text-align:center;margin-bottom:32px;">
+                <span style="display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:13px;font-weight:700;padding:8px 20px;border-radius:50px;border:1px solid #bfdbfe;">
+                  📌 {subject or 'General Inquiry'}
+                </span>
+              </div>
+
+              <!-- Info Cards -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+
+                <!-- Name -->
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                      <tr>
+                        <td style="width:44px;background:#1d4ed8;text-align:center;padding:16px 0;font-size:18px;">👤</td>
+                        <td style="padding:14px 16px;">
+                          <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Full Name</div>
+                          <div style="font-size:15px;font-weight:700;color:#0f172a;">{name}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Email -->
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                      <tr>
+                        <td style="width:44px;background:#0891b2;text-align:center;padding:16px 0;font-size:18px;">✉️</td>
+                        <td style="padding:14px 16px;">
+                          <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Email Address</div>
+                          <a href="mailto:{email}" style="font-size:15px;font-weight:700;color:#1d4ed8;text-decoration:none;">{email}</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Phone -->
+                <tr>
+                  <td style="padding-bottom:24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                      <tr>
+                        <td style="width:44px;background:#059669;text-align:center;padding:16px 0;font-size:18px;">📞</td>
+                        <td style="padding:14px 16px;">
+                          <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Phone Number</div>
+                          <div style="font-size:15px;font-weight:700;color:#0f172a;">{phone}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+
+              <!-- Message Box -->
+              <div style="margin-bottom:32px;">
+                <div style="font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">💬 Message</div>
+                <div style="background:#f0f9ff;border-left:4px solid #1d4ed8;border-radius:0 12px 12px 0;padding:20px 24px;color:#1e293b;font-size:15px;line-height:1.7;font-style:italic;">
+                  "{message}"
+                </div>
+              </div>
+
+              <!-- CTA Buttons -->
+              <div style="text-align:center;margin-bottom:8px;">
+                <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                  <tr>
+                    <td style="padding-right:10px;">
+                      <a href="mailto:{email}?subject=Re: {subject or 'Your Inquiry'}" style="display:inline-block;background:linear-gradient(135deg,#1e3a8a,#1d4ed8);color:#ffffff;font-size:13px;font-weight:800;padding:16px 28px;border-radius:50px;text-decoration:none;letter-spacing:0.5px;">
+                        &#9993; Reply to {name}
+                      </a>
+                    </td>
+                    <td>
+                      <a href="tel:{phone}" style="display:inline-block;background:linear-gradient(135deg,#065f46,#059669);color:#ffffff;font-size:13px;font-weight:800;padding:16px 28px;border-radius:50px;text-decoration:none;letter-spacing:0.5px;">
+                        &#128222; Call {name}
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#0f172a;padding:28px 40px;text-align:center;">
+              <p style="margin:0;color:#94a3b8;font-size:12px;font-weight:700;letter-spacing:0.5px;">G-Tech Azhagiyamandapam</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+    alt_part = MIMEMultipart('alternative')
+    alt_part.attach(MIMEText(html_body, 'html'))
+    msg.attach(alt_part)
+
+    # Attach logo as inline image
+    try:
+        with open(logo_path, 'rb') as f:
+            logo_data = f.read()
+        logo_img = MIMEImage(logo_data, 'webp')
+        logo_img.add_header('Content-ID', f'<{logo_cid}>')
+        logo_img.add_header('Content-Disposition', 'inline', filename='logo.webp')
+        msg.attach(logo_img)
+    except Exception as e:
+        print(f"Could not attach logo: {e}")
 
     try:
         server = smtplib.SMTP(smtp_server, smtp_port)

@@ -17,6 +17,23 @@ import axios from "axios";
 
 function SubmitAlert({ type, onClose }) {
   const success = type === "success";
+  const [countdown, setCountdown] = useState(3);
+
+  useEffect(() => {
+    if (!success || !type) return;
+    setCountdown(3);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          onClose();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [type]);
 
   return (
     <AnimatePresence>
@@ -118,14 +135,25 @@ function SubmitAlert({ type, onClose }) {
                 : "We could not submit your application. Please check your connection and try again."}
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={onClose}
-              className="w-full rounded-2xl bg-slate-950 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-slate-200"
-            >
-              {success ? "Go Home" : "Try Again"}
-            </motion.button>
+            {success ? (
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
+                  Redirecting in
+                </p>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-cyan-300 bg-cyan-50 text-2xl font-black text-cyan-600">
+                  {countdown}
+                </div>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={onClose}
+                className="w-full rounded-2xl bg-slate-950 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-slate-200"
+              >
+                Try Again
+              </motion.button>
+            )}
           </motion.div>
         </motion.div>
       )}
@@ -198,6 +226,13 @@ function Enroll() {
         break;
       case "dob":
         if (!value) error = "Date of Birth is required";
+        else {
+          const dobDate = new Date(value);
+          const year = dobDate.getFullYear();
+          const today = new Date();
+          if (year < 1990 || year > today.getFullYear()) error = "Enter a valid year (1990–present)";
+          else if (dobDate > today) error = "Date of Birth cannot be in the future";
+        }
         break;
       case "college":
         if (!value) error = "College/Institution name is required";
@@ -440,6 +475,8 @@ function Enroll() {
                       value={form.dob}
                       onChange={handleChange}
                       onBlur={handleBlur}
+                      min="1990-01-01"
+                      max={new Date().toISOString().split("T")[0]}
                       className={`${inputClass("dob")} appearance-none`}
                     />
                     {!form.dob && (

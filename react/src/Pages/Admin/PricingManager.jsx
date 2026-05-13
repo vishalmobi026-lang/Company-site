@@ -128,7 +128,15 @@ export default function PricingManager() {
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState(null);
   const [confirm, setConfirm] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
+
+  const handleApiError = (err, fallbackMessage) => {
+    if (err.response?.status === 401) {
+      logout();
+      return;
+    }
+    notify("error", err.response?.data?.detail || fallbackMessage);
+  };
 
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [showCatManager, setShowCatManager] = useState(false);
@@ -137,7 +145,13 @@ export default function PricingManager() {
 
   const notify = (type, message) => setNotice({ type, message });
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(null), 3500);
@@ -158,7 +172,7 @@ export default function PricingManager() {
       setCategories(catRes.data);
       if (catRes.data.length) setNewCourse((p) => ({ ...p, category: catRes.data[0].name }));
     } catch (err) {
-      notify("error", "Failed to fetch data from server.");
+      handleApiError(err, "Failed to fetch data from server.");
     } finally {
       setLoading(false);
     }
@@ -183,7 +197,7 @@ export default function PricingManager() {
       await axios.post(`${API}/admin/pricing`, pricings, auth(user));
       notify("success", "Pricing updated successfully.");
     } catch (err) {
-      notify("error", err.response?.data?.detail || "Failed to update pricing.");
+      handleApiError(err, "Failed to update pricing.");
     }
   };
 
@@ -195,8 +209,8 @@ export default function PricingManager() {
         await axios.post(`${API}/admin/pricing/reset`, {}, auth(user));
         notify("success", "Pricing reset to defaults.");
         fetchData();
-      } catch {
-        notify("error", "Failed to reset pricing.");
+      } catch (err) {
+        handleApiError(err, "Failed to reset pricing.");
       }
     },
   });
@@ -210,8 +224,8 @@ export default function PricingManager() {
       setCategories((p) => [...p, res.data]);
       setNewCat({ name: "", slug: "" });
       notify("success", `Category "${res.data.name}" added.`);
-    } catch {
-      notify("error", "Failed to add category.");
+    } catch (err) {
+      handleApiError(err, "Failed to add category.");
     }
   };
 
@@ -223,8 +237,8 @@ export default function PricingManager() {
         await axios.delete(`${API}/admin/categories/${id}`, auth(user));
         setCategories((p) => p.filter((c) => c.id !== id));
         notify("success", "Category removed.");
-      } catch {
-        notify("error", "Failed to delete category.");
+      } catch (err) {
+        handleApiError(err, "Failed to delete category.");
       }
     },
   });
@@ -238,8 +252,8 @@ export default function PricingManager() {
       setShowAddCourse(false);
       setNewCourse({ title: "", description: "", image_url: "", category: categories[0]?.name || "", tag: "" });
       notify("success", "Course added successfully.");
-    } catch {
-      notify("error", "Failed to add course.");
+    } catch (err) {
+      handleApiError(err, "Failed to add course.");
     }
   };
 
@@ -251,11 +265,19 @@ export default function PricingManager() {
         await axios.delete(`${API}/admin/courses/${id}`, auth(user));
         setCourses((p) => p.filter((c) => c.id !== id));
         notify("success", "Course deleted.");
-      } catch {
-        notify("error", "Failed to delete course.");
+      } catch (err) {
+        handleApiError(err, "Failed to delete course.");
       }
     },
   });
+
+  if (!isAuthenticated) {
+    return (
+      <div className="py-20 text-center text-gray-500">
+        Please login to access this page.
+      </div>
+    );
+  }
 
   if (loading) {
     return (
