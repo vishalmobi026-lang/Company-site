@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLottie } from "lottie-react";
 import successAnimation from "../Assets/Success.json";
@@ -162,6 +162,28 @@ export default function ChatWidget() {
   const [form, setForm] = useState({ name: "", phone: "", email: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState(24);
+
+  useEffect(() => {
+    const MARGIN = 16; // extra gap above footer
+    const BASE = 24;  // default bottom (px)
+
+    const update = () => {
+      const footer = document.querySelector("footer");
+      if (!footer) { setBottomOffset(BASE); return; }
+      const rect = footer.getBoundingClientRect();
+      const overlap = window.innerHeight - rect.top;
+      setBottomOffset(overlap > 0 ? BASE + overlap + MARGIN : BASE);
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
 
   const addToast = (message, type) => {
     const id = Date.now();
@@ -215,7 +237,13 @@ export default function ChatWidget() {
       <ToastContainer toasts={toasts} removeToast={removeToast} />
 
       {/* FLOATING MOTION CHAT POSITION */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 h-24 w-24 flex items-center justify-center">
+      <div
+        className="fixed right-4 sm:right-6 z-40 h-24 w-24 flex items-center justify-center"
+        style={{
+          bottom: bottomOffset,
+          transition: "bottom 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        }}
+      >
         {!open && (
           <motion.div
             initial={{ opacity: 0, scale: 0.75 }}
@@ -357,7 +385,11 @@ export default function ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 28, scale: 0.94 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="fixed bottom-28 right-4 left-4 sm:left-auto sm:right-8 sm:w-[350px] z-40 overflow-hidden rounded-[1.6rem] border border-white/70 bg-white shadow-[0_30px_80px_-24px_rgba(2,8,23,0.45)]"
+            className="fixed right-4 left-4 sm:left-auto sm:right-8 sm:w-[350px] z-40 overflow-hidden rounded-[1.6rem] border border-white/70 bg-white shadow-[0_30px_80px_-24px_rgba(2,8,23,0.45)]"
+            style={{
+              bottom: bottomOffset + 88,
+              transition: "bottom 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }}
           >
             <div className="relative overflow-hidden bg-[#07132f] px-6 py-6 text-white">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.38),transparent_38%),linear-gradient(135deg,rgba(37,99,235,0.45),transparent_55%)]" />

@@ -10,10 +10,13 @@ import {
   FaPhoneAlt,
   FaEnvelope,
   FaCalendarAlt,
-  FaTimes,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import LottieLib from "lottie-react";
+const Lottie = LottieLib.default ?? LottieLib;
+import successAnimation from "../assets/Success.json";
+import failAnimation from "../assets/Fail.json";
 
 function SubmitAlert({ type, onClose }) {
   const success = type === "success";
@@ -59,66 +62,12 @@ function SubmitAlert({ type, onClose }) {
               }`}
             />
 
-            <div className="relative mx-auto mb-7 flex h-44 w-44 items-center justify-center">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-                className={`absolute h-40 w-40 rounded-full border ${
-                  success ? "border-cyan-300/80" : "border-red-300/70"
-                }`}
+            <div className="mx-auto mb-2 w-48 h-48">
+              <Lottie
+                animationData={success ? successAnimation : failAnimation}
+                loop={true}
+                autoplay={true}
               />
-
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-                className={`absolute h-32 w-32 rounded-full border border-dashed ${
-                  success ? "border-blue-300/80" : "border-rose-300/70"
-                }`}
-              />
-
-              <motion.div
-                animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0, 0.35] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                className={`absolute h-36 w-36 rounded-full ${
-                  success ? "bg-cyan-200/50" : "bg-red-200/50"
-                }`}
-              />
-
-              <motion.div
-                animate={{ y: [0, -9, 0] }}
-                transition={{ duration: 2.7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-8 top-5 hidden rounded-2xl border border-cyan-200 bg-slate-950 px-4 py-3 text-left shadow-xl sm:block"
-              >
-                <p className="text-[10px] font-black uppercase tracking-widest text-cyan-200">
-                  G-TEC
-                </p>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-8 bottom-5 hidden rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-xl sm:block"
-              >
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-700">
-                  Enrolled
-                </p>
-              </motion.div>
-
-              <motion.div
-                animate={{ y: [0, -7, 0] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                className={`relative z-10 flex h-24 w-24 items-center justify-center rounded-[1.7rem] shadow-2xl ${
-                  success
-                    ? "bg-gradient-to-br from-cyan-300 via-blue-600 to-blue-900 text-white"
-                    : "bg-gradient-to-br from-red-400 via-rose-600 to-red-900 text-white"
-                }`}
-              >
-                {success ? (
-                  <FaCheckCircle className="text-5xl" />
-                ) : (
-                  <FaTimes className="text-5xl" />
-                )}
-              </motion.div>
             </div>
 
             <h2
@@ -138,22 +87,55 @@ function SubmitAlert({ type, onClose }) {
             {success ? (
               <div className="flex flex-col items-center gap-2">
                 <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                  Redirecting in
+                  Redirecting automatically…
                 </p>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-cyan-300 bg-cyan-50 text-2xl font-black text-cyan-600">
-                  {countdown}
-                </div>
               </div>
             ) : (
-              <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={onClose}
-                className="w-full rounded-2xl bg-slate-950 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-slate-200"
-              >
-                Try Again
-              </motion.button>
+              <div className="relative flex w-full items-center justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.04, y: -3, boxShadow: "0 0 48px 10px rgba(239,68,68,0.55)" }}
+                  whileTap={{ scale: 0.95, boxShadow: "0 0 20px 4px rgba(239,68,68,0.8)" }}
+                  onClick={onClose}
+                  className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-rose-700 via-red-500 to-orange-600 py-4 text-sm font-black uppercase tracking-widest text-white shadow-2xl shadow-red-900/50"
+                >
+                  {/* Fast shimmer sweep */}
+                  <motion.span
+                    className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                    animate={{ x: ["-120%", "220%"] }}
+                    transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
+                  />
+
+                  {/* Animated gradient overlay shift */}
+                  <motion.span
+                    className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-red-600/0 via-orange-400/20 to-red-600/0"
+                    animate={{ x: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  />
+
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {/* Spinning retry icon */}
+                    <motion.svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                      animate={{ rotate: [0, -30, 0] }}
+                      transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 1.2, ease: "easeInOut" }}
+                    >
+                      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                      <path d="M3 3v5h5" />
+                    </motion.svg>
+                    Try Again
+                  </span>
+                </motion.button>
+              </div>
             )}
+
+
           </motion.div>
         </motion.div>
       )}
