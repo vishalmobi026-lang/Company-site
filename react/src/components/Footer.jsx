@@ -141,6 +141,22 @@ function Footer() {
                   </motion.a>
                 ))}
               </div>
+
+              <div className="mt-8 pt-6 border-t border-slate-800">
+                <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
+                  <span className="text-cyan-200 font-bold uppercase tracking-wider text-[10px]">Official Website</span>
+                  <br />
+                  If you want to know more about G-TEC, please visit{" "}
+                  <a 
+                    href="https://www.gteceducation.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium underline underline-offset-4"
+                  >
+                    www.gteceducation.com
+                  </a>
+                </p>
+              </div>
             </div>
           </motion.div>
 

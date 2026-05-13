@@ -43,9 +43,27 @@ class ContactMessageCreate(BaseModel):
     message: Optional[str] = None
     status: Optional[str] = "Active"
     feedback: Optional[str] = None
+    professional_email: Optional[str] = None
     is_deleted: Optional[bool] = False
 
 class ContactMessageResponse(ContactMessageCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class ProfessionalInquiryCreate(BaseModel):
+    name: str
+    phone: str
+    email: str
+    subject: Optional[str] = None
+    message: Optional[str] = None
+    status: Optional[str] = "Active"
+    professional_email: Optional[str] = None
+    is_deleted: Optional[bool] = False
+    created_at: Optional[str] = None
+
+class ProfessionalInquiryResponse(ProfessionalInquiryCreate):
     id: int
 
     class Config:

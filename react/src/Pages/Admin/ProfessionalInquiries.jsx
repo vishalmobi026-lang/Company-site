@@ -9,9 +9,8 @@ import {
   FaClock,
   FaTag,
   FaCommentAlt,
-  FaCommentDots,
-  FaSave,
   FaTimes,
+  FaEnvelopeOpenText,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -148,9 +147,9 @@ function ConfirmModal({ confirm, setConfirm }) {
   );
 }
 
-export default function Info() {
+export default function ProfessionalInquiries() {
   const { user, isAuthenticated } = useContext(AuthContext);
-  const [contacts, setContacts] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState(null);
   const [confirm, setConfirm] = useState(null);
@@ -165,7 +164,7 @@ export default function Info() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchContacts();
+      fetchInquiries();
     } else {
       setLoading(false);
     }
@@ -178,16 +177,16 @@ export default function Info() {
     return () => clearTimeout(timer);
   }, [notice]);
 
-  const fetchContacts = async () => {
+  const fetchInquiries = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/admin/contacts`, authHeader);
-      setContacts(res.data);
+      const res = await axios.get(`${API}/admin/professional-contacts`, authHeader);
+      setInquiries(res.data);
     } catch (err) {
       console.error(err);
       notify(
         "error",
-        "Failed to load messages. Please ensure you are logged in as staff or admin."
+        "Failed to load professional inquiries."
       );
     } finally {
       setLoading(false);
@@ -196,63 +195,25 @@ export default function Info() {
 
   const handleDelete = (id) => {
     setConfirm({
-      title: "Move to trash?",
-      message: "This inquiry will be moved to the archived messages section.",
+      title: "Delete Inquiry?",
+      message: "This will remove the message from the professional inquiries list.",
       onConfirm: async () => {
         try {
-          await axios.delete(`${API}/admin/contacts/${id}`, authHeader);
-          setContacts((prev) => prev.filter((c) => c.id !== id));
-          notify("success", "Message moved to trash.");
+          await axios.delete(`${API}/admin/professional-contacts/${id}`, authHeader);
+          setInquiries((prev) => prev.filter((c) => c.id !== id));
+          notify("success", "Inquiry deleted successfully.");
         } catch (err) {
           console.error(err);
-          notify("error", "Failed to delete message.");
+          notify("error", "Failed to delete inquiry.");
         }
       },
     });
   };
 
-  const handleStatusUpdate = async (id, newStatus) => {
-    try {
-      await axios.put(
-        `${API}/admin/contacts/${id}/status`,
-        { status: newStatus },
-        authHeader
-      );
-
-      setContacts((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c))
-      );
-
-      notify("success", `Inquiry marked as ${newStatus}.`);
-    } catch (err) {
-      console.error(err);
-      notify("error", "Failed to update status.");
-    }
-  };
-
-  const handleFeedbackUpdate = async (id, feedback) => {
-    try {
-      await axios.put(
-        `${API}/admin/contacts/${id}/status`,
-        { feedback },
-        authHeader
-      );
-
-      setContacts((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, feedback } : c))
-      );
-
-      notify("success", "Feedback saved successfully.");
-    } catch (err) {
-      console.error(err);
-      notify("error", "Failed to update feedback.");
-    }
-  };
-
   if (!isAuthenticated) {
     return (
       <div className="py-20 text-center text-gray-500">
-        Please login to view messages.
+        Please login to view professional inquiries.
       </div>
     );
   }
@@ -262,11 +223,11 @@ export default function Info() {
       <motion.div
         animate={{ backgroundPosition: ["0px 0px", "40px 40px"] }}
         transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-0 opacity-10 bg-[linear-gradient(#2563eb_1px,transparent_1px),linear-gradient(90deg,#2563eb_1px,transparent_1px)] bg-[size:40px_40px]"
+        className="absolute inset-0 opacity-10 bg-[linear-gradient(#0891b2_1px,transparent_1px),linear-gradient(90deg,#0891b2_1px,transparent_1px)] bg-[size:40px_40px]"
       />
 
-      <div className="absolute left-[-130px] top-[-140px] h-[430px] w-[430px] rounded-full bg-blue-300/30 blur-3xl" />
-      <div className="absolute bottom-[-130px] right-[-120px] h-[390px] w-[390px] rounded-full bg-cyan-300/30 blur-3xl" />
+      <div className="absolute left-[-130px] top-[-140px] h-[430px] w-[430px] rounded-full bg-cyan-300/30 blur-3xl" />
+      <div className="absolute bottom-[-130px] right-[-120px] h-[390px] w-[390px] rounded-full bg-blue-300/30 blur-3xl" />
 
       <Notice notice={notice} onClose={() => setNotice(null)} />
       <ConfirmModal confirm={confirm} setConfirm={setConfirm} />
@@ -276,24 +237,24 @@ export default function Info() {
           <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div>
               <h2 className="flex items-center gap-3 text-3xl font-extrabold text-slate-900">
-                <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-blue-500 p-3 text-white shadow-lg shadow-blue-200">
-                  <FaEnvelope size={24} />
+                <div className="rounded-2xl bg-gradient-to-br from-cyan-900 to-cyan-500 p-3 text-white shadow-lg shadow-cyan-200">
+                  <FaEnvelopeOpenText size={24} />
                 </div>
-                Contact Inquiries
+                Professional Emails
               </h2>
               <p className="mt-2 font-medium text-slate-500">
-                Manage and respond to student inquiries from the contact form.
+                Direct log of inquiries stored in the professional inquiries table.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-blue-100 bg-white/85 p-2 shadow-sm backdrop-blur">
-              <span className="rounded-xl bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
-                {contacts.length} {contacts.length === 1 ? "Entry" : "Entries"}
+            <div className="flex items-center gap-3 rounded-2xl border border-cyan-100 bg-white/85 p-2 shadow-sm backdrop-blur">
+              <span className="rounded-xl bg-cyan-100 px-4 py-2 text-sm font-bold text-cyan-700">
+                {inquiries.length} {inquiries.length === 1 ? "Email" : "Emails"}
               </span>
 
               <button
-                onClick={fetchContacts}
-                className="p-2 text-slate-400 transition-colors hover:text-blue-600"
+                onClick={fetchInquiries}
+                className="p-2 text-slate-400 transition-colors hover:text-cyan-600"
                 title="Refresh"
               >
                 <FaClock />
@@ -304,40 +265,40 @@ export default function Info() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600" />
             <p className="mt-4 animate-pulse font-medium text-slate-500">
-              Loading inquiries...
+              Loading professional emails...
             </p>
           </div>
-        ) : contacts.length === 0 ? (
+        ) : inquiries.length === 0 ? (
           <Reveal>
-            <div className="rounded-3xl border border-blue-100 bg-white/90 p-20 text-center shadow-xl shadow-blue-100/40 backdrop-blur">
+            <div className="rounded-3xl border border-cyan-100 bg-white/90 p-20 text-center shadow-xl shadow-cyan-100/40 backdrop-blur">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-50">
-                <FaEnvelope className="text-4xl text-slate-200" />
+                <FaEnvelopeOpenText className="text-4xl text-slate-200" />
               </div>
               <h3 className="mb-2 text-xl font-bold text-slate-900">
-                Inbox is empty
+                No Professional Emails Yet
               </h3>
               <p className="font-medium text-slate-400">
-                When students fill the contact form, they will appear here.
+                New inquiries from the contact form will be logged here automatically.
               </p>
             </div>
           </Reveal>
         ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <AnimatePresence>
-              {contacts.map((c, index) => (
+              {inquiries.map((c, index) => (
                 <Reveal key={c.id} index={index}>
                   <motion.div
                     layout
                     exit={{ opacity: 0, scale: 0.95 }}
                     whileHover={{ y: -6 }}
-                    className="group overflow-hidden rounded-3xl border border-blue-100 bg-white/90 shadow-sm backdrop-blur transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10"
+                    className="group overflow-hidden rounded-3xl border border-cyan-100 bg-white/90 shadow-sm backdrop-blur transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10"
                   >
                     <div className="p-7">
                       <div className="mb-6 flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-600 transition-colors duration-300 group-hover:bg-cyan-600 group-hover:text-white">
                             <FaUser size={20} />
                           </div>
 
@@ -346,7 +307,7 @@ export default function Info() {
                               {c.name}
                             </h4>
                             <span className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-400">
-                              <FaClock size={10} /> Just now
+                              <FaClock size={10} /> {c.created_at || "Just now"}
                             </span>
                           </div>
                         </div>
@@ -360,26 +321,26 @@ export default function Info() {
                       </div>
 
                       <div className="mb-6 grid gap-4 sm:grid-cols-2">
-                        <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 transition-colors group-hover:border-blue-100">
-                          <FaPhone className="w-4 text-slate-400 group-hover:text-blue-500" />
+                        <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 transition-colors group-hover:border-cyan-100">
+                          <FaPhone className="w-4 text-slate-400 group-hover:text-cyan-500" />
                           <span className="text-sm font-semibold text-slate-600">
                             {c.phone}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-3 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-3 transition-colors group-hover:border-blue-100">
-                          <FaEnvelope className="w-4 text-slate-400 group-hover:text-blue-500" />
+                        <div className="flex items-center gap-3 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-3 transition-colors group-hover:border-cyan-100">
+                          <FaEnvelope className="w-4 text-slate-400 group-hover:text-cyan-500" />
                           <span className="truncate text-sm font-semibold text-slate-600">
                             {c.email}
                           </span>
                         </div>
 
                         {c.professional_email && (
-                          <div className="col-span-full flex items-center gap-3 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50/50 p-3 transition-colors">
-                            <FaEnvelope className="w-4 text-blue-500" />
+                          <div className="col-span-full flex items-center gap-3 overflow-hidden rounded-2xl border border-cyan-100 bg-cyan-50/30 p-3 transition-colors">
+                            <FaEnvelopeOpenText className="w-4 text-cyan-500" />
                             <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Professional Email</span>
-                              <span className="truncate text-sm font-bold text-slate-700">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-cyan-600/60">Professional Email</span>
+                              <span className="truncate text-sm font-bold text-cyan-700">
                                 {c.professional_email}
                               </span>
                             </div>
@@ -411,121 +372,21 @@ export default function Info() {
                             </div>
                           </div>
                         </div>
-
-                        <div className="flex items-start gap-3 pt-2">
-                          <FaCommentDots className="mt-1 shrink-0 text-blue-400" />
-                          <div className="w-full">
-                            <div className="mb-1 flex items-center justify-between">
-                              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                Staff Feedback
-                              </p>
-
-                              <button
-                                onClick={() =>
-                                  handleFeedbackUpdate(c.id, c.feedback)
-                                }
-                                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-tight text-blue-600 hover:text-blue-700"
-                              >
-                                <FaSave size={10} /> Save
-                              </button>
-                            </div>
-
-                            <textarea
-                              className="min-h-[80px] w-full resize-none rounded-2xl border border-blue-100 bg-blue-50/30 p-4 text-sm text-slate-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                              placeholder="Type staff feedback here..."
-                              value={c.feedback || ""}
-                              onChange={(e) => {
-                                const feedback = e.target.value;
-                                setContacts((prev) =>
-                                  prev.map((item) =>
-                                    item.id === c.id
-                                      ? { ...item, feedback }
-                                      : item
-                                  )
-                                );
-                              }}
-                            />
-                          </div>
-                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-7 py-4 transition-colors group-hover:bg-blue-50">
+                    <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-7 py-4 transition-colors group-hover:bg-cyan-50">
                       <div className="flex items-center gap-8">
                         <a
                           href={`mailto:${c.email}`}
-                          className="text-sm font-bold text-blue-600 hover:underline"
+                          className="text-sm font-bold text-cyan-600 hover:underline"
                         >
-                          Reply via Email
+                          Send Professional Reply
                         </a>
-
-                        <div className="flex items-center gap-6 border-l border-slate-200 pl-8">
-                          <div
-                            className="group/toggle flex cursor-pointer items-center gap-2"
-                            onClick={() => handleStatusUpdate(c.id, "Deactive")}
-                          >
-                            <span
-                              className={`text-[13px] font-bold transition-colors duration-300 ${
-                                c.status === "Deactive"
-                                  ? "text-slate-500"
-                                  : "text-slate-300 group-hover/toggle:text-slate-400"
-                              }`}
-                            >
-                              Deactive
-                            </span>
-
-                            <div
-                              className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                                c.status === "Deactive"
-                                  ? "border-red-400 bg-red-50/50"
-                                  : "border-slate-200 bg-transparent"
-                              }`}
-                            >
-                              <div
-                                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                                  c.status === "Deactive"
-                                    ? "scale-100 bg-red-500 opacity-100"
-                                    : "scale-50 bg-slate-200 opacity-0"
-                                }`}
-                              />
-                            </div>
-                          </div>
-
-                          <div
-                            className="group/toggle flex cursor-pointer items-center gap-2"
-                            onClick={() => handleStatusUpdate(c.id, "Active")}
-                          >
-                            <span
-                              className={`text-[13px] font-bold transition-colors duration-300 ${
-                                c.status === "Active"
-                                  ? "text-emerald-600"
-                                  : "text-slate-300 group-hover/toggle:text-slate-400"
-                              }`}
-                            >
-                              Active
-                            </span>
-
-                            <div
-                              className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                                c.status === "Active"
-                                  ? "border-emerald-400 bg-emerald-50/50"
-                                  : "border-slate-200 bg-transparent"
-                              }`}
-                            >
-                              <div
-                                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                                  c.status === "Active"
-                                    ? "scale-100 bg-emerald-500 opacity-100"
-                                    : "scale-50 bg-slate-200 opacity-0"
-                                }`}
-                              />
-                            </div>
-                          </div>
-                        </div>
                       </div>
 
                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        Ref: #{c.id}
+                        Log: #{c.id}
                       </span>
                     </div>
                   </motion.div>

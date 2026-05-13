@@ -37,6 +37,40 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = Boolean(user);
 
+  // --- AUTO LOGOUT LOGIC ---
+  useEffect(() => {
+    if (!user || !user.access_token) return;
+
+    try {
+      // Decode token to get expiration time
+      const base64Url = user.access_token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
+      
+      if (payload.exp) {
+        const expirationTime = payload.exp * 1000; // Convert to ms
+        const currentTime = Date.now();
+        const timeLeft = expirationTime - currentTime;
+
+        if (timeLeft <= 0) {
+          // Already expired
+          logout();
+        } else {
+          // Set a timer to logout exactly when it expires
+          const timer = setTimeout(() => {
+            console.log("Session expired. Logging out automatically.");
+            logout();
+            alert("Your session has expired. Please login again.");
+          }, timeLeft);
+
+          return () => clearTimeout(timer);
+        }
+      }
+    } catch (e) {
+      console.error("Token decoding error in auto-logout:", e);
+    }
+  }, [user]);
+
   const login = (userData, remember = false) => {
     setUser(userData);
     if (remember) {

@@ -13,6 +13,7 @@ import {
   FaBars,
   FaTimes,
 } from "react-icons/fa";
+import { IoLocationSharp } from "react-icons/io5";
 
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -98,7 +99,8 @@ function Navbar() {
             </a>
           </div>
 
-          <div className="text-gray-700 text-xl font-medium">
+          <div className="text-gray-700 text-xl font-medium flex items-center gap-2">
+            <IoLocationSharp className="text-[#ed1c24]" />
             Azhagiyamandapam
           </div>
         </div>
@@ -186,6 +188,17 @@ function Navbar() {
                         >
                           Archived Inquiries
                           <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full">Admin</span>
+                        </div>
+                        
+                        <div 
+                          onClick={() => {
+                            navigate("/admin/contacts/professional");
+                            setOpenMessages(false);
+                          }}
+                          className={`p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium flex items-center justify-between cursor-pointer ${location.pathname === "/admin/contacts/professional" ? "text-blue-400 bg-gray-800" : ""}`}
+                        >
+                          Professional Emails
+                          <span className="bg-cyan-600/20 text-cyan-400 text-[9px] px-1.5 py-0.5 rounded-md border border-cyan-500/30">New</span>
                         </div>
                       </div>
                     </div>

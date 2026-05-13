@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
 import Info from "./Pages/Admin/Info";
 import ArchivedInfo from "./Pages/Admin/ArchivedInfo";
+import ProfessionalInquiries from "./Pages/Admin/ProfessionalInquiries";
 import PricingManager from "./Pages/Admin/PricingManager";
 
 import Home from "./Pages/Home/Home";
@@ -60,6 +61,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={["admin"]}>
                   <ArchivedInfo />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/contacts/professional"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                  <ProfessionalInquiries />
                 </ProtectedRoute>
               }
             />

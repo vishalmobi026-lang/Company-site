@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from datetime import datetime
 from app.db.database import Base
 
 class User(Base):
@@ -32,7 +33,23 @@ class ContactMessage(Base):
     message = Column(String)
     status = Column(String, default="Active")
     feedback = Column(String) # Staff feedback field
+    professional_email = Column(String)
     is_deleted = Column(Boolean, default=False)
+    created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+class ProfessionalInquiry(Base):
+    __tablename__ = "professional_inquiries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    subject = Column(String)
+    message = Column(String)
+    status = Column(String, default="Active")
+    professional_email = Column(String)
+    is_deleted = Column(Boolean, default=False)
+    created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 

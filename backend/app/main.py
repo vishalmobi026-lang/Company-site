@@ -172,8 +172,10 @@ def get_staff_or_admin_user(current_user: models.User = Depends(get_current_user
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return current_user
 
-def send_contact_email(name, email, phone, subject, message):
-    target_email = os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
+def send_contact_email(name, email, phone, subject, message, professional_email=None, target_email=None):
+    if not target_email:
+        target_email = os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
+    
     smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", "587"))
     smtp_user = os.getenv("SMTP_USER")
@@ -270,13 +272,28 @@ def send_contact_email(name, email, phone, subject, message):
 
                 <!-- Phone -->
                 <tr>
-                  <td style="padding-bottom:24px;">
+                  <td style="padding-bottom:12px;">
                     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
                       <tr>
                         <td style="width:44px;background:#059669;text-align:center;padding:16px 0;font-size:18px;">📞</td>
                         <td style="padding:14px 16px;">
                           <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Phone Number</div>
                           <div style="font-size:15px;font-weight:700;color:#0f172a;">{phone}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Professional Email (if any) -->
+                <tr>
+                  <td style="padding-bottom:24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f9ff;border:1px solid #bfdbfe;border-radius:12px;overflow:hidden;">
+                      <tr>
+                        <td style="width:44px;background:#0369a1;text-align:center;padding:16px 0;font-size:18px;">💼</td>
+                        <td style="padding:14px 16px;">
+                          <div style="font-size:10px;font-weight:800;color:#0369a1;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Professional Email</div>
+                          <div style="font-size:15px;font-weight:700;color:#0c4a6e;">{professional_email or 'Not Provided'}</div>
                         </td>
                       </tr>
                     </table>
@@ -476,20 +493,60 @@ def create_contact(message: schemas.ContactMessageCreate, background_tasks: Back
         db.commit()
         db.refresh(new_message)
         
-        # Send email in background
+        # Send email in background to primary target
         background_tasks.add_task(
             send_contact_email,
             new_message.name, 
             new_message.email, 
             new_message.phone, 
             new_message.subject, 
-            new_message.message
+            new_message.message,
+            new_message.professional_email,
+            os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
         )
+
+        # ALSO send to Professional Email if provided
+        if new_message.professional_email:
+            background_tasks.add_task(
+                send_contact_email,
+                new_message.name, 
+                new_message.email, 
+                new_message.phone, 
+                new_message.subject, 
+                new_message.message,
+                new_message.professional_email,
+                new_message.professional_email
+            )
         
         return new_message
     except Exception as e:
         print(f"Error in create_contact: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/professional-contacts", response_model=schemas.ProfessionalInquiryResponse)
+def create_professional_inquiry(inquiry: schemas.ProfessionalInquiryCreate, db: Session = Depends(database.get_db)):
+    try:
+        new_inquiry = models.ProfessionalInquiry(**inquiry.dict())
+        db.add(new_inquiry)
+        db.commit()
+        db.refresh(new_inquiry)
+        return new_inquiry
+    except Exception as e:
+        print(f"Error in create_professional_inquiry: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/admin/professional-contacts", response_model=List[schemas.ProfessionalInquiryResponse])
+def get_professional_contacts(db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
+    return db.query(models.ProfessionalInquiry).filter(models.ProfessionalInquiry.is_deleted == False).all()
+
+@app.delete("/admin/professional-contacts/{id}")
+def delete_professional_contact(id: int, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
+    inquiry = db.query(models.ProfessionalInquiry).filter(models.ProfessionalInquiry.id == id).first()
+    if not inquiry:
+        raise HTTPException(status_code=404, detail="Inquiry not found")
+    inquiry.is_deleted = True
+    db.commit()
+    return {"detail": "Professional inquiry deleted"}
 
 @app.get("/admin/contacts", response_model=List[schemas.ContactMessageResponse])
 def get_contacts(db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):

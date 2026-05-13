@@ -14,6 +14,7 @@ function Contact() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    professional_email: "",
     subject: "",
     phone: "",
     message: "",
@@ -40,6 +41,10 @@ function Contact() {
       alert("Please enter a valid email address.");
       return;
     }
+    if (form.professional_email && !emailRegex.test(form.professional_email)) {
+      alert("Please enter a valid professional email address.");
+      return;
+    }
     if (!phoneRegex.test(form.phone)) {
       alert("Please enter a valid 10-digit phone number.");
       return;
@@ -58,6 +63,7 @@ function Contact() {
       const contactData = {
         name: form.name.trim(),
         email: form.email.trim(),
+        professional_email: form.professional_email.trim(),
         phone: form.phone.trim(),
         subject: form.subject,
         message: form.message.trim(),
@@ -76,12 +82,22 @@ function Contact() {
         throw new Error("Failed to send message");
       }
 
+      // ALSO save to Professional Inquiries as requested
+      await fetch("http://localhost:8000/professional-contacts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contactData),
+      });
+
       alert("Message sent successfully! We will get back to you soon.");
 
       // Reset form
       setForm({
         name: "",
         email: "",
+        professional_email: "",
         subject: "",
         phone: "",
         message: "",
@@ -227,7 +243,7 @@ function Contact() {
 
                 <input
                   name="email"
-                  placeholder="Email Address"
+                  placeholder="Personal Email Address"
                   value={form.email}
                   onChange={handleChange}
                   className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
@@ -235,18 +251,13 @@ function Contact() {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3.5">
-                <select
-                  name="subject"
-                  value={form.subject}
+                <input
+                  name="professional_email"
+                  placeholder="Professional Email (Optional)"
+                  value={form.professional_email}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
-                >
-                  <option value="">Select Subject</option>
-                  <option value="Course Inquiry">Course Inquiry</option>
-                  <option value="Admission">Admission</option>
-                  <option value="Fees Details">Fees Details</option>
-                  <option value="Career Guidance">Career Guidance</option>
-                </select>
+                  className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition text-cyan-200"
+                />
 
                 <input
                   name="phone"
@@ -256,6 +267,19 @@ function Contact() {
                   className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
                 />
               </div>
+
+              <select
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
+                className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
+              >
+                <option value="">Select Subject</option>
+                <option value="Course Inquiry">Course Inquiry</option>
+                <option value="Admission">Admission</option>
+                <option value="Fees Details">Fees Details</option>
+                <option value="Career Guidance">Career Guidance</option>
+              </select>
 
               <textarea
                 name="message"
