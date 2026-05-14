@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import ChatWidget from "./components/ChatWidget";
+import GameWidget from "./game/gameWidget";
 import EnrolledStudentDetail from "./components/EnrolledStudentDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
@@ -86,6 +87,7 @@ function App() {
 
         <Footer />
         <ChatWidget />
+        <GameWidget />
       </div>
 
     </BrowserRouter>

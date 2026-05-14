@@ -7,8 +7,81 @@ import {
   FaEnvelope,
   FaCheckCircle,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
+import LottieLib from "lottie-react";
+const Lottie = LottieLib.default ?? LottieLib;
+import shareAnimation from "../Assets/Share.json";
+import failAnimation from "../Assets/Fail.json";
+
+function SubmitAlert({ type, onClose }) {
+  const success = type === "success";
+
+  return (
+    <AnimatePresence>
+      {type && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-xl"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="relative w-full max-w-md p-6 text-center"
+          >
+            <div className="mx-auto mb-4 w-64 h-64">
+              <Lottie
+                animationData={success ? shareAnimation : failAnimation}
+                loop={!success}
+                onComplete={() => {
+                  if (success) onClose();
+                }}
+                autoplay={true}
+              />
+            </div>
+
+            <h2
+              className={`mb-3 text-4xl font-black uppercase tracking-tight ${
+                success ? "text-cyan-400" : "text-rose-500"
+              }`}
+            >
+              {success ? "Message Sent!" : "Submission Failed"}
+            </h2>
+
+            <p className="mx-auto mb-8 max-w-sm text-lg font-medium leading-relaxed text-slate-300">
+              {success
+                ? "Your inquiry has been received. Our team will get back to you soon."
+                : "We could not send your message. Please check your connection and try again."}
+            </p>
+
+            {!success && (
+              <div className="relative flex w-full items-center justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.04, y: -3, boxShadow: "0 0 48px 10px rgba(239,68,68,0.55)" }}
+                  whileTap={{ scale: 0.95, boxShadow: "0 0 20px 4px rgba(239,68,68,0.8)" }}
+                  onClick={onClose}
+                  className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-rose-700 via-red-500 to-orange-600 py-4 text-sm font-black uppercase tracking-widest text-white shadow-2xl shadow-red-900/50"
+                >
+                  <motion.span
+                    className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                    animate={{ x: ["-120%", "220%"] }}
+                    transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
+                  />
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Try Again
+                  </span>
+                </motion.button>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 function Contact() {
   const [form, setForm] = useState({
@@ -19,6 +92,8 @@ function Contact() {
     phone: "",
     message: "",
   });
+
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const { isAuthenticated, addContact } = useContext(AuthContext);
 
@@ -91,7 +166,7 @@ function Contact() {
         body: JSON.stringify(contactData),
       });
 
-      alert("Message sent successfully! We will get back to you soon.");
+      setSubmitStatus("success");
 
       // Reset form
       setForm({
@@ -104,7 +179,7 @@ function Contact() {
       });
     } catch (error) {
       console.error("Error submitting contact form:", error);
-      alert("Something went wrong. Please try again later.");
+      setSubmitStatus("error");
     }
   };
 
@@ -128,6 +203,10 @@ function Contact() {
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-10 sm:py-12 px-4 sm:px-6 overflow-hidden">
+      <SubmitAlert
+        type={submitStatus}
+        onClose={() => setSubmitStatus(null)}
+      />
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
       <div className="absolute w-[380px] sm:w-[560px] h-[380px] sm:h-[560px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-160px]"></div>

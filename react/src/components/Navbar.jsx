@@ -100,7 +100,7 @@ function Navbar() {
           </div>
 
           <div className="text-gray-700 text-xl font-medium flex items-center gap-2">
-            <IoLocationSharp className="text-[#ed1c24]" />
+            <IoLocationSharp className="text-[#ed1c25]" />
             Azhagiyamandapam
           </div>
         </div>
