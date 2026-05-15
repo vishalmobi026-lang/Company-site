@@ -874,43 +874,170 @@ export default function NeonStrikeGame({ onClose }) {
                       }}
                       className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
                     >
-                      {/* SHIP BODY */}
-                      <div 
-                        className="w-0 h-0 border-l-[30px] border-l-transparent border-r-[30px] border-r-transparent border-b-[60px] border-b-cyan-500 relative z-10"
-                        style={{ filter: "drop-shadow(0 0 15px rgba(34, 211, 238, 0.8))" }}
-                      >
-                        {/* COCKPIT */}
-                        <div className="absolute top-[25px] left-[-6px] w-3 h-6 bg-white/40 blur-[2px] rounded-full" />
-                      </div>
+                      {/* SHIP BODY - PROFESSIONAL DESIGN */}
+                      <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-10 drop-shadow-[0_15px_25px_rgba(34,211,238,0.4)]">
+                        <defs>
+                          <linearGradient id="bodyBase" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#1e293b" />
+                            <stop offset="100%" stopColor="#020617" />
+                          </linearGradient>
+                          <linearGradient id="accentCyan" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#22d3ee" />
+                            <stop offset="100%" stopColor="#0369a1" />
+                          </linearGradient>
+                          <linearGradient id="cockpitVisor" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#cffafe" />
+                            <stop offset="40%" stopColor="#06b6d4" />
+                            <stop offset="100%" stopColor="#082f49" />
+                          </linearGradient>
+                          <filter id="neonCoreGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                              <feMergeNode in="blur" />
+                              <feMergeNode in="blur" />
+                              <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                          </filter>
+                          <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000" floodOpacity="0.7" />
+                          </filter>
+                        </defs>
 
-                      {/* THRUSTER GLOW */}
+                        {/* Left Engine Pod */}
+                        <path d="M20 80 L30 40 L35 40 L40 80 L35 100 L25 100 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
+                        <path d="M25 70 L30 45 L32 45 L35 70 Z" fill="url(#accentCyan)" opacity="0.7" />
+                        
+                        {/* Right Engine Pod */}
+                        <path d="M100 80 L90 40 L85 40 L80 80 L85 100 L95 100 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
+                        <path d="M95 70 L90 45 L88 45 L85 70 Z" fill="url(#accentCyan)" opacity="0.7" />
+
+                        {/* Main Wings */}
+                        <path d="M15 85 L45 50 L60 40 L75 50 L105 85 L95 95 L75 75 L60 80 L45 75 L25 95 Z" fill="#0f172a" stroke="#22d3ee" strokeWidth="1" strokeOpacity="0.4" filter="url(#dropShadow)" />
+
+                        {/* Main Fuselage */}
+                        <path d="M45 90 L60 5 L75 90 L65 105 L55 105 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
+                        
+                        {/* Fuselage Accents */}
+                        <path d="M50 80 L60 15 L70 80 L60 90 Z" fill="#334155" />
+                        <path d="M55 70 L60 25 L65 70 Z" fill="url(#accentCyan)" opacity="0.4" />
+
+                        {/* Cockpit Canopy */}
+                        <path d="M54 55 Q60 30 66 55 L64 65 Q60 70 56 65 Z" fill="url(#cockpitVisor)" />
+                        <path d="M56 65 Q60 70 64 65 L62 60 L58 60 Z" fill="#22d3ee" opacity="0.5" filter="url(#neonCoreGlow)" />
+                        
+                        {/* Center Energy Core */}
+                        <circle cx="60" cy="75" r="5" fill="#fff" filter="url(#neonCoreGlow)" />
+                        <circle cx="60" cy="75" r="2" fill="#cffafe" />
+
+                        {/* Neon Trims */}
+                        <path d="M45 90 L60 5 L75 90" fill="none" stroke="#22d3ee" strokeWidth="2" strokeOpacity="0.9" filter="url(#neonCoreGlow)" />
+                        <path d="M60 5 L60 25" fill="none" stroke="#fff" strokeWidth="1" opacity="0.9" />
+                        
+                        {/* Wing Tip Glows */}
+                        <line x1="15" y1="85" x2="25" y2="95" stroke="#22d3ee" strokeWidth="2" filter="url(#neonCoreGlow)" />
+                        <line x1="105" y1="85" x2="95" y2="95" stroke="#22d3ee" strokeWidth="2" filter="url(#neonCoreGlow)" />
+                      </svg>
+
+
+                      {/* MAIN THRUSTER GLOW */}
                       <motion.div
                         animate={{ 
-                          scale: [1, 1.5, 1],
-                          opacity: [0.4, 0.8, 0.4]
+                          scale: [1, 1.2, 1],
+                          opacity: [0.7, 1, 0.7],
+                          y: [0, 4, 0]
                         }}
                         transition={{ 
-                          duration: 0.15, 
+                          duration: 0.08, 
                           repeat: Infinity, 
                           ease: "linear" 
                         }}
-                        className="absolute bottom-4 w-12 h-12 bg-blue-500/60 blur-xl rounded-full z-0"
+                        className="absolute bottom-[-10px] w-14 h-28 bg-gradient-to-t from-cyan-400 via-blue-500/50 to-transparent blur-xl rounded-full z-0"
                       />
 
-                      {/* WING GLOWS */}
-                      <div className="absolute bottom-8 -left-2 w-8 h-2 bg-cyan-400 blur-[4px] rounded-full rotate-[15deg] opacity-50" />
-                      <div className="absolute bottom-8 -right-2 w-8 h-2 bg-cyan-400 blur-[4px] rounded-full -rotate-[15deg] opacity-50" />
+                      {/* SIDE THRUSTER GLOWS */}
+                      <motion.div
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.9, 0.5], y: [0, 2, 0] }}
+                        transition={{ duration: 0.12, repeat: Infinity, ease: "linear", delay: 0.05 }}
+                        className="absolute bottom-2 left-4 w-6 h-16 bg-gradient-to-t from-cyan-300 via-blue-500/40 to-transparent blur-md rounded-full z-0"
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.9, 0.5], y: [0, 2, 0] }}
+                        transition={{ duration: 0.12, repeat: Infinity, ease: "linear", delay: 0.05 }}
+                        className="absolute bottom-2 right-4 w-6 h-16 bg-gradient-to-t from-cyan-300 via-blue-500/40 to-transparent blur-md rounded-full z-0"
+                      />
+                      
+                      {/* ENGINE SPARKS */}
+                      <motion.div 
+                        animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0], y: [0, 15, 30] }}
+                        transition={{ duration: 0.3, repeat: Infinity, delay: 0.1 }}
+                        className="absolute bottom-0 w-1.5 h-6 bg-white blur-[1px] rounded-full z-0"
+                      />
+                      <motion.div 
+                        animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], y: [0, 20, 35] }}
+                        transition={{ duration: 0.4, repeat: Infinity, delay: 0.2 }}
+                        className="absolute bottom-0 left-6 w-1 h-4 bg-cyan-200 blur-[1px] rounded-full z-0"
+                      />
+                      <motion.div 
+                        animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], y: [0, 20, 35] }}
+                        transition={{ duration: 0.4, repeat: Infinity, delay: 0.3 }}
+                        className="absolute bottom-0 right-6 w-1 h-4 bg-cyan-200 blur-[1px] rounded-full z-0"
+                      />
+
                     </motion.div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-4 p-4 md:p-6 bg-black/60 backdrop-blur-xl z-[100] h-28 md:h-32 border-t border-white/10 relative">
-                <button onPointerDown={() => movePlayer(-1)} className="flex-1 bg-white/5 border-t border-white/10 border-b-[6px] border-black rounded-3xl flex items-center justify-center active:border-b-0 active:translate-y-[6px] transition-all duration-300 hover:bg-white/10 shadow-2xl group">
-                  <ChevronLeft size={50} className="text-cyan-400 group-active:text-white transition-colors duration-300" />
+              {/* DIRECTIONAL CONTROLS - PROFESSIONAL HUD UI */}
+              <div className="flex gap-4 md:gap-8 p-4 md:p-6 bg-gradient-to-t from-[#020617] via-[#020617]/95 to-transparent backdrop-blur-xl z-[100] h-28 md:h-36 border-t border-cyan-500/20 relative shadow-[0_-20px_40px_rgba(34,211,238,0.05)] justify-center">
+                {/* Decorative Tech Lines */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,1)]"></div>
+
+                {/* Left Thrust Button */}
+                <button 
+                  onPointerDown={() => movePlayer(-1)} 
+                  className="relative flex-1 max-w-[350px] h-full bg-slate-900/40 backdrop-blur-md border border-cyan-500/30 rounded-2xl flex items-center justify-center active:scale-95 transition-all duration-300 hover:bg-cyan-950/60 hover:border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.05)] hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] group overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
+                  
+                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
+                    <ChevronLeft size={44} className="text-cyan-500 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:-translate-x-2 transition-all duration-300" />
+                    <div className="flex flex-col items-start text-left">
+                      <span className="hidden md:block text-[10px] text-cyan-500/50 font-mono font-bold uppercase tracking-widest group-hover:text-cyan-400/80 transition-colors">System Override</span>
+                      <span className="hidden md:block text-cyan-500/80 font-mono font-black tracking-[0.2em] uppercase text-sm group-hover:text-cyan-300 transition-colors">Port Thrust</span>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute top-3 right-3 flex gap-1 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse delay-150"></div>
+                  </div>
                 </button>
-                <button onPointerDown={() => movePlayer(1)} className="flex-1 bg-white/5 border-t border-white/10 border-b-[6px] border-black rounded-3xl flex items-center justify-center active:border-b-0 active:translate-y-[6px] transition-all duration-300 hover:bg-white/10 shadow-2xl group">
-                  <ChevronRight size={50} className="text-cyan-400 group-active:text-white transition-colors duration-300" />
+
+                {/* Right Thrust Button */}
+                <button 
+                  onPointerDown={() => movePlayer(1)} 
+                  className="relative flex-1 max-w-[350px] h-full bg-slate-900/40 backdrop-blur-md border border-cyan-500/30 rounded-2xl flex items-center justify-center active:scale-95 transition-all duration-300 hover:bg-cyan-950/60 hover:border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.05)] hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] group overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-l from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute right-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
+                  
+                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
+                    <div className="flex flex-col items-end text-right">
+                      <span className="hidden md:block text-[10px] text-cyan-500/50 font-mono font-bold uppercase tracking-widest group-hover:text-cyan-400/80 transition-colors">System Override</span>
+                      <span className="hidden md:block text-cyan-500/80 font-mono font-black tracking-[0.2em] uppercase text-sm group-hover:text-cyan-300 transition-colors">Starboard</span>
+                    </div>
+                    <ChevronRight size={44} className="text-cyan-500 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:translate-x-2 transition-all duration-300" />
+                  </div>
+
+                  <div className="absolute top-3 left-3 flex gap-1 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse delay-150"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
+                  </div>
                 </button>
               </div>
             </motion.div>
