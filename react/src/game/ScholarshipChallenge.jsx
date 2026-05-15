@@ -347,12 +347,13 @@ export default function NeonStrikeGame({ onClose }) {
 
     const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
     try {
-      await fetch("http://localhost:8000/api/gamescores/add", {
+      await fetch("http://localhost:8000/gamescores/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: formData.name, phone: fullPhoneNumber, course: formData.course, score: finalScore, couponCode: code })
       });
     } catch (error) { console.error("Failed to save score:", error); }
+
   };
 
   const handleExit = () => {

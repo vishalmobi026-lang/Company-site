@@ -87,7 +87,6 @@ function Contact() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    professional_email: "",
     subject: "",
     phone: "",
     message: "",
@@ -116,10 +115,7 @@ function Contact() {
       alert("Please enter a valid email address.");
       return;
     }
-    if (form.professional_email && !emailRegex.test(form.professional_email)) {
-      alert("Please enter a valid professional email address.");
-      return;
-    }
+
     if (!phoneRegex.test(form.phone)) {
       alert("Please enter a valid 10-digit phone number.");
       return;
@@ -138,7 +134,6 @@ function Contact() {
       const contactData = {
         name: form.name.trim(),
         email: form.email.trim(),
-        professional_email: form.professional_email.trim(),
         phone: form.phone.trim(),
         subject: form.subject,
         message: form.message.trim(),
@@ -168,11 +163,9 @@ function Contact() {
 
       setSubmitStatus("success");
 
-      // Reset form
       setForm({
         name: "",
         email: "",
-        professional_email: "",
         subject: "",
         phone: "",
         message: "",
@@ -328,16 +321,7 @@ function Contact() {
                   className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
                 />
               </div>
-
               <div className="grid sm:grid-cols-2 gap-3.5">
-                <input
-                  name="professional_email"
-                  placeholder="Professional Email (Optional)"
-                  value={form.professional_email}
-                  onChange={handleChange}
-                  className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition text-cyan-200"
-                />
-
                 <input
                   name="phone"
                   placeholder="Phone Number"
@@ -346,7 +330,6 @@ function Contact() {
                   className="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 focus:border-cyan-400 outline-none transition"
                 />
               </div>
-
               <select
                 name="subject"
                 value={form.subject}

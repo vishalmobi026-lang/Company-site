@@ -699,4 +699,40 @@ def delete_category(id: int, db: Session = Depends(database.get_db), admin: mode
     db.delete(db_cat)
     db.commit()
     return {"detail": "Category deleted"}
+
+# --- GAME SCORES ENDPOINTS ---
+
+@app.post("/gamescores/add", response_model=schemas.GameScoreResponse)
+def add_game_score(score_data: schemas.GameScoreCreate, db: Session = Depends(database.get_db)):
+    new_score = models.GameScore(**score_data.dict())
+    db.add(new_score)
+    db.commit()
+    db.refresh(new_score)
+    return new_score
+
+@app.get("/gamescores/all", response_model=List[schemas.GameScoreResponse])
+def get_all_game_scores(db: Session = Depends(database.get_db)):
+    return db.query(models.GameScore).all()
+
+@app.delete("/gamescores/{id}")
+def delete_game_score(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    db_score = db.query(models.GameScore).filter(models.GameScore.id == id).first()
+    if not db_score:
+        raise HTTPException(status_code=404, detail="Score record not found")
+    db.delete(db_score)
+    db.commit()
+    return {"detail": "Game score record deleted"}
+
+
+@app.get("/api/countries")
+def get_countries():
+    # Mock data for the frontend to work
+    return [
+        {"id": "IN", "name": "India", "phonecode": "91"},
+        {"id": "AE", "name": "UAE", "phonecode": "971"},
+        {"id": "QA", "name": "Qatar", "phonecode": "974"},
+        {"id": "OM", "name": "Oman", "phonecode": "968"},
+        {"id": "SA", "name": "Saudi Arabia", "phonecode": "966"}
+    ]
+
 

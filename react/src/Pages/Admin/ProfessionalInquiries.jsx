@@ -335,17 +335,7 @@ export default function ProfessionalInquiries() {
                           </span>
                         </div>
 
-                        {c.professional_email && (
-                          <div className="col-span-full flex items-center gap-3 overflow-hidden rounded-2xl border border-cyan-100 bg-cyan-50/30 p-3 transition-colors">
-                            <FaEnvelopeOpenText className="w-4 text-cyan-500" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-cyan-600/60">Professional Email</span>
-                              <span className="truncate text-sm font-bold text-cyan-700">
-                                {c.professional_email}
-                              </span>
-                            </div>
-                          </div>
-                        )}
+
                       </div>
 
                       <div className="space-y-4">
@@ -374,22 +364,9 @@ export default function ProfessionalInquiries() {
                         </div>
                       </div>
                     </div>
-
-                    <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-7 py-4 transition-colors group-hover:bg-cyan-50">
-                      <div className="flex items-center gap-8">
-                        <a
-                          href={`mailto:${c.email}`}
-                          className="text-sm font-bold text-cyan-600 hover:underline"
-                        >
-                          Send Professional Reply
-                        </a>
-                      </div>
-
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        Log: #{c.id}
-                      </span>
-                    </div>
                   </motion.div>
+
+
                 </Reveal>
               ))}
             </AnimatePresence>

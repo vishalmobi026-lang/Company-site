@@ -12,6 +12,10 @@ import Info from "./Pages/Admin/Info";
 import ArchivedInfo from "./Pages/Admin/ArchivedInfo";
 import ProfessionalInquiries from "./Pages/Admin/ProfessionalInquiries";
 import PricingManager from "./Pages/Admin/PricingManager";
+import AdminCouponDecoder from "./game/AdminCouponDecode";
+import AdminGameScores from "./game/AdminGameScores";
+
+
 
 import Home from "./Pages/Home/Home";
 import About from "./Pages/About";
@@ -81,6 +85,24 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/coupon-decoder"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                  <AdminCouponDecoder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/game-scores"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                  <AdminGameScores />
+                </ProtectedRoute>
+              }
+            />
+
+
           </Routes>
 
         </div>

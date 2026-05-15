@@ -134,3 +134,17 @@ class CategoryResponse(CategoryCreate):
 
     class Config:
         from_attributes = True
+
+class GameScoreCreate(BaseModel):
+    name: str
+    phone: str
+    course: str
+    score: int
+    couponCode: str
+
+class GameScoreResponse(GameScoreCreate):
+    id: int
+    created_at: str
+
+    class Config:
+        from_attributes = True

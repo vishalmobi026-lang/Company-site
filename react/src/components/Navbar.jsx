@@ -12,14 +12,24 @@ import {
   FaChevronDown,
   FaBars,
   FaTimes,
+  FaUserShield,
+  FaUserGraduate,
+  FaTrophy,
+  FaEnvelopeOpenText,
+  FaHistory,
+  FaTicketAlt,
+  FaTags,
+  FaBriefcase
 } from "react-icons/fa";
 import { IoLocationSharp } from "react-icons/io5";
+
 
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
-  const [openMessages, setOpenMessages] = useState(false);
+  const [openAdmin, setOpenAdmin] = useState(false);
   const [categories, setCategories] = useState([]);
+
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -123,98 +133,178 @@ function Navbar() {
             onMouseLeave={() => setOpenCourses(false)}
           >
             <div
-              onClick={() => navigate("/courses")}
-              className={`flex items-center gap-1 ${location.pathname === "/courses"
-                  ? "text-blue-600"
-                  : "hover:text-blue-600"
-                }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+                location.pathname.startsWith("/courses")
+                  ? "text-blue-600 bg-blue-50/50"
+                  : "hover:text-blue-600 hover:bg-gray-50"
+              }`}
             >
-              Courses <FaChevronDown />
+              <span className="font-semibold" onClick={() => navigate("/courses")}>Courses</span>
+              <FaChevronDown className={`text-[10px] transition-transform duration-300 ${openCourses ? 'rotate-180' : ''}`} />
             </div>
 
-            {openCourses && (
-              <div className="absolute left-0 top-full pt-3 z-50">
-                <div className="bg-gray-900 text-white p-5 rounded-2xl w-80 space-y-3 shadow-2xl">
-                  {categories.map(cat => (
-                    <div
-                      key={cat.id}
-                      onClick={() => navigate(`/courses/${cat.slug}`)}
-                      className="p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium"
-                    >
-                      {cat.name}
-                    </div>
-                  ))}
-                  {categories.length === 0 && <div className="p-3 text-gray-500 italic">No categories yet</div>}
-                </div>
-              </div>
-            )}
-          </li>
-
-          {isAuthenticated && (
-            <>
-              {user?.user?.role === "admin" && (
-                <li
-                  onClick={() => navigate("/admin/enrollments")}
-                  className={`cursor-pointer ${location.pathname === "/admin/enrollments" ? "text-blue-600" : "hover:text-blue-600"}`}
+            <AnimatePresence>
+              {openCourses && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute left-0 top-full pt-3 z-50"
                 >
-                  Enrollments
-                </li>
-              )}
-              {(user?.user?.role === "admin" || user?.user?.role === "staff") && (
-                <li
-                  className="relative cursor-pointer flex items-center"
-                  onMouseEnter={() => user?.user?.role === "admin" && setOpenMessages(true)}
-                  onMouseLeave={() => setOpenMessages(false)}
-                >
-                  <div
-                    onClick={() => navigate("/admin/contacts")}
-                    className={`flex items-center gap-1 ${location.pathname === "/admin/contacts"
-                        ? "text-blue-600"
-                        : "hover:text-blue-600"
-                      }`}
-                  >
-                    Messages {user?.user?.role === "admin" && <FaChevronDown className="text-[10px]" />}
-                  </div>
-
-                  {openMessages && user?.user?.role === "admin" && (
-                    <div className="absolute left-0 top-full pt-3 z-50">
-                      <div className="bg-gray-900 text-white p-4 rounded-2xl w-64 space-y-2 shadow-2xl border border-gray-800">
-                        <div
-                          onClick={() => {
-                            navigate("/admin/contacts/archived");
-                            setOpenMessages(false);
-                          }}
-                          className={`p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium flex items-center justify-between ${location.pathname === "/admin/contacts/archived" ? "text-blue-400 bg-gray-800" : ""}`}
-                        >
-                          Archived Inquiries
-                          <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full">Admin</span>
-                        </div>
-                        
-                        <div 
-                          onClick={() => {
-                            navigate("/admin/contacts/professional");
-                            setOpenMessages(false);
-                          }}
-                          className={`p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all font-medium flex items-center justify-between cursor-pointer ${location.pathname === "/admin/contacts/professional" ? "text-blue-400 bg-gray-800" : ""}`}
-                        >
-                          Professional Emails
-                          <span className="bg-cyan-600/20 text-cyan-400 text-[9px] px-1.5 py-0.5 rounded-md border border-cyan-500/30">New</span>
-                        </div>
+                  <div className="bg-gray-900 text-white p-2 rounded-[1.5rem] w-80 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 backdrop-blur-xl">
+                    <div className="p-3">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Program Categories</p>
+                      <div className="space-y-1">
+                        {categories.map(cat => (
+                          <div
+                            key={cat.id}
+                            onClick={() => { navigate(`/courses/${cat.slug}`); setOpenCourses(false); }}
+                            className="group flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer hover:bg-blue-600 text-gray-300 hover:text-white"
+                          >
+                            <div className="text-sm text-gray-500 group-hover:text-white transition-transform group-hover:scale-110">
+                              <FaTags />
+                            </div>
+                            <span className="text-xs font-bold">{cat.name}</span>
+                          </div>
+                        ))}
+                        {categories.length === 0 && (
+                          <div className="p-3 text-gray-500 italic text-xs">No categories available yet</div>
+                        )}
                       </div>
                     </div>
-                  )}
-                </li>
+                  </div>
+                </motion.div>
               )}
-              {user?.user?.role === "admin" && (
-                <li
-                  onClick={() => navigate("/admin/pricing")}
-                  className={`cursor-pointer ${location.pathname === "/admin/pricing" ? "text-blue-600" : "hover:text-blue-600"}`}
-                >
-                  Management
-                </li>
-              )}
-            </>
+            </AnimatePresence>
+          </li>
+          {isAuthenticated && (user?.user?.role === "admin" || user?.user?.role === "staff") && (
+            <li
+              className="relative cursor-pointer flex items-center"
+              onMouseEnter={() => setOpenAdmin(true)}
+              onMouseLeave={() => setOpenAdmin(false)}
+            >
+              <div
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+                  location.pathname.startsWith("/admin")
+                    ? "text-blue-600 bg-blue-50/50"
+                    : "hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                <FaUserShield className="text-sm" />
+                <span className="font-semibold">
+                  {user?.user?.role === "admin" ? "Admin Panel" : "Staff Panel"}
+                </span>
+                <FaChevronDown className={`text-[10px] transition-transform duration-300 ${openAdmin ? 'rotate-180' : ''}`} />
+              </div>
+
+              <AnimatePresence>
+                {openAdmin && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50"
+                  >
+                    <div className="bg-gray-900 text-white p-2 rounded-[1.5rem] w-80 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 backdrop-blur-xl">
+                      
+                      {user?.user?.role === "admin" ? (
+                        <>
+                          {/* FULL ADMIN VIEW */}
+                          <div className="p-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Records & Results</p>
+                            <div className="space-y-1">
+                              <AdminLink 
+                                icon={<FaUserGraduate />} 
+                                label="Student Enrollments" 
+                                path="/admin/enrollments" 
+                                active={location.pathname === "/admin/enrollments"}
+                                onClick={() => { navigate("/admin/enrollments"); setOpenAdmin(false); }}
+                              />
+                              <AdminLink 
+                                icon={<FaTrophy />} 
+                                label="Scholarship Results" 
+                                path="/admin/game-scores" 
+                                active={location.pathname === "/admin/game-scores"}
+                                onClick={() => { navigate("/admin/game-scores"); setOpenAdmin(false); }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="h-px bg-gray-800 mx-4" />
+
+                          <div className="p-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Communications</p>
+                            <div className="space-y-1">
+                              <AdminLink 
+                                icon={<FaEnvelopeOpenText />} 
+                                label="Inbox Inquiries" 
+                                path="/admin/contacts" 
+                                active={location.pathname === "/admin/contacts"}
+                                onClick={() => { navigate("/admin/contacts"); setOpenAdmin(false); }}
+                              />
+                              <AdminLink 
+                                icon={<FaBriefcase />} 
+                                label="Professional Emails" 
+                                path="/admin/contacts/professional" 
+                                active={location.pathname === "/admin/contacts/professional"}
+                                onClick={() => { navigate("/admin/contacts/professional"); setOpenAdmin(false); }}
+                              />
+                              <AdminLink 
+                                icon={<FaHistory />} 
+                                label="Archived Inquiries" 
+                                path="/admin/contacts/archived" 
+                                active={location.pathname === "/admin/contacts/archived"}
+                                onClick={() => { navigate("/admin/contacts/archived"); setOpenAdmin(false); }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="h-px bg-gray-800 mx-4" />
+
+                          <div className="p-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Tools & Pricing</p>
+                            <div className="space-y-1">
+                              <AdminLink 
+                                icon={<FaTicketAlt />} 
+                                label="Verify Coupon" 
+                                path="/admin/coupon-decoder" 
+                                active={location.pathname === "/admin/coupon-decoder"}
+                                onClick={() => { navigate("/admin/coupon-decoder"); setOpenAdmin(false); }}
+                              />
+                              <AdminLink 
+                                icon={<FaTags />} 
+                                label="Course Management" 
+                                path="/admin/pricing" 
+                                active={location.pathname === "/admin/pricing"}
+                                onClick={() => { navigate("/admin/pricing"); setOpenAdmin(false); }}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        /* STAFF ONLY VIEW */
+                        <div className="p-3">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Inquiry Portal</p>
+                          <div className="space-y-1">
+                            <AdminLink 
+                              icon={<FaEnvelopeOpenText />} 
+                              label="Inbox Inquiries" 
+                              path="/admin/contacts" 
+                              active={location.pathname === "/admin/contacts"}
+                              onClick={() => { navigate("/admin/contacts"); setOpenAdmin(false); }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </li>
           )}
+
+
 
           {/* ABOUT */}
           <li
@@ -331,81 +421,71 @@ function Navbar() {
                 )}
               </AnimatePresence>
             </motion.div>
+            {isAuthenticated && (user?.user?.role === "admin" || user?.user?.role === "staff") && (
+              <motion.div
+                initial={{ opacity: 0, x: -25 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, delay: 0.12 }}
+              >
+                <div
+                  onClick={() => setOpenAdmin(!openAdmin)}
+                  className="flex justify-between items-center cursor-pointer hover:text-blue-700 font-semibold text-slate-700"
+                >
+                  <div className="flex items-center gap-2">
+                    <FaUserShield size={16} />
+                    {user?.user?.role === "admin" ? "Admin Panel" : "Staff Panel"}
+                  </div>
+                  <motion.span
+                    animate={{ rotate: openAdmin ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <FaChevronDown size={12} />
+                  </motion.span>
+                </div>
 
-            {isAuthenticated && (
-              <>
-                {user?.user?.role === "admin" && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -25 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: 0.12 }}
-                    onClick={() => handleMobileNavigate("/admin/enrollments")}
-                    className="hover:cursor-pointer hover:text-blue-600"
-                  >
-                    Enrollments
-                  </motion.div>
-                )}
-                {(user?.user?.role === "admin" || user?.user?.role === "staff") && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -25 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: 0.13 }}
-                  >
-                    <div
-                      onClick={() => user?.user?.role === "admin" ? setOpenMessages(!openMessages) : handleMobileNavigate("/admin/contacts")}
-                      className="flex justify-between cursor-pointer hover:text-blue-700"
+                <AnimatePresence>
+                  {openAdmin && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -10 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: -10 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="overflow-hidden pl-6 mt-3 space-y-4 border-l-2 border-slate-100 ml-2"
                     >
-                      Messages
-                      {user?.user?.role === "admin" && (
-                        <motion.span
-                          animate={{ rotate: openMessages ? 180 : 0 }}
-                          transition={{ duration: 0.25 }}
-                        >
-                          <FaChevronDown />
-                        </motion.span>
-                      )}
-                    </div>
+                      {user?.user?.role === "admin" ? (
+                        <>
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Records</p>
+                            <div onClick={() => handleMobileNavigate("/admin/enrollments")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Student Enrollments</div>
+                            <div onClick={() => handleMobileNavigate("/admin/game-scores")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Scholarship Results</div>
+                          </div>
 
-                    <AnimatePresence>
-                      {openMessages && user?.user?.role === "admin" && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0, y: -10 }}
-                          animate={{ opacity: 1, height: "auto", y: 0 }}
-                          exit={{ opacity: 0, height: 0, y: -10 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="overflow-hidden pl-3 mt-2 space-y-2 cursor-pointer text-sm"
-                        >
-                          <div 
-                            className="cursor-pointer hover:text-blue-700 py-1" 
-                            onClick={() => handleMobileNavigate("/admin/contacts")}
-                          >
-                            Inbox Inquiries
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Messages</p>
+                            <div onClick={() => handleMobileNavigate("/admin/contacts")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Inbox Inquiries</div>
+                            <div onClick={() => handleMobileNavigate("/admin/contacts/professional")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Professional Emails</div>
+                            <div onClick={() => handleMobileNavigate("/admin/contacts/archived")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Archived Inquiries</div>
                           </div>
-                          <div 
-                            className="cursor-pointer hover:text-blue-700 py-1 flex items-center justify-between" 
-                            onClick={() => handleMobileNavigate("/admin/contacts/archived")}
-                          >
-                            Archived Inquiries
-                            <span className="text-[9px] bg-blue-50 text-blue-500 px-1.5 rounded-md">Admin Only</span>
+
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tools</p>
+                            <div onClick={() => handleMobileNavigate("/admin/coupon-decoder")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Verify Coupon</div>
+                            <div onClick={() => handleMobileNavigate("/admin/pricing")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Course Management</div>
                           </div>
-                        </motion.div>
+                        </>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inquiry Portal</p>
+                          <div onClick={() => handleMobileNavigate("/admin/contacts")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Inbox Inquiries</div>
+                        </div>
                       )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-                {user?.user?.role === "admin" && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -25 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, delay: 0.14 }}
-                    onClick={() => handleMobileNavigate("/admin/pricing")}
-                    className="hover:cursor-pointer hover:text-blue-600"
-                  >
-                    Management
-                  </motion.div>
-                )}
-              </>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             )}
+
+
 
             <motion.div
               initial={{ opacity: 0, x: -25 }}
@@ -470,4 +550,24 @@ function Navbar() {
   );
 }
 
+function AdminLink({ icon, label, onClick, active }) {
+  return (
+    <div
+      onClick={onClick}
+      className={`group flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer ${
+        active 
+          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+          : "hover:bg-blue-600 text-gray-300 hover:text-white"
+      }`}
+    >
+      <div className={`text-sm transition-transform group-hover:scale-110 ${active ? 'text-white' : 'text-gray-500 group-hover:text-white'}`}>
+        {icon}
+      </div>
+      <span className="text-xs font-bold">{label}</span>
+    </div>
+  );
+}
+
+
 export default Navbar;
+

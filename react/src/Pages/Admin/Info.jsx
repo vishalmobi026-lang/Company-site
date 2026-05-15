@@ -374,17 +374,7 @@ export default function Info() {
                           </span>
                         </div>
 
-                        {c.professional_email && (
-                          <div className="col-span-full flex items-center gap-3 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50/50 p-3 transition-colors">
-                            <FaEnvelope className="w-4 text-blue-500" />
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Professional Email</span>
-                              <span className="truncate text-sm font-bold text-slate-700">
-                                {c.professional_email}
-                              </span>
-                            </div>
-                          </div>
-                        )}
+
                       </div>
 
                       <div className="space-y-4">
@@ -448,85 +438,6 @@ export default function Info() {
                           </div>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-7 py-4 transition-colors group-hover:bg-blue-50">
-                      <div className="flex items-center gap-8">
-                        <a
-                          href={`mailto:${c.email}`}
-                          className="text-sm font-bold text-blue-600 hover:underline"
-                        >
-                          Reply via Email
-                        </a>
-
-                        <div className="flex items-center gap-6 border-l border-slate-200 pl-8">
-                          <div
-                            className="group/toggle flex cursor-pointer items-center gap-2"
-                            onClick={() => handleStatusUpdate(c.id, "Deactive")}
-                          >
-                            <span
-                              className={`text-[13px] font-bold transition-colors duration-300 ${
-                                c.status === "Deactive"
-                                  ? "text-slate-500"
-                                  : "text-slate-300 group-hover/toggle:text-slate-400"
-                              }`}
-                            >
-                              Deactive
-                            </span>
-
-                            <div
-                              className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                                c.status === "Deactive"
-                                  ? "border-red-400 bg-red-50/50"
-                                  : "border-slate-200 bg-transparent"
-                              }`}
-                            >
-                              <div
-                                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                                  c.status === "Deactive"
-                                    ? "scale-100 bg-red-500 opacity-100"
-                                    : "scale-50 bg-slate-200 opacity-0"
-                                }`}
-                              />
-                            </div>
-                          </div>
-
-                          <div
-                            className="group/toggle flex cursor-pointer items-center gap-2"
-                            onClick={() => handleStatusUpdate(c.id, "Active")}
-                          >
-                            <span
-                              className={`text-[13px] font-bold transition-colors duration-300 ${
-                                c.status === "Active"
-                                  ? "text-emerald-600"
-                                  : "text-slate-300 group-hover/toggle:text-slate-400"
-                              }`}
-                            >
-                              Active
-                            </span>
-
-                            <div
-                              className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-300 ${
-                                c.status === "Active"
-                                  ? "border-emerald-400 bg-emerald-50/50"
-                                  : "border-slate-200 bg-transparent"
-                              }`}
-                            >
-                              <div
-                                className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                                  c.status === "Active"
-                                    ? "scale-100 bg-emerald-500 opacity-100"
-                                    : "scale-50 bg-slate-200 opacity-0"
-                                }`}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        Ref: #{c.id}
-                      </span>
                     </div>
                   </motion.div>
                 </Reveal>

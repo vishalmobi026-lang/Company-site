@@ -87,4 +87,16 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     slug = Column(String, unique=True, index=True, nullable=False)
+
+class GameScore(Base):
+    __tablename__ = "game_scores"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+    course = Column(String, nullable=False)
+    score = Column(Integer, nullable=False)
+    couponCode = Column(String, unique=True, index=True, nullable=False)
+    created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
 

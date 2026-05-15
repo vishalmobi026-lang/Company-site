@@ -398,8 +398,10 @@ export default function ArchivedInfo() {
                           </p>
                         </div>
                       )}
+
                     </div>
                   </motion.div>
+
                 </Reveal>
               ))}
             </AnimatePresence>
