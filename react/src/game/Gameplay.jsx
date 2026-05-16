@@ -7,6 +7,7 @@ import {
   ChevronDown, AlertCircle, Rocket, Gamepad2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ALL_QUESTIONS } from "./questions";
 
 const API_CATEGORY_MAP = {
   "IT / Technical": 18,
@@ -16,43 +17,6 @@ const API_CATEGORY_MAP = {
   "Civil": 17
 };
 
-const FALLBACK_QUESTIONS = {
-  "IT / Technical": [
-    { q: "What does HTML stand for?", options: ["Hyper Text", "Home Tool", "Hyperlinks"], correct: 0 },
-    { q: "Which acts as the 'brain' of a computer?", options: ["RAM", "Motherboard", "CPU"], correct: 2 },
-    { q: "Which is a frontend React framework?", options: ["Next.js", "Django", "Laravel"], correct: 0 },
-    { q: "What does CSS do?", options: ["Database", "Styling", "Server Logic"], correct: 1 },
-    { q: "Python files end with which extension?", options: [".pt", ".py", ".pn"], correct: 1 }
-  ],
-  "IT / Non-Technical": [
-    { q: "What does SEO stand for?", options: ["Search Engine Opt.", "Secure Email Org.", "System Error Out"], correct: 0 },
-    { q: "Which is used for spreadsheets?", options: ["MS Word", "MS Excel", "MS Paint"], correct: 1 },
-    { q: "B2B stands for?", options: ["Back to Basics", "Business to Bus.", "Binary to Base"], correct: 1 },
-    { q: "Which is a social media platform?", options: ["LinkedIn", "Linux", "Linode"], correct: 0 },
-    { q: "What is Google Analytics used for?", options: ["Coding", "Web Traffic", "Video Editing"], correct: 1 }
-  ],
-  "Designing": [
-    { q: "What does CAD stand for?", options: ["Computer Art", "Code And Deploy", "Computer Aided Design"], correct: 2 },
-    { q: "Which tool is best for UI/UX?", options: ["Figma", "AutoCAD", "Notepad"], correct: 0 },
-    { q: "RGB is primarily used for?", options: ["Printing", "Digital Screens", "3D Models"], correct: 1 },
-    { q: "Which is vector-based?", options: ["Photoshop", "Illustrator", "Lightroom"], correct: 1 },
-    { q: "What does UI stand for?", options: ["User Interface", "Unix Index", "Unified Input"], correct: 0 }
-  ],
-  "Civil": [
-    { q: "Which software is standard for 2D drafting?", options: ["Maya", "AutoCAD", "Photoshop"], correct: 1 },
-    { q: "Revit is primarily used for?", options: ["Video Editing", "BIM Modeling", "Web Design"], correct: 1 },
-    { q: "What does RCC stand for?", options: ["Real Cement", "Reinforced Concrete", "Rigid Core"], correct: 1 },
-    { q: "Which tool is used for 3D elevation?", options: ["3ds Max", "Excel", "Tally"], correct: 0 },
-    { q: "What is a foundation?", options: ["Roof top", "Base of structure", "Wall paint"], correct: 1 }
-  ],
-  "Accounting": [
-    { q: "Which software is used for GST in India?", options: ["AutoCAD", "Tally Prime", "VS Code"], correct: 1 },
-    { q: "What is a Ledger?", options: ["Account Book", "Hardware", "Tax Type"], correct: 0 },
-    { q: "GST stands for?", options: ["Gross Sales Tax", "Goods & Service Tax", "General State Tax"], correct: 1 },
-    { q: "Which is an asset?", options: ["Bank Loan", "Cash in Hand", "Creditors"], correct: 1 },
-    { q: "What is SAP?", options: ["Game Engine", "ERP Software", "Design Tool"], correct: 1 }
-  ]
-};
 
 const decodeHTML = (html) => {
   const txt = document.createElement("textarea");
@@ -95,6 +59,8 @@ export default function NeonStrikeGame({ onClose }) {
   const [shake, setShake] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [discount, setDiscount] = useState(0);
 
   const [countries, setCountries] = useState([]);
   const [formData, setFormData] = useState({ name: "", countryCode: "+91", phone: "", course: "" });
@@ -106,7 +72,7 @@ export default function NeonStrikeGame({ onClose }) {
     speed: 0.35,
     entities: [], flashTimer: 0, frame: 0,
     questions: [], qIndex: 0, isQuestionActive: false,
-    spawnTimer: 30
+    spawnTimer: 30, correctCount: 0
   });
 
   const gameLoopRef = useRef(null);
@@ -173,28 +139,29 @@ export default function NeonStrikeGame({ onClose }) {
     let finalQuestions = [];
 
     try {
-      const categoryId = API_CATEGORY_MAP[formData.course] || 18;
-      const response = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
-      const data = await response.json();
+      // Use the expanded local question bank (100 questions per field)
+      const localPool = ALL_QUESTIONS[formData.course] || ALL_QUESTIONS["IT / Technical"];
+      
+      // Randomize the questions
+      finalQuestions = [...localPool].sort(() => Math.random() - 0.5);
+      
+      // Shuffle options for each question to increase variety
+      finalQuestions = finalQuestions.map(item => {
+        const optionsWithIndex = item.options.map((opt, idx) => ({ text: opt, isCorrect: idx === item.correct }));
+        const shuffledOptions = [...optionsWithIndex].sort(() => Math.random() - 0.5);
+        const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+        
+        return {
+          q: item.q,
+          options: shuffledOptions.map(o => o.text),
+          correct: newCorrectIndex
+        };
+      });
 
-      if (data.results && data.results.length > 0) {
-        finalQuestions = data.results.map((item) => {
-          const options = [...item.incorrect_answers];
-          const correctIndex = Math.floor(Math.random() * 4);
-          options.splice(correctIndex, 0, item.correct_answer);
-
-          return {
-            q: decodeHTML(item.question),
-            options: options.map(decodeHTML),
-            correct: correctIndex,
-          };
-        });
-      } else {
-        finalQuestions = [...FALLBACK_QUESTIONS[formData.course]].sort(() => Math.random() - 0.5);
-      }
     } catch (error) {
-      console.error("API failed to fetch, using fallback questions:", error);
-      finalQuestions = [...FALLBACK_QUESTIONS[formData.course]].sort(() => Math.random() - 0.5);
+      console.error("Error setting up questions:", error);
+      // Minimal fallback
+      finalQuestions = [{ q: "Error loading questions. Restart?", options: ["Restart", "Exit", "Retry"], correct: 0 }];
     }
 
     setIsFetchingQs(false);
@@ -228,8 +195,10 @@ export default function NeonStrikeGame({ onClose }) {
     stateRef.current = {
       lane: 1, score: 0, lives: 3, combo: 1, speed: 0.35, entities: [],
       flashTimer: 0, frame: 0, questions: questionsToPlay, qIndex: 0,
-      isQuestionActive: false, spawnTimer: 30
+      isQuestionActive: false, spawnTimer: 30, correctCount: 0
     };
+
+    setCorrectCount(0);
 
     setPlayerLane(1);
     gameLoopRef.current = setInterval(gameTick, 30);
@@ -286,10 +255,12 @@ export default function NeonStrikeGame({ onClose }) {
           waveCompleted = true;
 
           if (ent.isCorrect) {
-            const pts = 1000 * state.combo;
+            state.correctCount += 1;
+            const pts = 10; // 10 points per correct answer
             state.score += pts;
             state.combo = Math.min(state.combo + 1, 10);
             setCombo(state.combo);
+            setCorrectCount(state.correctCount);
             addFloatingText(`+${pts}`, "text-green-400", state.lane);
           } else {
             hitWrong = true;
@@ -342,7 +313,11 @@ export default function NeonStrikeGame({ onClose }) {
     else if (finalScore > 5000) prefix = "V7";
 
     const code = `GTEC-${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const count = stateRef.current.correctCount;
+    const calculatedDiscount = count >= 20 ? 7 : count >= 10 ? 5 : count >= 7 ? 4 : count >= 5 ? 3 : count >= 3 ? 2 : count >= 1 ? 1 : 0;
+    
     setCouponCode(code);
+    setDiscount(calculatedDiscount);
     setGameState("result");
 
     const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
@@ -350,7 +325,15 @@ export default function NeonStrikeGame({ onClose }) {
       await fetch("http://localhost:8000/gamescores/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: formData.name, phone: fullPhoneNumber, course: formData.course, score: finalScore, couponCode: code })
+        body: JSON.stringify({ 
+          name: formData.name, 
+          phone: fullPhoneNumber, 
+          course: formData.course, 
+          score: finalScore, 
+          couponCode: code,
+          discount: calculatedDiscount,
+          correctAnswers: count
+        })
       });
     } catch (error) { console.error("Failed to save score:", error); }
 
@@ -590,7 +573,7 @@ export default function NeonStrikeGame({ onClose }) {
                         className="w-full bg-slate-900/40 border border-slate-700/50 text-white rounded-2xl py-4 pl-12 pr-10 hover:bg-slate-800/40 focus:bg-slate-800/80 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10 outline-none transition-all duration-500 ease-out appearance-none text-base md:text-lg font-medium shadow-inner cursor-pointer"
                       >
                         <option value="" disabled>Select Target Sector</option>
-                        {Object.keys(FALLBACK_QUESTIONS).map(c => <option key={c} value={c}>{c}</option>)}
+                        {Object.keys(ALL_QUESTIONS).map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                         <ChevronDown className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={20} />
@@ -1050,82 +1033,285 @@ export default function NeonStrikeGame({ onClose }) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.19, 1, 0.22, 1] }}
-              className="text-center px-4 w-full max-w-2xl mx-auto relative z-20"
+              className="text-center px-4 w-full max-w-5xl mx-auto relative z-20"
             >
-              <div className="mb-8">
-                <h2 className="text-white text-sm font-black uppercase tracking-[0.3em] mb-2 opacity-50">
-                  Assessment Report
-                </h2>
-                <div className="h-[1px] w-12 bg-blue-500 mx-auto"></div>
+              <div className="mb-4 relative">
+                <motion.h2 
+                  animate={{ 
+                    opacity: [0.5, 1, 0.5],
+                    textShadow: ["0 0 10px rgba(34,211,238,0)", "0 0 20px rgba(34,211,238,0.5)", "0 0 10px rgba(34,211,238,0)"]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-white text-[10px] font-black uppercase tracking-[0.5em] mb-1"
+                >
+                  Post-Assessment Telemetry
+                </motion.h2>
+                <div className="h-[1.5px] w-16 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto"></div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-left flex flex-col justify-between">
-                  <div>
-                    <User size={18} className="text-zinc-500 mb-4" />
-                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Candidate</p>
-                    <p className="text-xl font-semibold text-white truncate">{formData.name}</p>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch perspective-1000">
+                
+                {/* LEFT: CANDIDATE INFO */}
+                <motion.div 
+                  initial={{ x: -30, opacity: 0, rotateY: -5 }}
+                  animate={{ x: 0, opacity: 1, rotateY: 0 }}
+                  transition={{ duration: 0.8, ease: smoothEase }}
+                  whileHover={{ scale: 1.01 }}
+                  className="md:col-span-7 bg-[#0b132b]/60 backdrop-blur-3xl border border-cyan-500/20 rounded-[2rem] p-6 md:p-8 text-left flex flex-col justify-between relative overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                >
+                  {/* TECH DECORATIONS */}
+                  <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                    <div className="absolute top-6 left-6 w-12 h-12 border-t-2 border-l-2 border-cyan-500/40 rounded-tl-2xl" />
+                    <div className="absolute bottom-6 right-6 w-12 h-12 border-b-2 border-r-2 border-cyan-500/40 rounded-br-2xl" />
+                    <div className="absolute inset-0 scanline-vertical opacity-[0.03]" />
                   </div>
-                  <div className="mt-4 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-                    <span className="text-[10px] text-emerald-500 font-bold uppercase">Verified Result</span>
+
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-6 mb-12">
+                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-600/10 rounded-2xl flex items-center justify-center border border-cyan-500/30 group-hover:border-cyan-400 transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.1)] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/20 to-transparent" />
+                        <motion.div 
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                          className="w-10 h-10 border-2 border-dashed border-cyan-500/20 rounded-full flex items-center justify-center"
+                        >
+                          <div className="w-1 h-4 bg-cyan-500/40 rounded-full" />
+                        </motion.div>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-cyan-500/40 text-[10px] font-black uppercase tracking-[0.3em] font-mono">Neural_Link: Established</p>
+                        <div className="flex items-center gap-3">
+                          <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                            <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest">Verified_Result</span>
+                          </div>
+                          <div className="px-3 py-1 bg-cyan-500/10 border border-cyan-500/30 rounded-full">
+                            <span className="text-cyan-400 text-[10px] font-black uppercase tracking-widest italic">{formData.course}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-cyan-500/30 text-[9px] font-black uppercase tracking-[0.2em] mb-1">Subject Identity</h3>
+                    <p className="text-3xl md:text-4xl font-black text-white tracking-tighter truncate leading-tight">
+                      {formData.name}
+                    </p>
                   </div>
+
+                  <div className="mt-16 flex items-center justify-between border-t border-white/5 pt-10">
+                    <div className="flex items-center gap-4">
+                      <div className="flex gap-1.5">
+                        {[...Array(5)].map((_, i) => (
+                          <motion.div 
+                            key={i}
+                            animate={{ opacity: [0.2, 1, 0.2] }}
+                            transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
+                            className="w-1.5 h-6 bg-cyan-500/30 rounded-full" 
+                          />
+                        ))}
+                      </div>
+                      <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest leading-none">Global_Score_Registry: ACTIVE</span>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-mono text-[9px] text-cyan-500/50 uppercase tracking-[0.2em]">Hash_Signature</p>
+                      <p className="font-mono text-[11px] text-zinc-400">{Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* RIGHT: STATS STACK */}
+                <div className="md:col-span-5 flex flex-col gap-8">
+                  {/* DISCOUNT CARD */}
+                  <motion.div 
+                    initial={{ x: 30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.1 }}
+                    className="flex-1 bg-gradient-to-br from-indigo-900/40 to-blue-900/20 backdrop-blur-3xl border border-cyan-400/30 rounded-[2rem] p-6 text-left relative overflow-hidden group shadow-lg"
+                  >
+                    {/* ANIMATED GLOW BACKGROUND */}
+                    <motion.div 
+                      animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.4, 0.2] }}
+                      transition={{ duration: 5, repeat: Infinity }}
+                      className="absolute top-0 right-0 w-48 h-48 bg-cyan-400 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" 
+                    />
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                          <Zap size={12} className="fill-cyan-400" /> Scholarship Grant
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">
+                          {discount}
+                        </span>
+                        <span className="text-xl font-black text-cyan-400 italic">%</span>
+                      </div>
+                      <p className="text-zinc-500 text-[8px] font-black mt-1 uppercase tracking-[0.2em] border-l-2 border-cyan-500 pl-2">Grant Authorized</p>
+                    </div>
+                  </motion.div>
+
+                  {/* SOLVED CARD */}
+                  <motion.div 
+                    initial={{ x: 30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="bg-[#0b132b]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 text-left relative overflow-hidden group shadow-lg"
+                  >
+                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full translate-x-1/4 translate-y-1/4" />
+                    
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div>
+                        <p className="text-zinc-500 text-[8px] font-black uppercase tracking-[0.2em] mb-1">Total Solved</p>
+                        <p className="text-2xl md:text-3xl font-black text-white tracking-tighter italic flex items-baseline gap-1 leading-none">
+                          {correctCount} <span className="text-[9px] text-cyan-500/50 not-italic uppercase tracking-widest font-mono font-bold">PTS</span>
+                        </p>
+                      </div>
+                      <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-all duration-500 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-blue-500/5 scanline-horizontal" />
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className="w-8 h-8 bg-blue-500/20 rounded-full blur-sm"
+                        />
+                        <div className="w-2 h-2 bg-blue-400 rounded-full relative z-10 shadow-[0_0_10px_#60a5fa]" />
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
 
-                <div className="bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-left">
-                  <BrainCircuit size={18} className="text-blue-500 mb-4" />
-                  <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Performance Score</p>
-                  <p className="text-5xl font-light text-white tabular-nums mt-1">
-                    {score.toLocaleString()}
-                  </p>
-                </div>
-
-                <div className="md:col-span-2 bg-white text-black rounded-2xl p-8 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Sparkles size={80} />
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="md:col-span-12 bg-white rounded-[2rem] p-6 md:p-8 relative overflow-hidden group shadow-2xl border-[4px] border-black"
+                >
+                  {/* LUXURY DECORATIONS */}
+                  <div className="absolute top-6 right-6 flex gap-2 opacity-10">
+                    <div className="w-12 h-1 bg-black rounded-full" />
+                    <div className="w-6 h-1 bg-black rounded-full" />
                   </div>
+                  
+                  {/* SIGNATURE TECH STRIPE */}
+                  <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-b from-cyan-500 via-blue-600 to-indigo-800" />
 
-                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="text-left">
-                      <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-1">Benefit Unlocked</h3>
-                      <p className="text-2xl font-bold leading-tight">Scholarship <br />Grant Voucher</p>
+                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="text-left space-y-4">
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-100 border border-zinc-200 text-black text-[9px] font-black uppercase tracking-[0.2em]">
+                        <ShieldAlert size={12} className="text-cyan-600" /> SECURE VOUCHER
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-3xl md:text-5xl font-black tracking-tighter leading-none text-black">
+                          SCHOLARSHIP <br />
+                          <span className="text-cyan-600 italic">GRANT</span> VOUCHER
+                        </h3>
+                      </div>
+                      <div className="pt-4 border-t border-zinc-100 max-w-xs">
+                        <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.1em] leading-tight">
+                          Valid for institutional grant allocation.
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col items-center md:items-end gap-3">
+                    <div className="flex flex-col items-center md:items-end gap-6 w-full md:w-auto">
                       <div
                         onClick={copyToClipboard}
-                        className="text-4xl font-mono font-black tracking-tighter cursor-pointer hover:text-blue-600 transition-colors"
+                        className="bg-zinc-50 border-4 border-double border-zinc-200 rounded-[2rem] p-6 md:p-8 cursor-pointer group/code transition-all hover:border-cyan-500/30 hover:bg-white w-full md:min-w-[320px] relative text-center md:text-right"
                       >
-                        {couponCode}
+                        <p className="text-[11px] font-black text-cyan-600 uppercase tracking-[0.3em] mb-2">Access Key</p>
+                        <div className="text-4xl md:text-6xl font-mono font-black tracking-tighter text-black leading-none break-all">
+                          {couponCode || "GTEC-SCORE-XXXX"}
+                        </div>
+                        
+                        <div className="mt-6 flex justify-center md:justify-end items-center gap-3">
+                          <div className="w-12 h-1.5 bg-cyan-500/10 rounded-full overflow-hidden">
+                            <motion.div 
+                              animate={{ x: ["-100%", "100%"] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                              className="w-1/2 h-full bg-cyan-500" 
+                            />
+                          </div>
+                        </div>
                       </div>
+
                       <button
                         onClick={copyToClipboard}
-                        className="flex items-center gap-2 text-[10px] font-black uppercase bg-black text-white px-4 py-2 rounded-lg hover:bg-zinc-800 transition-all active:scale-95"
+                        className="group/btn relative h-14 w-full md:w-[300px] bg-black text-white rounded-[1.2rem] font-black uppercase tracking-[0.3em] text-[10px] overflow-hidden shadow-lg active:scale-95 flex items-center justify-center gap-3 transition-all"
                       >
-                        {copied ? <><CheckCircle2 size={14} /> Copied</> : <><Copy size={14} /> Copy Code</>}
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-700 -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500" />
+                        <span className="relative z-10 flex items-center gap-3">
+                          {copied ? <><CheckCircle2 size={16} className="text-cyan-400" /> COPIED</> : <><Copy size={16} /> COPY CODE</>}
+                        </span>
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6">
-                <button
-                  onClick={() => setGameState("form")}
-                  className="text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
-                >
-                  <X size={14} /> Reset Session
-                </button>
+              <div className="mt-6 flex flex-col items-center justify-center gap-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 w-full max-w-3xl">
+                  {/* SYSTEM INTEGRITY BAR */}
+                  <div className="hidden lg:flex items-center gap-4 px-6 py-3 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex-1">
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(i => (
+                        <motion.div 
+                          key={i}
+                          animate={{ height: [8, 16, 8] }}
+                          transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity }}
+                          className="w-1 bg-cyan-500/40 rounded-full" 
+                        />
+                      ))}
+                    </div>
+                    <div className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] flex-1 text-left">
+                      System Integrity: <span className="text-cyan-500/80">Optimal</span>
+                    </div>
+                    <div className="text-[9px] font-mono text-zinc-600">
+                      SEC_AUTH_v2.0
+                    </div>
+                  </div>
 
-                <div className="hidden sm:block w-px h-4 bg-zinc-800"></div>
+                  <div className="flex items-center gap-4">
+                    <motion.button
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileHover={{ scale: 1.05, color: "#ffffff" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setGameState("form")}
+                      className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2 px-6 py-3 border border-transparent hover:border-zinc-800 rounded-xl transition-all"
+                    >
+                      <X size={14} /> Reset
+                    </motion.button>
 
-                <button
-                  onClick={handleExit}
-                  className="group bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition-all shadow-xl shadow-blue-900/20 flex items-center gap-3 active:scale-95"
-                >
-                  Finish & Exit
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </button>
+                    <div className="w-px h-6 bg-zinc-800"></div>
+
+                    <motion.button
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        boxShadow: "0 0 30px rgba(37, 99, 235, 0.3)",
+                        backgroundColor: "#2563eb" 
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleExit}
+                      className="group bg-blue-600 text-white px-10 py-4 rounded-full text-[12px] font-black uppercase tracking-[0.4em] shadow-2xl flex items-center gap-4"
+                    >
+                      Exit Game
+                      <motion.div
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <ArrowRight size={18} />
+                      </motion.div>
+                    </motion.button>
+                  </div>
+                </div>
+                
+                {/* FOOTER HASH */}
+                <div className="text-[8px] font-mono text-zinc-700 uppercase tracking-widest opacity-50">
+                  Transaction_Hash: {Math.random().toString(36).substring(2, 15).toUpperCase()}
+                </div>
               </div>
             </motion.div>
           )}
@@ -1140,14 +1326,26 @@ export default function NeonStrikeGame({ onClose }) {
         @keyframes shimmer {
           100% { transform: translateX(100%); }
         }
-        .cyber-grid {
-          background-image: 
-            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-          background-size: 50px 50px;
+        .scanline-horizontal {
+          background: linear-gradient(to bottom, transparent, rgba(34,211,238,0.2), transparent);
+          background-size: 100% 4px;
+          animation: scan-v 4s linear infinite;
         }
-        .neon-glow {
-          filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8));
+        .scanline-vertical {
+          background: linear-gradient(to right, transparent, rgba(34,211,238,0.4), transparent);
+          background-size: 4px 100%;
+          animation: scan-h 8s linear infinite;
+        }
+        @keyframes scan-v {
+          0% { background-position: 0 -100%; }
+          100% { background-position: 0 100%; }
+        }
+        @keyframes scan-h {
+          0% { background-position: -100% 0; }
+          100% { background-position: 100% 0; }
+        }
+        .perspective-1000 {
+          perspective: 1000px;
         }
       `}</style>
     </div>

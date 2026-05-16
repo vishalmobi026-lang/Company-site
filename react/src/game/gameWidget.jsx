@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Gamepad2, Zap } from "lucide-react";
-import NeonStrikeGame from "./ScholarshipChallenge";
+import NeonStrikeGame from "./Gameplay";
 
 export default function GameWidget() {
   const [open, setOpen] = useState(false);
