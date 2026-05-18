@@ -94,7 +94,7 @@ function Contact() {
 
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  const { isAuthenticated, addContact } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

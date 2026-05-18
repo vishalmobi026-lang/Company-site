@@ -69,6 +69,12 @@ class Enrollment(Base):
     district = Column(String)
     pincode = Column(String)
     course = Column(String, nullable=False)
+    school = Column(String)
+    school_status = Column(String)
+    school_year = Column(String)
+    college_status = Column(String)
+    college_degree_type = Column(String)
+    college_degree = Column(String)
 
 class Course(Base):
     __tablename__ = "courses"
@@ -97,6 +103,9 @@ class GameScore(Base):
     course = Column(String, nullable=False)
     score = Column(Integer, nullable=False)
     couponCode = Column(String, unique=True, index=True, nullable=False)
+    discount = Column(Integer, default=0, nullable=False)
+    correctAnswers = Column(Integer, default=0, nullable=False)
     created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
 
 

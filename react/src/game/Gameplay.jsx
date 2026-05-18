@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Trophy, ArrowRight, ShieldAlert, Sparkles, Copy, CheckCircle2,
+  Trophy, ArrowRight, ShieldAlert, Sparkles, Copy, CheckCircle2, Clock,
   ChevronLeft, ChevronRight, Heart, Zap, Bomb,
   User, Phone, BookOpen, BrainCircuit, X, Loader2,
   ChevronDown, AlertCircle, Rocket, Gamepad2
@@ -129,12 +129,34 @@ export default function NeonStrikeGame({ onClose }) {
 
   const submitForm = async () => {
     if (formData.name.trim().length < 3) return setFormError("Name must be at least 3 characters.");
-    if (formData.countryCode === "+91" && formData.phone.length !== 10) return setFormError("Indian phone numbers must be exactly 10 digits.");
-    if (formData.countryCode !== "+91" && formData.phone.length < 6) return setFormError("Please enter a valid phone number.");
+    
+    if (formData.countryCode === "+91") {
+      if (formData.phone.length !== 10) {
+        return setFormError("Indian phone numbers must be exactly 10 digits.");
+      }
+      if (!/^[6789]/.test(formData.phone)) {
+        return setFormError("Indian phone numbers must start with 6, 7, 8, or 9.");
+      }
+    } else {
+      if (formData.phone.length < 6) return setFormError("Please enter a valid phone number.");
+    }
+    
     if (!formData.course) return setFormError("Please select a target course.");
 
     setFormError("");
     setIsFetchingQs(true);
+
+    const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
+    try {
+      const checkRes = await fetch(`http://localhost:8000/gamescores/check?phone=${encodeURIComponent(fullPhoneNumber)}`);
+      const checkData = await checkRes.json();
+      if (checkData.exists) {
+        setIsFetchingQs(false);
+        return setFormError("This phone number has already been registered for a scholarship session.");
+      }
+    } catch (err) {
+      console.error("Failed to check phone number duplicate status:", err);
+    }
 
     let finalQuestions = [];
 
@@ -314,7 +336,7 @@ export default function NeonStrikeGame({ onClose }) {
 
     const code = `GTEC-${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const count = stateRef.current.correctCount;
-    const calculatedDiscount = count >= 20 ? 7 : count >= 10 ? 5 : count >= 7 ? 4 : count >= 5 ? 3 : count >= 3 ? 2 : count >= 1 ? 1 : 0;
+    const calculatedDiscount = count >= 20 ? 7 : count >= 10 ? 5 : count >= 7 ? 4 : count >= 5 ? 3 : count >= 3 ? 2 : 1;
     
     setCouponCode(code);
     setDiscount(calculatedDiscount);
@@ -345,13 +367,26 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930] flex items-center justify-center font-sans overflow-hidden select-none w-full h-full">
+    <div className={`fixed inset-0 z-[99999] flex items-center justify-center font-sans overflow-hidden select-none w-full h-full transition-colors duration-500 ${
+      gameState === "playing" 
+        ? "bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930]" 
+        : "bg-slate-950/40 backdrop-blur-sm"
+    }`}>
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-cyan-600/10 blur-[150px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none"></div>
+      {gameState === "playing" ? (
+        <>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-cyan-600/10 blur-[150px] rounded-full pointer-events-none nebula-glow-1"></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none nebula-glow-2"></div>
+        </>
+      ) : (
+        <>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-blue-500/10 blur-[150px] rounded-full pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none"></div>
+        </>
+      )}
 
       {gameState !== "playing" && (
-        <button onClick={handleExit} className="absolute top-4 right-4 md:top-6 md:right-6 z-[100000] bg-white/10 hover:bg-red-500/80 text-white p-3 rounded-full backdrop-blur-md transition-all duration-500 border border-white/20 shadow-lg">
+        <button onClick={handleExit} className="absolute top-4 right-4 md:top-6 md:right-6 z-[100000] bg-white/95 hover:bg-red-50 text-slate-400 hover:text-red-500 p-3 rounded-full border border-blue-100 shadow-xl transition-all duration-500 active:scale-95">
           <X size={24} />
         </button>
       )}
@@ -382,65 +417,83 @@ export default function NeonStrikeGame({ onClose }) {
                 transition={{ duration: 0.8, ease: smoothEase }}
                 className="z-10 w-full max-w-7xl flex flex-col lg:flex-row gap-8 items-stretch"
               >
-                {/* LEFT PANEL: TITLE */}
+                {/* LEFT PANEL: TITLE CARD */}
                 <motion.div
-                  whileHover={{ y: -5, rotateX: 2, rotateY: -2 }}
-                  className="flex-1 bg-white/5 backdrop-blur-3xl border border-white/10 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden relative group"
+                  whileHover={{ y: -6, scale: 1.005 }}
+                  className="flex-1 bg-white/90 backdrop-blur-xl border border-slate-100 p-8 md:p-12 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] flex flex-col justify-between overflow-hidden relative group transition-all duration-500 hover:shadow-[0_48px_80px_-16px_rgba(37,99,235,0.12)] hover:border-blue-100/80"
                 >
-                  <div className="absolute -top-[30%] -left-[10%] w-[80%] h-[80%] bg-gradient-to-br from-cyan-500/10 to-blue-600/10 blur-[100px] rounded-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+                  {/* Inset Border Glow */}
+                  <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+
+                  {/* Rotating Mesh Glow */}
+                  <motion.div 
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-[30%] -left-[10%] w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08)_0%,rgba(6,182,212,0.03)_50%,transparent_100%)] blur-[80px] rounded-full pointer-events-none" 
+                  />
                   
-                  <div className="absolute top-0 right-0 p-6 opacity-40 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(34,211,238,1)]" />
-                    <span className="font-mono text-[10px] text-cyan-300 tracking-widest uppercase">SYS_REF: G-TEC_BRAIN_V3</span>
+                  <div className="absolute top-0 right-0 p-8 opacity-65 flex items-center gap-2 z-10">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,1)]" />
+                    <span className="font-mono text-[9px] text-slate-400 tracking-widest uppercase font-bold">SYS_REF: G-TEC_BRAIN_V3</span>
                   </div>
 
                   <div className="space-y-8 relative z-10">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      className="w-24 h-24 bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.15)]"
+                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                      className="w-20 h-20 bg-blue-50/50 border border-blue-100/50 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/40"
                     >
-                      <BrainCircuit size={48} className="text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
+                      <BrainCircuit size={40} className="text-blue-600" />
                     </motion.div>
 
-                    <motion.div 
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                      className="space-y-3"
-                    >
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest">
+                    <div className="space-y-3">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/80 border border-blue-100/50 text-blue-600 text-xs font-bold uppercase tracking-widest">
                         <ShieldAlert size={14} /> Security Clearance: Level 1
                       </div>
-                      <h1 className="text-5xl md:text-7xl lg:text-[5rem] font-black text-white leading-[1.1] uppercase tracking-tighter">
+                      <h1 className="text-5xl md:text-7xl lg:text-[4.5rem] font-black text-slate-900 leading-[1.05] uppercase tracking-tighter">
                         KNOWLEDGE <br /> 
                         <motion.span 
-                          animate={{ 
-                            opacity: [1, 0.8, 1, 0.9, 1],
-                            textShadow: [
-                              "0 0 20px rgba(34,211,238,0.4)",
-                              "0 0 40px rgba(34,211,238,0.7)",
-                              "0 0 20px rgba(34,211,238,0.4)"
-                            ],
-                            x: [0, -1, 1, -0.5, 0]
-                          }}
-                          transition={{ duration: 2, repeat: Infinity, times: [0, 0.1, 0.2, 0.3, 1] }}
-                          className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 italic inline-block mt-2"
+                          animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                          style={{ backgroundSize: "200% auto" }}
+                          className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 via-blue-600 to-cyan-500 italic inline-block mt-2"
                         >
                           COMMAND
                         </motion.span>
                       </h1>
-                    </motion.div>
+                    </div>
                   </div>
 
-                  <motion.p 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-12 text-slate-400 font-mono text-sm leading-relaxed border-l-2 border-cyan-500/50 pl-5 relative z-10 bg-black/20 p-4 rounded-r-2xl backdrop-blur-sm"
+                  {/* Ultimate System Diagnostics Logger Panel */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, duration: 0.6 }}
+                    className="mt-12 relative z-10 bg-slate-50/80 border border-slate-100 p-5 rounded-2xl flex flex-col gap-3 backdrop-blur-md"
                   >
-                    <span className="text-cyan-400 font-bold">Establish neural handshake.</span> <br />
-                    Target: 100% Scholarship Grant Allocation.
-                  </motion.p>
+                    <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
+                      <span className="font-mono text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Connection Status
+                      </span>
+                      <span className="font-mono text-[9px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-bold uppercase tracking-widest border border-blue-100">Handshake Active</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-[9px] text-slate-400 font-bold font-sans uppercase">Handshake target</div>
+                        <div className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-1 mt-0.5">
+                          100% Grant <span className="text-[9px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.2 rounded font-mono font-bold">SECURED</span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[9px] text-slate-400 font-bold font-sans uppercase">Server Node</div>
+                        <div className="text-sm font-bold text-slate-600 font-mono tracking-wider mt-0.5">AP-SOUTH_GATE_1</div>
+                      </div>
+                    </div>
+                    <div className="text-[11px] text-slate-500 font-semibold leading-relaxed border-t border-slate-200/50 pt-2 flex items-center justify-between">
+                      <span>System diagnostics: <span className="text-slate-800 font-bold">Stable</span></span>
+                      <span className="text-[9px] font-mono text-slate-400">Ping: 12ms</span>
+                    </div>
+                  </motion.div>
                 </motion.div>
 
                 {/* RIGHT PANEL: DIRECTIVES */}
@@ -448,54 +501,68 @@ export default function NeonStrikeGame({ onClose }) {
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: smoothEase }}
-                  className="lg:w-[450px] bg-white/5 backdrop-blur-3xl border border-white/10 p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative flex flex-col justify-between"
+                  className="lg:w-[450px] bg-white/90 backdrop-blur-xl border border-slate-100 p-8 md:p-10 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] relative flex flex-col justify-between overflow-hidden"
                 >
+                  <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+
                   <motion.div
                     animate={{ top: ['0%', '100%', '0%'] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent shadow-[0_0_10px_rgba(34,211,238,0.8)] z-20 pointer-events-none"
+                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent shadow-[0_0_10px_rgba(37,99,235,0.1)] z-20 pointer-events-none"
                   />
 
                   <div>
-                    <div className="flex items-center justify-between mb-10 pb-4 border-b border-white/10">
-                      <h3 className="text-white font-black text-xl uppercase tracking-widest flex items-center gap-3">
-                        <Sparkles className="text-cyan-400" size={24} /> Directives
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                      <h3 className="text-slate-900 font-black text-xl uppercase tracking-widest flex items-center gap-3">
+                        <Sparkles className="text-blue-600" size={24} /> Directives
                       </h3>
-                      <div className="text-[10px] bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /> LIVE
+                      <div className="text-[10px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-2 font-bold">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> LIVE
                       </div>
                     </div>
 
-                    <div className="space-y-6">
+                    {/* Elastic Hover-Physics List */}
+                    <div className="space-y-4">
                       {[
-                        { label: "01_LIMIT", text: "One session attempt per verified UID." },
-                        { label: "02_TIMER", text: "Sixty-second response window per node." },
-                        { label: "03_CRED", text: "Identity verification mandatory for grant." },
-                        { label: "04_DATA", text: "System logs IP and attempt metadata." }
+                        { label: "01_LIMIT", text: "One session attempt per verified UID.", icon: <User size={14} className="text-blue-600" /> },
+                        { label: "02_TIMER", text: "Sixty-second response window per node.", icon: <Clock size={14} className="text-blue-600" /> },
+                        { label: "03_CRED", text: "Identity verification mandatory for grant.", icon: <ShieldAlert size={14} className="text-blue-600" /> },
+                        { label: "04_DATA", text: "System logs IP and attempt metadata.", icon: <BookOpen size={14} className="text-blue-600" /> }
                       ].map((item, idx) => (
-                        <div key={idx} className="group flex gap-4 items-start">
-                          <div className="mt-1 text-[10px] font-mono text-cyan-500/70 group-hover:text-cyan-400 transition-colors">[{item.label.split('_')[0]}]</div>
-                          <div>
-                            <p className="text-[10px] text-cyan-500 font-mono mb-0.5 opacity-60 group-hover:opacity-100 transition-opacity">{item.label}</p>
-                            <p className="text-slate-300 text-sm font-medium group-hover:text-white transition-colors">{item.text}</p>
+                        <motion.div 
+                          key={idx} 
+                          whileHover={{ x: 6, scale: 1.01 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                          className="group flex gap-4 items-center bg-slate-50/50 hover:bg-blue-50/40 border border-slate-100 hover:border-blue-100/40 p-4 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md cursor-default"
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 group-hover:border-blue-100/80 shadow-sm flex items-center justify-center shrink-0 transition-all duration-300">
+                            {item.icon}
                           </div>
-                        </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <p className="text-[9px] text-blue-600 font-mono font-black uppercase tracking-wider">{item.label}</p>
+                              <span className="text-[9px] text-slate-400 font-mono font-bold">[{item.label.split('_')[0]}]</span>
+                            </div>
+                            <p className="text-slate-600 text-xs md:text-sm font-semibold group-hover:text-slate-900 transition-colors mt-0.5 leading-snug">{item.text}</p>
+                          </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="mt-12 space-y-5">
+                  <div className="mt-10 space-y-5 relative z-10">
                     <motion.button
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setGameState("form")}
-                      className="group relative w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl transition-all duration-500 ease-out shadow-[0_0_20px_rgba(34,211,238,0.2)] hover:shadow-[0_10px_40px_rgba(34,211,238,0.4)] text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 overflow-hidden hover:-translate-y-1"
+                      className="group relative w-full bg-gradient-to-r from-blue-950 via-blue-800 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_20px_40px_-12px_rgba(37,99,235,0.25)] hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.35)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-blue-400/20 overflow-hidden"
                     >
                       <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
-                      <span className="relative z-10 flex items-center gap-3">
-                        Initialize System <ArrowRight size={22} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500 ease-out" />
+                      <span className="relative z-10 flex items-center gap-3 font-extrabold">
+                        Initialize System <ArrowRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-300 ease-out" />
                       </span>
                     </motion.button>
-                    <p className="text-[10px] text-slate-500 text-center font-mono uppercase tracking-[0.2em]">Authorized Access Only // Port_8080</p>
+                    <p className="text-[10px] text-slate-400 text-center font-mono uppercase tracking-[0.2em] font-bold">Authorized Access Only // Port_8080</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -506,123 +573,144 @@ export default function NeonStrikeGame({ onClose }) {
           {gameState === "form" && (
             <motion.div
               key="form"
-              initial={{ opacity: 0, scale: 0.98, y: 30, filter: "blur(10px)" }}
-              animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 0.98, y: -20, filter: "blur(10px)" }}
+              initial={{ opacity: 0, scale: 0.98, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98, y: -20 }}
               transition={{ duration: 1, ease: smoothEase }}
-              className="w-full max-w-5xl mx-auto bg-white/5 backdrop-blur-3xl p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden"
+              className="w-full max-w-5xl mx-auto bg-white/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] relative overflow-hidden"
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
-                className="absolute -top-[50%] -right-[20%] w-[100%] h-[150%] bg-gradient-to-b from-cyan-500/10 to-transparent blur-[120px] rounded-full pointer-events-none"
-              />
+              {/* Inset Border Glow */}
+              <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+
+              <div className="absolute -top-[50%] -right-[20%] w-[100%] h-[150%] bg-gradient-to-b from-blue-500/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
-                <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-8">
+                <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={itemVariants}>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4">
-                      <Sparkles size={14} className="animate-pulse" /> Security Clearance
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-4">
+                      <Sparkles size={14} /> Security Clearance
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">Pilot Registration</h2>
-                    <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed">
+                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-3 tracking-tight">Pilot Registration</h2>
+                    <p className="text-slate-500 text-sm md:text-base font-semibold leading-relaxed">
                       Authenticate your credentials to generate your secure scholarship pass and enter the arena.
                     </p>
                   </motion.div>
 
                   <motion.div variants={itemVariants} className="space-y-5">
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <User className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={20} />
+                    {/* Full Name Input Field */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Full Name</label>
+                      <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
+                          <User className="text-slate-400 group-focus-within:text-blue-600 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
+                        </div>
+                        <input
+                          type="text" placeholder="Enter full name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-12 pr-4 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out text-base placeholder:text-slate-400 font-semibold shadow-inner"
+                        />
                       </div>
-                      <input
-                        type="text" placeholder="Full Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full bg-slate-900/40 border border-slate-700/50 text-white rounded-2xl py-4 pl-12 pr-4 hover:bg-slate-800/40 focus:bg-slate-800/80 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10 outline-none transition-all duration-500 ease-out text-base placeholder:text-slate-500 font-medium shadow-inner"
-                      />
                     </div>
 
-                    <div className="flex gap-3 relative">
-                      <div className="relative w-[35%] shrink-0 group">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Phone className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={18} />
+                    {/* Phone Number Input Field */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Contact Number</label>
+                      <div className="flex gap-3 relative">
+                        <div className="relative w-[35%] shrink-0 group">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
+                            <Phone className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={18} />
+                          </div>
+                          <select
+                            value={formData.countryCode} onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-10 pr-8 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out appearance-none text-sm md:text-base font-semibold cursor-pointer relative z-10"
+                          >
+                            <option value="+91">IN (+91)</option>
+                            {Array.isArray(countries) && countries.map((c) => <option key={c.id} value={`+${c.phonecode}`}>{c.id} (+{c.phonecode})</option>)}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none z-20">
+                            <ChevronDown className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={16} />
+                          </div>
+                        </div>
+
+                        <input
+                          type="text" placeholder="Phone Number" value={formData.phone} onChange={handlePhoneChange} maxLength={formData.countryCode === "+91" ? 10 : 15}
+                          className="w-[65%] bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 px-5 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out font-mono tracking-wider text-base md:text-lg placeholder:text-slate-400 placeholder:font-sans font-semibold shadow-inner"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Course Selection Input Field */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Target Sector</label>
+                      <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
+                          <BookOpen className="text-slate-400 group-focus-within:text-blue-600 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
                         </div>
                         <select
-                          value={formData.countryCode} onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                          className="w-full bg-slate-900/40 border border-slate-700/50 text-white rounded-2xl py-4 pl-10 pr-8 hover:bg-slate-800/40 focus:bg-slate-800/80 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10 outline-none transition-all duration-500 ease-out appearance-none text-sm md:text-base font-medium shadow-inner cursor-pointer"
+                          value={formData.course} onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-12 pr-10 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out appearance-none text-base md:text-lg font-semibold cursor-pointer relative z-10"
                         >
-                          <option value="+91">IN (+91)</option>
-                          {Array.isArray(countries) && countries.map((c) => <option key={c.id} value={`+${c.phonecode}`}>{c.id} (+{c.phonecode})</option>)}
+                          <option value="" disabled>Select Target Sector</option>
+                          {Object.keys(ALL_QUESTIONS).map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                          <ChevronDown className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={16} />
+                        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-20">
+                          <ChevronDown className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={20} />
                         </div>
-                      </div>
-
-                      <input
-                        type="text" placeholder="Phone Number" value={formData.phone} onChange={handlePhoneChange} maxLength={formData.countryCode === "+91" ? 10 : 15}
-                        className="w-[65%] bg-slate-900/40 border border-slate-700/50 text-white rounded-2xl py-4 px-5 hover:bg-slate-800/40 focus:bg-slate-800/80 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10 outline-none transition-all duration-500 ease-out font-mono tracking-wider text-base md:text-lg placeholder:text-slate-500 placeholder:font-sans font-medium shadow-inner"
-                      />
-                    </div>
-
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <BookOpen className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={20} />
-                      </div>
-                      <select
-                        value={formData.course} onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                        className="w-full bg-slate-900/40 border border-slate-700/50 text-white rounded-2xl py-4 pl-12 pr-10 hover:bg-slate-800/40 focus:bg-slate-800/80 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10 outline-none transition-all duration-500 ease-out appearance-none text-base md:text-lg font-medium shadow-inner cursor-pointer"
-                      >
-                        <option value="" disabled>Select Target Sector</option>
-                        {Object.keys(ALL_QUESTIONS).map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <ChevronDown className="text-slate-500 group-focus-within:text-cyan-400 transition-colors duration-500 ease-out" size={20} />
                       </div>
                     </div>
                   </motion.div>
 
                   {formError && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} transition={{ duration: 0.4, ease: smoothEase }} className="flex items-center gap-3 text-red-300 text-sm font-bold bg-red-500/10 py-3 px-4 rounded-xl border border-red-500/20 backdrop-blur-md">
-                      <AlertCircle size={18} className="text-red-400 shrink-0" />
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} transition={{ duration: 0.4, ease: smoothEase }} className="flex items-center gap-3 text-red-700 text-sm font-bold bg-red-50 py-3 px-4 rounded-xl border border-red-100">
+                      <AlertCircle size={18} className="text-red-500 shrink-0" />
                       <p>{formError}</p>
                     </motion.div>
                   )}
 
                   <motion.button
                     variants={itemVariants}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={submitForm} disabled={isFetchingQs}
-                    className="group relative w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl transition-all duration-500 ease-out shadow-[0_0_20px_rgba(34,211,238,0.2)] hover:shadow-[0_10px_40px_rgba(34,211,238,0.4)] text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden hover:-translate-y-1"
+                    className="group relative w-full bg-gradient-to-r from-blue-950 via-blue-800 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_20px_40px_-12px_rgba(37,99,235,0.25)] hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.35)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-blue-400/20 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
                   >
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                    <span className="relative z-10 flex items-center gap-3">
-                      {isFetchingQs ? <><Loader2 className="animate-spin" size={22} /> Calibrating...</> : <><Rocket size={22} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500 ease-out" /> Ready to Launch</>}
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    <span className="relative z-10 flex items-center gap-3 font-extrabold">
+                      {isFetchingQs ? <><Loader2 className="animate-spin" size={20} /> Calibrating...</> : <><Rocket size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300 ease-out" /> Ready to Launch</>}
                     </span>
                   </motion.button>
                 </motion.div>
 
-                <div className="hidden lg:flex flex-col items-center justify-center relative border-l border-white/5 pl-16 py-8">
-                  <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-blue-500/5 to-transparent blur-[60px] rounded-full pointer-events-none"></div>
+                {/* Ultimate 3D Gyro HUD Graphic Card */}
+                <div className="hidden lg:flex flex-col items-center justify-center relative border-l border-slate-100 pl-16 py-8">
+                  <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-cyan-500/5 to-transparent blur-[60px] rounded-full pointer-events-none" />
+
+                  {/* Tech Coordinates HUD Markers */}
+                  <div className="absolute top-0 left-16 font-mono text-[9px] text-slate-400/80 font-bold uppercase tracking-widest">SEC_LOCK: ACTIVE</div>
+                  <div className="absolute bottom-0 right-0 font-mono text-[9px] text-slate-400/80 font-bold uppercase tracking-widest">COORDS: 42.99 // 88.01</div>
 
                   <motion.div
-                    animate={{ y: [-10, 10, -10] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    animate={{ y: [-8, 8, -8] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                     className="relative z-10 flex flex-col items-center justify-center w-full max-w-[320px]"
                   >
                     <div className="relative w-full aspect-square flex items-center justify-center scale-95 mt-2" style={{ perspective: "1000px" }}>
                       
+                      {/* Telemetry coordinate guides */}
+                      <div className="absolute top-0 right-0 font-mono text-[8px] text-slate-400/60 uppercase tracking-widest">ALT: 1042.8M</div>
+                      <div className="absolute bottom-0 left-0 font-mono text-[8px] text-slate-400/60 uppercase tracking-widest">HDG: 042.89°</div>
+
                       {/* OUTER HUD BRACKETS */}
                       <motion.div
                         animate={{ rotate: 360, scale: [1, 1.05, 1] }}
                         transition={{ rotate: { duration: 40, repeat: Infinity, ease: "linear" }, scale: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
-                        className="absolute w-56 h-56 border-[1px] border-cyan-500/20 rounded-full pointer-events-none"
+                        className="absolute w-56 h-56 border-[1px] border-slate-200 rounded-full pointer-events-none"
                         style={{ borderStyle: "dashed", borderDasharray: "20 40" }}
                       />
 
                       <motion.div
                         animate={{ rotate: -360 }}
                         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                        className="absolute w-48 h-48 border-[2px] border-blue-500/30 rounded-full pointer-events-none"
+                        className="absolute w-48 h-48 border-[2px] border-blue-500/20 rounded-full pointer-events-none"
                         style={{ borderStyle: "dashed", borderDasharray: "10 50" }}
                       />
 
@@ -630,14 +718,14 @@ export default function NeonStrikeGame({ onClose }) {
                       <motion.div
                         animate={{ rotateX: 360, rotateY: 180, rotateZ: 360 }}
                         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        className="absolute w-40 h-40 rounded-full border border-cyan-400/50 shadow-[0_0_20px_rgba(34,211,238,0.2)] pointer-events-none"
+                        className="absolute w-40 h-40 rounded-full border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)] pointer-events-none"
                         style={{ transformStyle: "preserve-3d" }}
                       />
 
                       <motion.div
                         animate={{ rotateX: -360, rotateY: -360, rotateZ: 180 }}
                         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute w-40 h-40 rounded-full border-2 border-indigo-500/40 shadow-[0_0_20px_rgba(99,102,241,0.2)] pointer-events-none"
+                        className="absolute w-40 h-40 rounded-full border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.1)] pointer-events-none"
                         style={{ transformStyle: "preserve-3d" }}
                       />
 
@@ -656,7 +744,7 @@ export default function NeonStrikeGame({ onClose }) {
                             delay: i * 0.4,
                             ease: "linear"
                           }}
-                          className="absolute w-1 h-6 bg-cyan-400/60 blur-[1px] origin-[0_90px] pointer-events-none"
+                          className="absolute w-1 h-6 bg-blue-500/40 blur-[1px] origin-[0_90px] pointer-events-none"
                           style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
                         />
                       ))}
@@ -665,33 +753,33 @@ export default function NeonStrikeGame({ onClose }) {
                       <motion.div
                         animate={{ 
                           rotate: 45,
-                          scale: [1, 1.2, 1],
+                          scale: [1, 1.15, 1],
                           opacity: [0.8, 1, 0.8]
                         }}
                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        className="relative z-20 w-16 h-16 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-xl shadow-[0_0_50px_rgba(34,211,238,0.8)] border-2 border-white/40 flex items-center justify-center overflow-hidden"
+                        className="relative z-20 w-16 h-16 bg-gradient-to-tr from-blue-900 to-blue-600 rounded-xl shadow-[0_0_40px_rgba(37,99,235,0.4)] border border-white/40 flex items-center justify-center overflow-hidden"
                       >
                         <div className="absolute inset-0 bg-white/20 blur-sm mix-blend-overlay" />
                         <motion.div 
                           animate={{ rotate: -90 }} 
                           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                          className="w-8 h-8 border border-white/50 rounded-sm"
+                          className="w-8 h-8 border border-white/40 rounded-sm"
                         />
                       </motion.div>
 
                       {/* PULSING BACKGROUND GLOW */}
                       <motion.div 
-                        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.6, 0.3] }}
+                        animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.4, 0.2] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute w-40 h-40 bg-cyan-500/20 blur-3xl rounded-full pointer-events-none"
+                        className="absolute w-40 h-40 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"
                       />
                     </div>
 
                     <div className="mt-8 relative group cursor-default">
-                      <div className="absolute inset-0 bg-cyan-400/20 blur-md rounded-full transition-colors duration-500"></div>
-                      <div className="relative px-6 py-2 border border-cyan-500/30 bg-slate-950/80 backdrop-blur-xl rounded-full flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,1)]"></div>
-                        <span className="text-cyan-300 font-mono text-xs font-bold uppercase tracking-widest">System Calibrated</span>
+                      <div className="absolute inset-0 bg-blue-500/5 blur-md rounded-full transition-colors duration-500" />
+                      <div className="relative px-6 py-2 border border-blue-100 bg-blue-50/50 backdrop-blur-xl rounded-full flex items-center gap-2 shadow-sm">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse shadow-[0_0_8px_rgba(37,99,235,1)]" />
+                        <span className="text-blue-600 font-mono text-[10px] font-bold uppercase tracking-widest">System Calibrated</span>
                       </div>
                     </div>
                   </motion.div>
@@ -705,14 +793,31 @@ export default function NeonStrikeGame({ onClose }) {
             <motion.div key="playing" initial={{ opacity: 0, filter: "blur(10px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: smoothEase }} className="flex flex-col h-full w-full relative">
               <div className="absolute top-0 left-0 w-full z-[100] pointer-events-none p-4 md:p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
-                  <div className="flex flex-col gap-1 bg-black/60 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-white/10 shadow-xl transition-all duration-500">
-                    <div className="font-black font-mono text-2xl md:text-4xl text-white drop-shadow-md flex items-baseline gap-2 leading-none">
-                      {score.toLocaleString()} <span className="text-xs md:text-sm text-cyan-400 hidden sm:inline">PTS</span>
+                  <div className="relative overflow-hidden flex flex-col gap-1.5 bg-[#050917]/90 backdrop-blur-md p-4 rounded-3xl border-2 border-cyan-400/50 shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-500 max-w-[200px]">
+                    {/* Glowing Tech Corners */}
+                    <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-cyan-400/60"></div>
+                    <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-cyan-400/60"></div>
+                    <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-cyan-400/60"></div>
+                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-cyan-400/60"></div>
+                    
+                    {/* Pulsing indicator */}
+                    <div className="absolute top-2 right-4 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]"></span>
+                      <span className="font-mono text-[7px] text-cyan-400/60 tracking-wider">HUD_v3</span>
                     </div>
-                    <div className="flex gap-1 mt-1.5">
-                      {[...Array(3)].map((_, i) => (
-                        <Heart key={i} size={18} className={i < lives ? "text-red-500 fill-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]" : "text-white/20"} />
-                      ))}
+
+                    <p className="font-mono text-[8px] text-cyan-400/70 font-black uppercase tracking-[0.25em] mb-0.5">Telemetry Score</p>
+                    <div className="font-black font-mono text-2xl md:text-3xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)] flex items-baseline gap-1.5 leading-none">
+                      {score.toLocaleString()} <span className="text-[10px] text-cyan-400 font-bold tracking-widest font-sans uppercase">PTS</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-cyan-400/20">
+                      <span className="font-mono text-[7px] text-slate-400 font-bold uppercase tracking-widest">Shields</span>
+                      <div className="flex gap-1">
+                        {[...Array(3)].map((_, i) => (
+                          <Heart key={i} size={13} className={i < lives ? "text-red-500 fill-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.9)] animate-[heartPulse_1.5s_infinite_alternate]" : "text-white/20"} style={{ animationDelay: `${i * 0.15}s` }} />
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -720,19 +825,32 @@ export default function NeonStrikeGame({ onClose }) {
                     <Zap size={18} className={combo > 1 ? "fill-yellow-400" : ""} /> x{combo}
                   </div>
                 </div>
-
                 <div className="hidden md:flex flex-col items-center justify-start w-1/2 max-w-2xl mt-1">
                   <AnimatePresence mode="wait">
                     {currentQuestion && (
                       <motion.div
                         initial={{ y: -20, opacity: 0, filter: "blur(5px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: -20, opacity: 0, filter: "blur(5px)" }} transition={{ duration: 0.5, ease: smoothEase }}
-                        className="bg-[#0b132b]/90 backdrop-blur-xl border border-cyan-500/60 rounded-2xl p-4 text-center shadow-[0_15px_30px_rgba(34,211,238,0.15)] w-full relative overflow-hidden"
+                        className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-3xl p-5 text-center shadow-[0_0_40px_rgba(34,211,238,0.3)] w-full relative overflow-hidden animate-[hudScan_10s_linear_infinite]"
                       >
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500"></div>
-                        <p className="text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-1.5 flex items-center justify-center gap-2">
-                          <Sparkles size={12} /> Target Acquired
+                        {/* Glowing corner brackets */}
+                        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
+                        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
+                        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
+                        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+                        
+                        {/* Faint Grid Scanline Overlay */}
+                        <div className="absolute inset-0 bg-[linear-gradient(transparent_96%,rgba(34,211,238,0.08)_96%)] bg-[length:100%_8px] opacity-40 pointer-events-none"></div>
+
+                        {/* Telemetry info in tiny fonts */}
+                        <div className="absolute top-2 left-6 font-mono text-[8px] text-cyan-400/60 uppercase tracking-widest">Target Node ID: GTEC_98</div>
+                        <div className="absolute top-2 right-6 font-mono text-[8px] text-cyan-400/60 uppercase tracking-widest">Link Rate: 99.8%</div>
+
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-60"></div>
+                        <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 flex items-center justify-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                          <Sparkles size={12} className="text-cyan-400" /> Target Acquired
                         </p>
-                        <h3 className="text-lg md:text-xl font-black text-white leading-tight">{currentQuestion}</h3>
+                        <h3 className="text-xl md:text-2xl font-black text-white leading-tight mt-2 px-4 select-text">{currentQuestion}</h3>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -750,19 +868,31 @@ export default function NeonStrikeGame({ onClose }) {
                   {currentQuestion && (
                     <motion.div
                       initial={{ y: -20, opacity: 0, filter: "blur(5px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: -20, opacity: 0, filter: "blur(5px)" }} transition={{ duration: 0.5, ease: smoothEase }}
-                      className="bg-[#0b132b]/95 backdrop-blur-xl border border-cyan-500/60 rounded-2xl p-3 text-center shadow-[0_10px_30px_rgba(34,211,238,0.2)] relative overflow-hidden"
+                      className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-2xl p-4 text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] relative overflow-hidden"
                     >
-                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500"></div>
-                      <p className="text-cyan-400 text-[9px] font-black uppercase tracking-widest mb-1 flex items-center justify-center gap-1">
+                      {/* Glowing corner brackets */}
+                      <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
+                      <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
+                      <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
+                      <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
+
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-60"></div>
+                      <p className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                         <Sparkles size={10} /> Target Acquired
                       </p>
-                      <h3 className="text-sm font-black text-white leading-snug">{currentQuestion}</h3>
+                      <h3 className="text-base font-black text-white leading-snug mt-1 px-2 select-text">{currentQuestion}</h3>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
 
               <div className="relative flex-1 w-full overflow-hidden" style={{ perspective: '1200px' }}>
+                {/* Deep Space Parallax Starfields */}
+                <div className="absolute inset-0 starfield-1 opacity-30 pointer-events-none"></div>
+                <div className="absolute inset-0 starfield-2 opacity-50 pointer-events-none"></div>
+                <div className="absolute inset-0 starfield-3 opacity-75 pointer-events-none"></div>
+
                 <div
                   className="absolute bottom-0 w-full h-[250%]"
                   style={{
@@ -773,12 +903,16 @@ export default function NeonStrikeGame({ onClose }) {
                     WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 100%)'
                   }}
                 >
+                  {/* Sleek Digital Grid Layer (Perspective Movement lines) */}
                   <div className="absolute inset-0 opacity-40">
-                    <div className="w-full h-full bg-[linear-gradient(transparent_50%,rgba(34,211,238,0.2)_50%)] bg-[length:100%_120px] animate-[slideDown_0.6s_linear_infinite]"></div>
+                    {/* Thin sliding horizontal neon lines */}
+                    <div className="absolute inset-0 bg-[linear-gradient(transparent_97%,rgba(34,211,238,0.45)_97%)] bg-[length:100%_120px] animate-[slideDown_0.6s_linear_infinite]"></div>
                   </div>
+                  
+                  {/* Glowing Laser Lane Separators */}
                   <div className="absolute inset-0 flex justify-evenly pointer-events-none opacity-80">
-                    <div className="w-3 md:w-5 h-full bg-cyan-500/50 shadow-[0_0_40px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
-                    <div className="w-3 md:w-5 h-full bg-cyan-500/50 shadow-[0_0_40px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
+                    <div className="w-[1.5px] md:w-[2.5px] h-full bg-cyan-400/60 shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
+                    <div className="w-[1.5px] md:w-[2.5px] h-full bg-cyan-400/60 shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
                   </div>
                 </div>
 
@@ -802,8 +936,17 @@ export default function NeonStrikeGame({ onClose }) {
                            }}>
 
                         {!ent.revealed && (
-                          <div className="bg-[#0b132b]/95 border-2 border-cyan-400 p-2 md:p-4 rounded-xl md:rounded-2xl text-white font-bold text-center shadow-[0_10px_20px_rgba(34,211,238,0.4)] backdrop-blur-md flex items-center justify-center min-h-[50px] md:min-h-[90px] w-full break-words transition-all duration-300">
-                            <span className="text-[10px] leading-tight sm:text-xs md:text-lg md:leading-snug">{ent.text}</span>
+                          <div className="relative overflow-hidden bg-[#050917]/95 border-2 border-cyan-400/70 p-3 md:p-6 rounded-2xl text-white font-bold text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] backdrop-blur-md flex items-center justify-center min-h-[60px] md:min-h-[100px] w-full break-words transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_40px_rgba(34,211,238,0.45)]">
+                            {/* Futuristic Tech Corner Brackets */}
+                            <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
+                            <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
+                            <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
+                            <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
+                            
+                            {/* Faint Scanline Grid Overlay */}
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,24,45,0)_95%,rgba(34,211,238,0.15)_95%)] bg-[length:100%_6px] opacity-35 pointer-events-none"></div>
+                            
+                            <span className="relative z-10 text-[10px] leading-tight sm:text-xs md:text-lg md:leading-snug bg-gradient-to-b from-white to-slate-200 bg-clip-text text-transparent drop-shadow-sm select-text">{ent.text}</span>
                           </div>
                         )}
 
@@ -1319,6 +1462,73 @@ export default function NeonStrikeGame({ onClose }) {
       </motion.div>
 
       <style jsx="true">{`
+        .nebula-glow-1 {
+          animation: driftGlowOne 20s ease-in-out infinite;
+        }
+        .nebula-glow-2 {
+          animation: driftGlowTwo 25s ease-in-out infinite;
+        }
+        @keyframes driftGlowOne {
+          0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.7; }
+          50% { transform: translate(-45%, -55%) scale(1.2) rotate(180deg); opacity: 0.9; }
+          100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0.7; }
+        }
+        @keyframes driftGlowTwo {
+          0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+          50% { transform: scale(1.15) translate(-15px, -20px); opacity: 0.8; }
+          100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+        }
+        @keyframes heartPulse {
+          0% { transform: scale(1); filter: drop-shadow(0 0 3px rgba(239,68,68,0.5)); }
+          100% { transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(239,68,68,0.9)); }
+        }
+        @keyframes hudScan {
+          0% { box-shadow: 0 0 40px rgba(34,211,238,0.25); }
+          50% { box-shadow: 0 0 50px rgba(34,211,238,0.4); }
+          100% { box-shadow: 0 0 40px rgba(34,211,238,0.25); }
+        }
+        .starfield-1 {
+          background-image: 
+            radial-gradient(1px 1px at 25px 45px, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 80px 120px, #fff, transparent),
+            radial-gradient(1px 1px at 140px 180px, #fff, transparent),
+            radial-gradient(1px 1px at 200px 30px, #fff, transparent),
+            radial-gradient(1.5px 1.5px at 240px 220px, #fff, transparent),
+            radial-gradient(1px 1px at 290px 100px, #fff, transparent);
+          background-size: 300px 300px;
+          animation: moveStarsSlow 25s linear infinite;
+        }
+        .starfield-2 {
+          background-image: 
+            radial-gradient(1.5px 1.5px at 40px 90px, #fff, transparent),
+            radial-gradient(2px 2px at 110px 40px, rgba(34,211,238,0.8), transparent),
+            radial-gradient(1.5px 1.5px at 170px 210px, #fff, transparent),
+            radial-gradient(2px 2px at 220px 130px, rgba(147,51,234,0.6), transparent),
+            radial-gradient(1.5px 1.5px at 280px 60px, #fff, transparent);
+          background-size: 320px 320px;
+          animation: moveStarsMedium 15s linear infinite;
+        }
+        .starfield-3 {
+          background-image: 
+            radial-gradient(2px 2px at 15px 150px, #fff, transparent),
+            radial-gradient(2.5px 2.5px at 95px 85px, #fff, transparent),
+            radial-gradient(2px 2px at 180px 20px, #fff, transparent),
+            radial-gradient(3px 3px at 230px 260px, rgba(255,255,255,0.9), transparent);
+          background-size: 280px 280px;
+          animation: moveStarsFast 8s linear infinite;
+        }
+        @keyframes moveStarsSlow {
+          from { background-position: 0 0; }
+          to { background-position: 0 300px; }
+        }
+        @keyframes moveStarsMedium {
+          from { background-position: 0 0; }
+          to { background-position: 0 320px; }
+        }
+        @keyframes moveStarsFast {
+          from { background-position: 0 0; }
+          to { background-position: 0 280px; }
+        }
         @keyframes slideDown {
           from { background-position: 0 0; }
           to { background-position: 0 120px; }

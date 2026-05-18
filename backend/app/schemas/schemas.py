@@ -82,6 +82,12 @@ class EnrollmentCreate(BaseModel):
     district: Optional[str] = None
     pincode: Optional[str] = None
     course: str
+    school: Optional[str] = None
+    school_status: Optional[str] = None
+    school_year: Optional[str] = None
+    college_status: Optional[str] = None
+    college_degree_type: Optional[str] = None
+    college_degree: Optional[str] = None
 
 class EnrollmentUpdate(BaseModel):
     name: Optional[str] = None
@@ -96,6 +102,12 @@ class EnrollmentUpdate(BaseModel):
     district: Optional[str] = None
     pincode: Optional[str] = None
     course: Optional[str] = None
+    school: Optional[str] = None
+    school_status: Optional[str] = None
+    school_year: Optional[str] = None
+    college_status: Optional[str] = None
+    college_degree_type: Optional[str] = None
+    college_degree: Optional[str] = None
 
 class EnrollmentResponse(EnrollmentCreate):
     id: int
@@ -141,6 +153,8 @@ class GameScoreCreate(BaseModel):
     course: str
     score: int
     couponCode: str
+    discount: Optional[int] = 0
+    correctAnswers: Optional[int] = 0
 
 class GameScoreResponse(GameScoreCreate):
     id: int

@@ -11,7 +11,10 @@ import {
   FaGamepad,
   FaPercentage,
   FaUser,
-  FaBookOpen
+  FaBookOpen,
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaTimesCircle
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -46,10 +49,19 @@ function Reveal({ children, index = 0, className = "" }) {
   );
 }
 
-const getOffer = (score) => {
-  if (score > 10000) return { label: "Top Tier", discount: "20% Discount", color: "bg-emerald-100 text-emerald-700 border-emerald-200" };
-  if (score > 5000) return { label: "Mid Tier", discount: "10% Discount", color: "bg-blue-100 text-blue-700 border-blue-200" };
-  return { label: "Base Tier", discount: "5% Discount", color: "bg-slate-100 text-slate-600 border-slate-200" };
+const getOffer = (scoreObj) => {
+  // Use correctAnswers count directly if present, with backward-compatible fallback to points score division
+  let answers = scoreObj.correctAnswers;
+  if ((answers === undefined || answers === null || answers === 0) && scoreObj.score > 0) {
+    answers = Math.floor(scoreObj.score / 10);
+  }
+
+  if (answers >= 20) return { label: "Max Tier", discount: "7% Discount", color: "bg-purple-100 text-purple-700 border-purple-200" };
+  if (answers >= 10) return { label: "High Tier", discount: "5% Discount", color: "bg-emerald-100 text-emerald-700 border-emerald-200" };
+  if (answers >= 7) return { label: "Mid Tier", discount: "4% Discount", color: "bg-blue-100 text-blue-700 border-blue-200" };
+  if (answers >= 5) return { label: "Low Tier", discount: "3% Discount", color: "bg-cyan-100 text-cyan-700 border-cyan-200" };
+  if (answers >= 3) return { label: "Entry Tier", discount: "2% Discount", color: "bg-teal-100 text-teal-700 border-teal-200" };
+  return { label: "Base Tier", discount: "1% Discount", color: "bg-slate-100 text-slate-600 border-slate-200" };
 };
 
 export default function AdminGameScores() {
@@ -57,6 +69,17 @@ export default function AdminGameScores() {
   const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const authHeader = {
     headers: {
@@ -82,14 +105,28 @@ export default function AdminGameScores() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this score record?")) return;
+  const handleDelete = (id) => {
+    setDeleteTarget(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axios.delete(`${API}/gamescores/${id}`, authHeader);
-      setScores(scores.filter((s) => s.id !== id));
+      await axios.delete(`${API}/gamescores/${deleteTarget}`, authHeader);
+      setScores(scores.filter((s) => s.id !== deleteTarget));
+      setNotification({ type: "success", message: "Score record deleted successfully!" });
     } catch (err) {
       console.error("Failed to delete score:", err);
-      alert("Error deleting record");
+      if (err.response?.status === 404) {
+        // If the record was already deleted or not found on the server, treat it as a success
+        setScores(scores.filter((s) => s.id !== deleteTarget));
+        setNotification({ type: "success", message: "Score record deleted successfully!" });
+      } else {
+        const errMsg = err.response?.data?.detail || "Failed to delete score record. Please try again.";
+        setNotification({ type: "error", message: errMsg });
+      }
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -107,17 +144,18 @@ export default function AdminGameScores() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#f8fafc] px-4 pb-20 pt-32 sm:px-6">
+    <div className="relative min-h-screen overflow-hidden bg-white px-4 pb-20 pt-32 sm:px-6">
       {/* Abstract Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50/50 to-transparent -z-10" />
-      <div className="absolute top-40 right-20 w-72 h-72 bg-blue-400/5 blur-[100px] rounded-full -z-10" />
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite] pointer-events-none"></div>
+      <div className="absolute w-[400px] h-[400px] bg-blue-300/30 blur-3xl rounded-full top-[-100px] left-[-100px] pointer-events-none"></div>
+      <div className="absolute w-[350px] h-[350px] bg-cyan-300/30 blur-3xl rounded-full bottom-[-100px] right-[-100px] pointer-events-none"></div>
 
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl relative z-10">
         {/* Header Section */}
         <Reveal>
           <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="bg-white p-4 rounded-3xl shadow-xl shadow-blue-900/5 border border-blue-50">
+              <div className="bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-xl shadow-blue-900/5 border border-blue-50/50">
                 <FaTrophy className="text-blue-600 text-3xl" />
               </div>
               <div>
@@ -133,7 +171,7 @@ export default function AdminGameScores() {
                 placeholder="Search name, code, or course..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 shadow-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-600"
+                className="w-full bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 shadow-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-slate-600"
               />
             </div>
           </div>
@@ -146,7 +184,7 @@ export default function AdminGameScores() {
           </div>
         ) : filteredScores.length === 0 ? (
           <Reveal>
-            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-20 text-center shadow-2xl shadow-blue-900/5">
+            <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-[2.5rem] p-20 text-center shadow-2xl shadow-blue-900/5">
               <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaGamepad className="text-slate-200 text-5xl" />
               </div>
@@ -158,17 +196,17 @@ export default function AdminGameScores() {
           <div className="grid grid-cols-1 gap-4">
             <AnimatePresence>
               {filteredScores.map((score, index) => {
-                const offer = getOffer(score.score);
+                const offer = getOffer(score);
                 return (
                   <Reveal key={score.id} index={index}>
                     <motion.div
                       layout
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="group bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 relative overflow-hidden"
+                      className="group bg-white/80 backdrop-blur-md border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 relative overflow-hidden"
                     >
                       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                        
+
                         {/* Student Main Info */}
                         <div className="flex items-start gap-5">
                           <div className="relative">
@@ -187,13 +225,13 @@ export default function AdminGameScores() {
                                 <FaBookOpen size={10} /> {score.course}
                               </span>
                             </div>
-                            
+
                             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 text-sm font-semibold text-slate-500">
                               <span className="flex items-center gap-2">
                                 <FaPhone className="text-slate-300" /> {score.phone}
                               </span>
                               <span className="flex items-center gap-2">
-                                <FaCalendarAlt className="text-slate-300" /> 
+                                <FaCalendarAlt className="text-slate-300" />
                                 {score.created_at ? score.created_at : "Recent"}
                               </span>
                             </div>
@@ -223,20 +261,22 @@ export default function AdminGameScores() {
                           <div className="flex flex-col">
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Reward Tier</span>
                             <span className={`text-sm font-black px-3 py-1 rounded-lg border flex items-center gap-2 ${offer.color}`}>
-                              <FaPercentage size={12} /> {offer.discount}
+                              {offer.discount}
                             </span>
                           </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2 self-end lg:self-center">
-                          <button
-                            onClick={() => handleDelete(score.id)}
-                            className="bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 p-4 rounded-2xl transition-all border border-slate-100 hover:border-red-100 active:scale-95 group/btn"
-                          >
-                            <FaTrash className="group-hover/btn:scale-110 transition-transform" />
-                          </button>
-                        </div>
+                        {user?.user?.role === "admin" && (
+                          <div className="flex items-center gap-2 self-end lg:self-center">
+                            <button
+                              onClick={() => handleDelete(score.id)}
+                              className="bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 p-4 rounded-2xl transition-all border border-slate-100 hover:border-red-100 active:scale-95 group/btn"
+                            >
+                              <FaTrash className="group-hover/btn:scale-110 transition-transform" />
+                            </button>
+                          </div>
+                        )}
 
                       </div>
                     </motion.div>
@@ -246,6 +286,88 @@ export default function AdminGameScores() {
             </AnimatePresence>
           </div>
         )}
+      </div>
+
+      {/* Custom Framer Motion Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteTarget && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={() => setDeleteTarget(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl shadow-blue-900/10 border border-slate-100"
+            >
+              <div className="flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                  <FaExclamationTriangle />
+                </div>
+                <h3 className="text-xl font-black text-slate-900 mb-2">Delete Score Record</h3>
+                <p className="text-slate-500 mb-8">
+                  Are you sure you want to permanently delete this score? This action cannot be undone.
+                </p>
+                <div className="flex items-center gap-4 w-full">
+                  <button
+                    onClick={() => setDeleteTarget(null)}
+                    className="flex-1 py-3.5 px-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="flex-1 py-3.5 px-4 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition-all active:scale-[0.98]"
+                  >
+                    Delete Record
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Motion Toast Notifications */}
+      <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] pointer-events-none w-full max-w-sm px-4">
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className={`p-4 rounded-2xl shadow-2xl border flex items-start gap-3 pointer-events-auto backdrop-blur-md ${notification.type === "success"
+                  ? "bg-emerald-50/95 border-emerald-200 text-emerald-800"
+                  : "bg-red-50/95 border-red-200 text-red-800"
+                }`}
+            >
+              <div className="mt-0.5">
+                {notification.type === "success" ? (
+                  <FaCheckCircle className="text-emerald-500 text-xl" />
+                ) : (
+                  <FaTimesCircle className="text-red-500 text-xl" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-sm leading-tight">
+                  {notification.type === "success" ? "Success" : "Error"}
+                </p>
+                <p className="text-xs mt-1 leading-snug font-medium opacity-90">{notification.message}</p>
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-slate-400 hover:text-slate-600 transition-colors shrink-0"
+              >
+                <FaTimesCircle size={14} className="opacity-60" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

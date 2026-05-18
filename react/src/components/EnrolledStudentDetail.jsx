@@ -461,14 +461,14 @@ export default function EnrolledStudentDetail() {
                             <FaPhone className="text-gray-400" /> {e.phone}
                           </div>
 
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-600 sm:col-span-2">
                             <FaSchool className="text-gray-400" />{" "}
-                            {e.college || "N/A"}
+                            <span className="font-semibold text-slate-700">School:</span> {e.school || "N/A"} ({e.school_status || "N/A"}{e.school_year ? `, ${e.school_year}` : ""})
                           </div>
 
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-600 sm:col-span-2">
                             <FaUserGraduate className="text-gray-400" />{" "}
-                            {e.year || "N/A"}
+                            <span className="font-semibold text-slate-700">College:</span> {e.college || "N/A"} ({e.college_degree_type || "N/A"} - {e.college_degree || "N/A"}, {e.college_status || "N/A"}{e.year ? `, ${e.year}` : ""})
                           </div>
 
                           <div className="flex items-center gap-2 text-gray-600 sm:col-span-2">
@@ -588,8 +588,14 @@ export default function EnrolledStudentDetail() {
                       ["Email", "email", "email", ""],
                       ["Phone", "phone", "text", ""],
                       ["Course", "course", "text", "lg:col-span-2"],
-                      ["College", "college", "text", ""],
-                      ["Year", "year", "text", ""],
+                      ["School Name", "school", "text", ""],
+                      ["School Status", "school_status", "text", ""],
+                      ["School Passing Year", "school_year", "text", ""],
+                      ["College Name", "college", "text", ""],
+                      ["College Status", "college_status", "text", ""],
+                      ["Degree Type", "college_degree_type", "text", ""],
+                      ["Degree Course", "college_degree", "text", ""],
+                      ["College Passing Year", "year", "text", ""],
                     ].map(([label, name, type, span]) => (
                       <div key={name} className={span}>
                         <label className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-slate-400">

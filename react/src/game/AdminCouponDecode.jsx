@@ -27,19 +27,41 @@ export default function AdminCouponDecoder() {
       const foundStudent = data.find(student => student.couponCode === code);
 
       if (foundStudent) {
-        // Determine the tier dynamically based on the exact score
-        let level = "Base Tier Offer";
-        let discount = "5% Discount";
-        let hits = "Under 5000 Pts";
+        // Determine the tier dynamically based on the exact correctAnswers count
+        let level = "No Tier Offer";
+        let discount = "0% Discount";
+        
+        let answers = foundStudent.correctAnswers;
+        if ((answers === undefined || answers === null || answers === 0) && foundStudent.score > 0) {
+          answers = Math.floor(foundStudent.score / 10);
+        }
 
-        if (foundStudent.score > 10000) {
-          level = "Top Tier Offer";
-          discount = "20% Discount";
-          hits = "10,000+ Pts (Pro)";
-        } else if (foundStudent.score > 5000) {
+        let hits = `${answers} Pts`;
+
+        if (answers >= 20) {
+          level = "Max Tier Offer";
+          discount = "7% Discount";
+          hits = "20+ Pts";
+        } else if (answers >= 10) {
+          level = "High Tier Offer";
+          discount = "5% Discount";
+          hits = "10-19 Pts";
+        } else if (answers >= 7) {
           level = "Mid Tier Offer";
-          discount = "10% Discount";
-          hits = "5,000+ Pts (Good)";
+          discount = "4% Discount";
+          hits = "7-9 Pts";
+        } else if (answers >= 5) {
+          level = "Low Tier Offer";
+          discount = "3% Discount";
+          hits = "5-6 Pts";
+        } else if (answers >= 3) {
+          level = "Entry Tier Offer";
+          discount = "2% Discount";
+          hits = "3-4 Pts";
+        } else {
+          level = "Base Tier Offer";
+          discount = "1% Discount";
+          hits = "0-2 Pts";
         }
 
         setResult({ 
@@ -64,94 +86,138 @@ export default function AdminCouponDecoder() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-[#f8fafc] p-4 pt-32">
-      <div className="w-full max-w-md bg-white border border-gray-200 rounded-[2rem] shadow-2xl p-8 relative overflow-hidden">
-        
-        {/* Background Decorative element */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full pointer-events-none -z-10"></div>
+    <div className="relative min-h-screen overflow-hidden bg-white px-4 pb-20 pt-32 sm:px-6 font-sans">
+      {/* Abstract Background Elements */}
+      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite] pointer-events-none"></div>
+      <div className="absolute w-[400px] h-[400px] bg-blue-300/30 blur-3xl rounded-full top-[-100px] left-[-100px] pointer-events-none"></div>
+      <div className="absolute w-[350px] h-[350px] bg-cyan-300/30 blur-3xl rounded-full bottom-[-100px] right-[-100px] pointer-events-none"></div>
 
-        <div className="flex items-center gap-3 mb-8">
-          <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-            <Gamepad2 size={28} />
+      <div className="mx-auto flex justify-center relative z-10">
+        <div className="w-full max-w-lg bg-[#0d1326]/90 backdrop-blur-xl border border-blue-500/30 rounded-3xl shadow-[0_20px_50px_rgba(30,58,138,0.3)] p-8 relative overflow-hidden">
+        
+        {/* Top Decorative Line */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800/80">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-blue-950/40 border border-blue-500/30 text-blue-400 rounded-lg shadow-[inset_0_0_15px_rgba(59,130,246,0.1)]">
+              <Gamepad2 size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-white tracking-widest uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Nexus Decryptor</h2>
+              <p className="text-blue-400/70 text-[10px] font-mono tracking-widest mt-1">SECURE_CHANNEL: ACTIVE</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-black text-gray-900 leading-none">Coupon Decoder</h2>
-            <p className="text-gray-500 text-sm mt-1">Verify student game rewards</p>
+          <div className="flex flex-col items-end">
+            <span className="text-[9px] text-slate-500 tracking-widest font-mono uppercase mb-0.5">Sys_Status</span>
+            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5 bg-emerald-950/30 border border-emerald-500/20 px-2 py-0.5 rounded">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_5px_#34d399]"></div> OPTIMAL
+            </span>
           </div>
         </div>
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-5 mb-8">
           <div className="relative">
-            <input 
-              type="text" 
-              placeholder="e.g., GTEC-X9-A1B2" 
-              value={inputCode}
-              onChange={(e) => setInputCode(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
-              className="w-full bg-gray-50 border border-gray-300 text-gray-900 font-mono tracking-wider text-lg rounded-xl py-4 pl-4 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase placeholder:normal-case placeholder:tracking-normal"
-            />
-            <Percent className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <label className="text-[10px] text-blue-300/60 font-mono tracking-widest uppercase mb-2 block">Input Hash Signature</label>
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="GTEC-XXXX-XXXX" 
+                value={inputCode}
+                onChange={(e) => setInputCode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
+                className="w-full bg-[#080d19] border border-blue-500/30 text-cyan-300 font-mono tracking-[0.2em] text-lg rounded-xl py-4 pl-4 pr-12 focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-400 outline-none transition-all uppercase placeholder:text-slate-700 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]"
+              />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-500/50" size={20} />
+            </div>
           </div>
 
           <button 
             onClick={handleVerify}
             disabled={isLoading || !inputCode.trim()}
-            className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all active:scale-[0.98] shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-blue-400/30 text-sm tracking-widest uppercase font-mono"
           >
-            {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
-            {isLoading ? "Verifying..." : "Verify Secret Code"}
+            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
+            {isLoading ? "Decoding..." : "Initialize Decode"}
           </button>
         </div>
 
         {result && (
-          <div className={`p-6 rounded-2xl border transition-all duration-300 ${result.valid ? 'bg-green-50 border-green-200 shadow-[0_0_20px_rgba(34,197,94,0.1)]' : 'bg-red-50 border-red-200 shadow-[0_0_20px_rgba(239,68,68,0.1)]'}`}>
+          <div className={`p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 ${result.valid ? 'bg-[#0a141d]/80 border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.05)]' : 'bg-[#1a0f14]/80 border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.05)]'}`}>
             {result.valid ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 
                 {/* Status Banner */}
-                <p className="flex items-center gap-2 text-green-800 font-black text-lg border-b border-green-200/60 pb-3">
-                  <CheckCircle size={24} className="text-green-600" /> Verified Match
-                </p>
+                <div className="flex justify-between items-center border-b border-emerald-500/20 pb-3">
+                  <p className="flex items-center gap-2 text-emerald-400 font-mono text-xs tracking-widest uppercase">
+                    <CheckCircle size={14} className="text-emerald-500" /> Verified_Result
+                  </p>
+                  <span className="text-[9px] text-emerald-500/60 font-mono border border-emerald-500/30 px-2 py-0.5 rounded-full bg-emerald-950/20">AUTH_V2.0</span>
+                </div>
 
-                {/* Student Details */}
-                <div className="space-y-3 py-2">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <User size={18} className="text-gray-400" />
-                    <span className="font-semibold">{result.name}</span>
+                {/* Subject Details */}
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase mb-1">Subject Identity</p>
+                    <div className="flex items-center gap-3 text-white">
+                      <User size={16} className="text-blue-400" />
+                      <span className="font-bold text-2xl tracking-tight">{result.name}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <Phone size={18} className="text-gray-400" />
-                    <span className="font-mono">{result.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <BookOpen size={18} className="text-gray-400" />
-                    <span className="font-medium text-sm bg-white px-3 py-1 rounded-lg border border-green-200 shadow-sm">{result.course}</span>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase mb-1">Comms Link</p>
+                      <div className="flex items-center gap-2 text-slate-300">
+                        <Phone size={14} className="text-blue-400/70" />
+                        <span className="font-mono text-xs">{result.phone}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-slate-500 font-mono tracking-widest uppercase mb-1">Designation</p>
+                      <div className="flex items-center gap-2 text-slate-300">
+                        <BookOpen size={14} className="text-blue-400/70" />
+                        <span className="font-mono text-[10px] uppercase bg-blue-950/50 px-2 py-0.5 rounded text-blue-300 border border-blue-800/50">{result.course}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-full h-px bg-green-200/60 my-2"></div>
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"></div>
 
-                {/* Game Stats & Discount */}
-                <div className="flex justify-between items-center text-sm text-green-700 pt-1">
-                  <strong className="font-semibold text-green-800 flex items-center gap-2"><Trophy size={16} /> Final Score:</strong> 
-                  <span className="bg-green-100 px-3 py-1 rounded-md font-black">{result.score}</span>
+                {/* Game Stats & Discount - Sci-fi Style */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-[#080c16] border border-emerald-500/20 rounded-xl p-4 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/50 group-hover:bg-emerald-400 transition-colors"></div>
+                    <p className="text-[9px] text-emerald-500/70 font-mono tracking-widest uppercase mb-2">Total Solved</p>
+                    <div className="flex items-end gap-1">
+                      <span className="font-black text-2xl text-white leading-none">{result.score}</span>
+                      <span className="text-[10px] text-emerald-400/80 font-mono mb-0.5 pb-0.5">PTS</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-[#060c18] border border-cyan-500/30 rounded-xl p-4 relative overflow-hidden shadow-[inset_0_0_20px_rgba(6,182,212,0.05)]">
+                    <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-900/30 via-transparent to-transparent"></div>
+                    <p className="text-[9px] text-cyan-400/80 font-mono tracking-widest uppercase mb-1 flex items-center gap-1.5">
+                      <Percent size={10} /> Grant Auth
+                    </p>
+                    <div className="flex items-end gap-1 relative z-10">
+                      <span className="font-black text-3xl text-cyan-300 leading-none drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]">{result.discount.replace(' Discount', '')}</span>
+                      <span className="text-[10px] text-cyan-400/70 font-mono mb-1">%</span>
+                    </div>
+                    <p className="text-[8px] text-cyan-500/60 font-mono mt-1.5 opacity-80">TIER: {result.level.toUpperCase()}</p>
+                  </div>
                 </div>
-                
-                <div className="flex justify-between items-center text-sm text-green-700 mt-2">
-                  <strong className="font-semibold text-green-800 flex items-center gap-2"><Percent size={16} /> Deal Unlocked:</strong> 
-                  <span className="font-black text-xl text-green-600 drop-shadow-sm bg-white px-3 py-1 rounded-lg border border-green-200">
-                    {result.discount}
-                  </span>
-                </div>
-                <p className="text-xs text-green-600/80 text-right font-medium">Tier: {result.level}</p>
 
               </div>
             ) : (
-              <div className="flex items-start gap-3 text-red-700">
-                <AlertCircle size={24} className="shrink-0 text-red-500" />
+              <div className="flex items-start gap-4 text-red-400">
+                <div className="p-2 bg-red-950/40 rounded-lg border border-red-500/30 shadow-[inset_0_0_10px_rgba(239,68,68,0.1)]">
+                  <AlertCircle size={22} className="shrink-0 text-red-500" />
+                </div>
                 <div>
-                  <p className="font-bold text-red-800 mb-1">Verification Failed</p>
-                  <p className="text-sm leading-snug">{result.message}</p>
+                  <p className="font-mono text-xs tracking-widest text-red-400 mb-1 font-bold uppercase drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">Access Denied</p>
+                  <p className="text-xs text-red-300/70 leading-relaxed">{result.message}</p>
                 </div>
               </div>
             )}
@@ -159,6 +225,7 @@ export default function AdminCouponDecoder() {
         )}
 
       </div>
+    </div>
     </div>
   );
 }

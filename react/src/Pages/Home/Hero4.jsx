@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCheck } from "react-icons/fa";
 import Lottie, { useLottie } from "lottie-react";
-import touchAnimation from "../../assets/touch.json";
+import touchAnimation from "../../Assets/touch.json";
 import { motion } from "framer-motion";
 import axios from "axios";
 
@@ -97,7 +97,7 @@ function Hero4() {
               opacity: { duration: 0.5 },
               scale: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
             }}
-            className="w-14 sm:w-16 md:w-20 mx-auto translate-x-14 sm:translate-x-16 md:translate-x-14 -translate-y-24 sm:-translate-y-28 md:-translate-y-28 -mb-7 sm:-mb-8 md:-mb-9 pointer-events-none"
+            className="w-14 sm:w-16 md:w-20 mx-auto translate-x-14 sm:translate-x-16 md:translate-x-14 -translate-y-20 sm:-translate-y-24 md:-translate-y-24 -mb-5 sm:-mb-6 md:-mb-7 pointer-events-none"
           >
             {View}
           </motion.div>

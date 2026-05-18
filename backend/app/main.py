@@ -5,6 +5,7 @@ import os
 load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 import bcrypt
 from datetime import datetime, timedelta, timezone
@@ -109,6 +110,21 @@ def seed_all_data():
 
 # Run seeding on startup
 seed_all_data()
+
+# Database migration to add columns if they do not exist
+try:
+    with database.engine.begin() as conn:
+        conn.execute(text("ALTER TABLE game_scores ADD COLUMN IF NOT EXISTS discount INTEGER DEFAULT 0"))
+        conn.execute(text("ALTER TABLE game_scores ADD COLUMN IF NOT EXISTS \"correctAnswers\" INTEGER DEFAULT 0"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS school VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS school_status VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS school_year VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_status VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree_type VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree VARCHAR"))
+    print("Successfully applied database migrations!")
+except Exception as e:
+    print(f"Error executing database migrations: {e}")
 
 app = FastAPI()
 
@@ -714,6 +730,11 @@ def add_game_score(score_data: schemas.GameScoreCreate, db: Session = Depends(da
 def get_all_game_scores(db: Session = Depends(database.get_db)):
     return db.query(models.GameScore).all()
 
+@app.get("/gamescores/check")
+def check_phone_number(phone: str, db: Session = Depends(database.get_db)):
+    exists = db.query(models.GameScore).filter(models.GameScore.phone == phone).first() is not None
+    return {"exists": exists}
+
 @app.delete("/gamescores/{id}")
 def delete_game_score(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
     db_score = db.query(models.GameScore).filter(models.GameScore.id == id).first()
@@ -735,4 +756,4 @@ def get_countries():
         {"id": "SA", "name": "Saudi Arabia", "phonecode": "966"}
     ]
 
-
+

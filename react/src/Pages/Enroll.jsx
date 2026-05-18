@@ -7,16 +7,15 @@ import {
   FaMapMarkerAlt,
   FaBookOpen,
   FaCheckCircle,
-  FaPhoneAlt,
-  FaEnvelope,
   FaCalendarAlt,
+  FaImage,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import LottieLib from "lottie-react";
 const Lottie = LottieLib.default ?? LottieLib;
-import successAnimation from "../assets/Success.json";
-import failAnimation from "../assets/Fail.json";
+import successAnimation from "../Assets/Success.json";
+import failAnimation from "../Assets/Fail.json";
 
 function SubmitAlert({ type, onClose }) {
   const success = type === "success";
@@ -55,11 +54,10 @@ function SubmitAlert({ type, onClose }) {
             className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-cyan-100 bg-white p-9 text-center shadow-[0_40px_120px_-35px_rgba(34,211,238,0.55)]"
           >
             <div
-              className={`absolute inset-x-0 top-0 h-2 ${
-                success
-                  ? "bg-gradient-to-r from-blue-700 via-cyan-400 to-emerald-400"
-                  : "bg-gradient-to-r from-red-600 via-rose-500 to-orange-400"
-              }`}
+              className={`absolute inset-x-0 top-0 h-2 ${success
+                ? "bg-gradient-to-r from-blue-700 via-cyan-400 to-emerald-400"
+                : "bg-gradient-to-r from-red-600 via-rose-500 to-orange-400"
+                }`}
             />
 
             <div className="mx-auto mb-2 w-48 h-48">
@@ -71,9 +69,8 @@ function SubmitAlert({ type, onClose }) {
             </div>
 
             <h2
-              className={`mb-3 text-3xl font-black uppercase tracking-tight ${
-                success ? "text-emerald-600" : "text-red-600"
-              }`}
+              className={`mb-3 text-3xl font-black uppercase tracking-tight ${success ? "text-emerald-600" : "text-red-600"
+                }`}
             >
               {success ? "Success!" : "Submission Failed"}
             </h2>
@@ -98,22 +95,17 @@ function SubmitAlert({ type, onClose }) {
                   onClick={onClose}
                   className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-rose-700 via-red-500 to-orange-600 py-4 text-sm font-black uppercase tracking-widest text-white shadow-2xl shadow-red-900/50"
                 >
-                  {/* Fast shimmer sweep */}
                   <motion.span
                     className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent"
                     animate={{ x: ["-120%", "220%"] }}
                     transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.9, ease: "easeInOut" }}
                   />
-
-                  {/* Animated gradient overlay shift */}
                   <motion.span
                     className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-red-600/0 via-orange-400/20 to-red-600/0"
                     animate={{ x: ["0%", "100%", "0%"] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   />
-
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {/* Spinning retry icon */}
                     <motion.svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -134,8 +126,6 @@ function SubmitAlert({ type, onClose }) {
                 </motion.button>
               </div>
             )}
-
-
           </motion.div>
         </motion.div>
       )}
@@ -167,10 +157,8 @@ function Enroll() {
   const selectedCourseName = location.state?.course || "Full-Stack Development";
   const courseList = allCourses.length > 0 ? allCourses.map((c) => c.title) : [selectedCourseName];
 
-  const courseDescriptions = allCourses.reduce((acc, c) => {
-    acc[c.title] = c.description;
-    return acc;
-  }, {});
+  const [eduTab, setEduTab] = useState("school");
+  const [idProofName, setIdProofName] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -180,11 +168,17 @@ function Enroll() {
     college: "",
     year: "",
     address: "",
-    country: "",
+    country: "India",
     state: "",
     district: "",
     pincode: "",
     course: selectedCourseName,
+    school: "",
+    school_status: "Passout",
+    school_year: "",
+    college_status: "Pursuing",
+    college_degree_type: "Bachelor",
+    college_degree: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -196,7 +190,7 @@ function Enroll() {
     switch (name) {
       case "name":
         if (!value) error = "Full name is required";
-        else if (value.length < 3) error = "Name must be at least 3 characters";
+        else if (value.trim().length < 3) error = "Name must be at least 3 characters";
         break;
       case "email":
         if (!value) error = "Email address is required";
@@ -204,7 +198,15 @@ function Enroll() {
         break;
       case "phone":
         if (!value) error = "Phone number is required";
-        else if (!/^\d{10}$/.test(value)) error = "Enter a valid 10-digit number";
+        else if (form.country === "India") {
+          if (!/^[6-9]\d{9}$/.test(value)) {
+            error = "Indian phone numbers must start with 6, 7, 8, or 9 and be exactly 10 digits";
+          }
+        } else {
+          if (!/^\d{10,15}$/.test(value)) {
+            error = "Enter a valid 10-15 digit phone number";
+          }
+        }
         break;
       case "dob":
         if (!value) error = "Date of Birth is required";
@@ -215,6 +217,9 @@ function Enroll() {
           if (year < 1990 || year > today.getFullYear()) error = "Enter a valid year (1990–present)";
           else if (dobDate > today) error = "Date of Birth cannot be in the future";
         }
+        break;
+      case "school":
+        if (!value) error = "School name is required";
         break;
       case "college":
         if (!value) error = "College/Institution name is required";
@@ -233,18 +238,22 @@ function Enroll() {
     const { name, value } = e.target;
     let formattedValue = value;
 
-    if (name === "year" || name === "pincode" || name === "phone") {
+    if (name === "year" || name === "school_year" || name === "pincode" || name === "phone") {
       formattedValue = value.replace(/\D/g, "");
       if (name === "year" && formattedValue.length > 4) return;
+      if (name === "school_year" && formattedValue.length > 4) return;
       if (name === "pincode" && formattedValue.length > 6) return;
-      if (name === "phone" && formattedValue.length > 10) return;
+      if (name === "phone") {
+        if (form.country === "India" && formattedValue.length > 10) return;
+        if (formattedValue.length > 15) return;
+      }
     }
 
     setForm((prev) => ({
       ...prev,
       [name]: formattedValue,
       ...(name === "pincode" && formattedValue.length < 6
-        ? { district: "", state: "", country: "" }
+        ? { district: "", state: "", country: "India" }
         : {}),
     }));
 
@@ -299,17 +308,21 @@ function Enroll() {
   const inputClass = (name) => {
     const hasError = errors[name] && touched[name];
 
-    return `w-full mt-2 p-3.5 rounded-xl bg-slate-900/80 border transition-all duration-300 outline-none text-white placeholder:text-slate-600 shadow-inner ${
-      hasError
-        ? "border-red-500/50 focus:border-red-500 bg-red-500/5 ring-4 ring-red-500/10"
-        : "border-slate-700 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10"
-    }`;
+    return `w-full mt-1.5 p-3 rounded-xl bg-slate-900 border transition-all duration-300 outline-none text-white text-sm placeholder:text-slate-600 shadow-inner ${hasError
+      ? "border-red-500/50 focus:border-red-500 bg-red-500/5 ring-4 ring-red-500/10"
+      : "border-slate-800 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/10"
+      }`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const requiredFields = ["name", "email", "phone", "dob", "college"];
+    const requiredFields = ["name", "email", "phone", "dob"];
+    if (eduTab === "school") {
+      requiredFields.push("school");
+    } else {
+      requiredFields.push("college");
+    }
     const newErrors = {};
     const newTouched = {};
 
@@ -343,7 +356,7 @@ function Enroll() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-950 px-4 py-10 text-white">
+    <section className="relative h-screen overflow-hidden bg-slate-950 px-4 py-4 md:py-6 text-white flex flex-col justify-between">
       <SubmitAlert
         type={submitStatus}
         onClose={() => {
@@ -355,99 +368,79 @@ function Enroll() {
         }}
       />
 
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]" />
+      <div className="absolute inset-0 bg-[radial-gradient(#06b6d4_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.07] pointer-events-none" />
+      <div className="absolute left-[-150px] top-[-150px] h-[400px] w-[400px] rounded-full bg-blue-500/10 blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-150px] right-[-150px] h-[400px] w-[400px] rounded-full bg-cyan-400/10 blur-[100px] pointer-events-none" />
 
-      <div className="absolute left-[-120px] top-[-120px] h-[500px] w-[500px] rounded-full bg-blue-500/20 blur-3xl" />
-      <div className="absolute bottom-[-120px] right-[-100px] h-[420px] w-[420px] rounded-full bg-cyan-400/20 blur-3xl" />
-
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mb-6">
+      {/* TOP HEADER BLOCK (Extremely compact) */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl flex items-center justify-between border-b border-slate-900 pb-3 shrink-0">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 font-bold text-cyan-300 transition hover:text-cyan-200"
+            className="flex items-center gap-2 font-bold text-cyan-400 transition hover:text-cyan-300 text-sm py-1.5 px-3 rounded-lg bg-slate-900 border border-slate-800"
           >
-            <FaArrowLeft /> Back
+            <FaArrowLeft size={12} /> Back
           </button>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="mb-10 text-center"
-        >
-          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm font-bold text-cyan-200 backdrop-blur">
-            <FaCheckCircle />
-            Start your learning journey
-          </span>
-
-          <h1 className="bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text pb-2 text-4xl font-black text-transparent md:text-6xl">
+          <h1 className="bg-gradient-to-r from-blue-200 via-cyan-300 to-blue-500 bg-clip-text text-xl md:text-2xl font-black text-transparent">
             Student Enrollment
           </h1>
+        </div>
+        <span className="hidden sm:inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/5 px-3 py-1 text-xs font-bold text-cyan-300 backdrop-blur">
+          <FaCheckCircle size={10} /> Secure Form Session
+        </span>
+      </div>
 
-          <p className="mt-4 text-lg font-medium text-slate-400">
-            Complete the form below and our team will contact you shortly.
-          </p>
-        </motion.div>
+      {/* SELECT PROGRAM & CONTACT INFO COMPACT STRIP (Takes almost no vertical space) */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl mt-3 shrink-0">
+        <div className="bg-slate-900/60 border border-slate-900 rounded-2xl p-3 flex items-center gap-3 backdrop-blur-xl">
+          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0">
+            <FaBookOpen size={14} />
+          </div>
+          <div>
+            <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Target Course</div>
+            <div className="text-xs font-black text-cyan-300 leading-tight">{form.course}</div>
+          </div>
+        </div>
+      </div>
 
-        <div className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
-          <motion.form
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0, x: -45 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.75 }}
-            className="relative space-y-10 overflow-hidden rounded-[2.5rem] border border-slate-800 bg-white/5 p-6 shadow-2xl backdrop-blur-2xl md:p-10"
-          >
-            <div className="grid gap-6 sm:grid-cols-3">
-              {["Personal", "Education", "Course"].map((step, index) => (
-                <div
-                  key={step}
-                  className={`rounded-2xl border p-5 transition-all duration-500 ${
-                    index === 0
-                      ? "border-cyan-400/30 bg-cyan-400/5 shadow-lg shadow-cyan-400/5"
-                      : "border-slate-800 bg-slate-950/40"
-                  }`}
-                >
-                  <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    Step 0{index + 1}
-                  </p>
-                  <h3 className={`font-bold ${index === 0 ? "text-cyan-300" : "text-slate-400"}`}>
-                    {step}
-                  </h3>
-                </div>
-              ))}
+      {/* SPLIT SCROLLABLE DASHBOARD PANEL */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl mt-3 flex-1 min-h-0 overflow-hidden flex flex-col justify-start lg:justify-center">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-5 h-fit lg:max-h-[640px] w-full min-h-0">
+
+          {/* LEFT PANE: PERSONAL & CONTACT */}
+          <div className="relative rounded-[2rem] border border-slate-900 bg-slate-950/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
+            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-900 shrink-0">
+              <div className="rounded-lg bg-cyan-500/10 p-1.5 text-cyan-400">
+                <FaUser size={14} />
+              </div>
+              <h2 className="text-sm font-black uppercase tracking-widest text-cyan-300">
+                01. Personal Information
+              </h2>
             </div>
 
-            <div className="space-y-6">
-              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
-                <div className="rounded-lg bg-cyan-400/10 p-2">
-                  <FaUser size={18} />
-                </div>
-                Personal Information
-              </h2>
+            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-4 min-h-0 pb-4">
+              <div className="space-y-1">
+                <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Full Name *
+                </label>
+                <input
+                  name="name"
+                  placeholder="e.g. John Doe"
+                  value={form.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={inputClass("name")}
+                />
+                {errors.name && touched.name && (
+                  <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
+                    {errors.name}
+                  </p>
+                )}
+              </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
-                    Full Name *
-                  </label>
-                  <input
-                    name="name"
-                    placeholder="e.g. John Doe"
-                    value={form.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={inputClass("name")}
-                  />
-                  {errors.name && touched.name && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
-                      {errors.name}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
+                  <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                     Date of Birth *
                   </label>
                   <div className="relative">
@@ -462,18 +455,18 @@ function Enroll() {
                       className={`${inputClass("dob")} appearance-none`}
                     />
                     {!form.dob && (
-                      <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <FaCalendarAlt className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 text-sm" />
                     )}
                   </div>
                   {errors.dob && touched.dob && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
+                    <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
                       {errors.dob}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
+                  <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                     Email Address *
                   </label>
                   <input
@@ -486,86 +479,70 @@ function Enroll() {
                     className={inputClass("email")}
                   />
                   {errors.email && touched.email && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
+                    <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
                       {errors.email}
                     </p>
                   )}
                 </div>
+              </div>
 
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
+                  <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                     Phone Number *
                   </label>
-                  <input
-                    name="phone"
-                    placeholder="10-digit mobile number"
-                    value={form.phone}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={inputClass("phone")}
-                  />
+                  <div className="relative flex items-center">
+                    {form.country === "India" && (
+                      <span className="absolute left-4 font-mono font-bold text-cyan-400 select-none z-20 text-sm">
+                        +91
+                      </span>
+                    )}
+                    <input
+                      name="phone"
+                      placeholder="10-digit mobile number"
+                      value={form.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`${inputClass("phone")} ${form.country === "India" ? "pl-14" : ""}`}
+                    />
+                  </div>
                   {errors.phone && touched.phone && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
+                    <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
                       {errors.phone}
                     </p>
                   )}
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
-                <div className="rounded-lg bg-cyan-400/10 p-2">
-                  <FaGraduationCap size={18} />
-                </div>
-                Academic Details
-              </h2>
-
-              <div className="grid gap-6 md:grid-cols-3">
-                <div className="space-y-1 md:col-span-2">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
-                    College / University *
-                  </label>
-                  <input
-                    name="college"
-                    placeholder="Name of your current or last institution"
-                    value={form.college}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    className={inputClass("college")}
-                  />
-                  {errors.college && touched.college && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
-                      {errors.college}
-                    </p>
-                  )}
-                </div>
 
                 <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
-                    Year of Passing
+                  <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Country *
                   </label>
-                  <input
-                    name="year"
-                    placeholder="YYYY"
-                    value={form.year}
-                    onChange={handleChange}
-                    className={inputClass("year")}
-                  />
+                  <select
+                    name="country"
+                    value={form.country}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setForm((prev) => ({
+                        ...prev,
+                        country: val,
+                        phone: val === "India" ? prev.phone.slice(0, 10) : prev.phone,
+                      }));
+                    }}
+                    onBlur={handleBlur}
+                    className={inputClass("country")}
+                  >
+                    <option value="India">India</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-6">
-              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
-                <div className="rounded-lg bg-cyan-400/10 p-2">
-                  <FaMapMarkerAlt size={18} />
-                </div>
-                Communication Address
-              </h2>
-
-              <div className="space-y-1">
-                <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
+              <div className="space-y-1 border-t border-slate-900/60 pt-3">
+                <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                   Street Address
                 </label>
                 <textarea
@@ -574,13 +551,13 @@ function Enroll() {
                   rows="2"
                   value={form.address}
                   onChange={handleChange}
-                  className={`${inputClass("address")} resize-none`}
+                  className={`${inputClass("address")} resize-none p-3 text-sm`}
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-3 grid-cols-3">
                 <div className="space-y-1">
-                  <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
+                  <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
                     Pincode
                   </label>
                   <input
@@ -592,181 +569,379 @@ function Enroll() {
                     className={inputClass("pincode")}
                   />
                   {errors.pincode && touched.pincode && (
-                    <p className="ml-1 mt-1 text-[10px] font-bold uppercase text-red-400">
+                    <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
                       {errors.pincode}
                     </p>
                   )}
                 </div>
 
-                {["district", "state", "country"].map((field) => (
-                  <div key={field} className="space-y-1">
-                    <label className="ml-1 text-xs font-black uppercase tracking-wider text-slate-400">
-                      {field}
-                    </label>
-                    <input
-                      name={field}
-                      placeholder={field}
-                      value={form[field]}
-                      onChange={handleChange}
-                      className={inputClass(field)}
-                    />
-                  </div>
-                ))}
+                <div className="space-y-1">
+                  <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
+                    District
+                  </label>
+                  <input
+                    name="district"
+                    placeholder="District"
+                    value={form.district}
+                    onChange={handleChange}
+                    className={inputClass("district")}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
+                    State
+                  </label>
+                  <input
+                    name="state"
+                    placeholder="State"
+                    value={form.state}
+                    onChange={handleChange}
+                    className={inputClass("state")}
+                  />
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="space-y-6">
-              <h2 className="flex items-center gap-3 text-xl font-black text-cyan-300">
-                <div className="rounded-lg bg-cyan-400/10 p-2">
-                  <FaBookOpen size={18} />
+          {/* RIGHT PANE: ACADEMIC DETAILS & SUBMISSION */}
+          <div className="relative rounded-[2rem] border border-slate-900 bg-slate-950/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-900 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg bg-cyan-500/10 p-1.5 text-cyan-400">
+                  <FaGraduationCap size={14} />
                 </div>
-                Selected Program
-              </h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-cyan-300">
+                  02. Academic Information
+                </h2>
+              </div>
 
-              <div className="relative">
+              <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-0.5 w-36 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setCourseOpen(!courseOpen)}
-                  className="flex w-full items-center justify-between rounded-xl border border-slate-700 bg-slate-900 p-4 text-left font-bold text-white outline-none transition focus:border-cyan-400"
-                >
-                  <span>{form.course}</span>
-                  <span
-                    className={`text-cyan-400 transition-transform duration-300 ${
-                      courseOpen ? "rotate-180" : ""
+                  onClick={() => setEduTab("school")}
+                  className={`flex-1 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${eduTab === "school"
+                    ? "bg-gradient-to-r from-blue-900 to-blue-600 text-cyan-200 shadow-md"
+                    : "text-slate-500 hover:text-slate-300"
                     }`}
-                  >
-                    ▼
-                  </span>
+                >
+                  School
                 </button>
-
-                <AnimatePresence>
-                  {courseOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="custom-scrollbar absolute bottom-full z-50 mb-3 max-h-[250px] w-full overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl"
-                    >
-                      {courseList.map((course) => (
-                        <button
-                          key={course}
-                          type="button"
-                          onClick={() => {
-                            setForm({ ...form, course });
-                            setCourseOpen(false);
-                          }}
-                          className={`block w-full px-5 py-4 text-left text-sm font-bold transition-all ${
-                            form.course === course
-                              ? "bg-blue-600 text-white"
-                              : "text-slate-300 hover:bg-slate-800"
-                          }`}
-                        >
-                          {course}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <button
+                  type="button"
+                  onClick={() => setEduTab("college")}
+                  className={`flex-1 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${eduTab === "college"
+                    ? "bg-gradient-to-r from-blue-900 to-blue-600 text-cyan-200 shadow-md"
+                    : "text-slate-500 hover:text-slate-300"
+                    }`}
+                >
+                  College
+                </button>
               </div>
             </div>
 
-            <div className="flex flex-col items-center justify-between gap-8 border-t border-slate-800 pt-10 md:flex-row">
-              <div className="flex items-center gap-3 text-slate-500">
-                <div className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
-                <p className="text-xs font-black uppercase tracking-widest">
-                  Secure Enrollment
+            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-5 min-h-0 pb-4">
+
+              <AnimatePresence mode="wait">
+                {eduTab === "school" && (
+                  <motion.div
+                    key="school"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-4"
+                  >
+                    {/* SCHOOL EDUCATION SUB-SECTION */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" /> School Category
+                      </h3>
+
+                      <div className="grid gap-4 sm:grid-cols-3">
+                        <div className="sm:col-span-2 space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            School Name *
+                          </label>
+                          <input
+                            name="school"
+                            placeholder="Name of your last school"
+                            value={form.school}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={inputClass("school")}
+                          />
+                          {errors.school && touched.school && (
+                            <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
+                              {errors.school}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            Status *
+                          </label>
+                          <select
+                            name="school_status"
+                            value={form.school_status}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={inputClass("school_status")}
+                          >
+                            <option value="Passout">Passout</option>
+                            <option value="Pursuing">Pursuing</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                          {form.school_status === "Pursuing" ? "Year of Pursuing (School)" : "Year of Passing (School)"}
+                        </label>
+                        <input
+                          name="school_year"
+                          placeholder="YYYY"
+                          value={form.school_year}
+                          onChange={handleChange}
+                          className={inputClass("school_year")}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {eduTab === "college" && (
+                  <motion.div
+                    key="college"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-4"
+                  >
+                    {/* COLLEGE EDUCATION SUB-SECTION */}
+                    <div className="border-t border-slate-900/60 pt-4 space-y-3">
+                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" /> College / University Category
+                      </h3>
+
+                      <div className="grid gap-4 sm:grid-cols-3">
+                        <div className="sm:col-span-2 space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            College Name *
+                          </label>
+                          <input
+                            name="college"
+                            placeholder="Name of your college"
+                            value={form.college}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={inputClass("college")}
+                          />
+                          {errors.college && touched.college && (
+                            <p className="ml-1 mt-1 text-[9px] font-bold uppercase text-red-400">
+                              {errors.college}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            Status *
+                          </label>
+                          <select
+                            name="college_status"
+                            value={form.college_status}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={inputClass("college_status")}
+                          >
+                            <option value="Pursuing">Pursuing</option>
+                            <option value="Passout">Passout</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-3">
+                        <div className="space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            Degree Type
+                          </label>
+                          <select
+                            name="college_degree_type"
+                            value={form.college_degree_type}
+                            onChange={handleChange}
+                            className={inputClass("college_degree_type")}
+                          >
+                            <option value="Bachelor">Bachelor</option>
+                            <option value="Master">Master</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            Degree Course
+                          </label>
+                          <select
+                            name="college_degree"
+                            value={form.college_degree}
+                            onChange={handleChange}
+                            className={inputClass("college_degree")}
+                          >
+                            <option value="">Select Degree</option>
+                            <option value="BCA">BCA</option>
+                            <option value="MCA">MCA</option>
+                            <option value="B.Sc">B.Sc</option>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="MBA">MBA</option>
+                            <option value="BBA">BBA</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            {form.college_status === "Pursuing" ? "Year of Pursuing" : "Year of Passing"}
+                          </label>
+                          <input
+                            name="year"
+                            placeholder="YYYY"
+                            value={form.year}
+                            onChange={handleChange}
+                            className={inputClass("year")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* COURSE PROGRAM PROGRAM DROPDOWN */}
+              <div className="border-t border-slate-900/60 pt-4 space-y-2">
+                <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Verify or Change Selected Program
+                </label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setCourseOpen(!courseOpen)}
+                    className="flex w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-900 p-3 text-left font-bold text-white text-sm outline-none transition focus:border-cyan-400"
+                  >
+                    <span>{form.course}</span>
+                    <span className={`text-cyan-400 transition-transform duration-300 ${courseOpen ? "rotate-180" : ""}`}>
+                      ▼
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {courseOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="custom-scrollbar absolute bottom-full z-50 mb-3 max-h-[180px] w-full overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl"
+                      >
+                        {courseList.map((course) => (
+                          <button
+                            key={course}
+                            type="button"
+                            onClick={() => {
+                              setForm((prev) => ({ ...prev, course }));
+                              setCourseOpen(false);
+                            }}
+                            className={`block w-full px-4 py-3 text-left text-xs font-bold transition-all ${form.course === course
+                              ? "bg-blue-600 text-white"
+                              : "text-slate-300 hover:bg-slate-800"
+                              }`}
+                          >
+                            {course}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+              {/* Sleek Dynamic Helper Card to fill vertical space beautifully */}
+              <div className="mt-6 rounded-2xl border border-slate-900/60 bg-slate-950/40 p-4.5 shadow-xl flex items-start gap-4 backdrop-blur-md transition-all duration-300 hover:border-cyan-500/20">
+                <div className="rounded-xl bg-cyan-500/10 p-2.5 text-cyan-400 shrink-0">
+                  <FaCheckCircle size={18} className="animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-cyan-300">
+                    Enrollment Instructions
+                  </h4>
+                  <p className="mt-1.5 text-[11px] font-semibold text-slate-400 leading-relaxed">
+                    Verify all active academic details before submitting. Our admissions board will cross-reference your records during the onboarding session. If you need any assistance, reach out directly via our secure helpdesk link.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* SINGLE IMAGE FIELD (Fixed below the form, above submit button) */}
+            <div className="pt-3 border-t border-slate-900/60 shrink-0 mb-3 mt-1">
+              <div className="space-y-1">
+                <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
+                  Upload ID Proof (Image)
+                </label>
+                <div className="relative flex flex-col items-center justify-center border border-dashed border-slate-800 bg-slate-900/40 hover:bg-slate-900/60 hover:border-cyan-500/40 rounded-xl py-2 px-3 text-center cursor-pointer transition-all duration-300">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) setIdProofName(file.name);
+                    }}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  />
+                  <div className="text-cyan-400/80 mb-0.5">
+                    <FaImage size={14} />
+                  </div>
+                  <span className="text-[9px] font-bold text-slate-300 truncate max-w-full">
+                    {idProofName || "Choose Image File"}
+                  </span>
+                  <span className="text-[7px] text-slate-500 font-semibold uppercase">
+                    ID Proof (Aadhaar/PAN)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* SUBMIT BUTTON CONTAINER */}
+            <div className="border-t border-slate-900 pt-3 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 text-slate-500">
+                <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
+                <p className="text-[10px] font-black uppercase tracking-widest">
+                  Ready to enroll
                 </p>
               </div>
 
               <motion.button
                 disabled={loading}
-                whileHover={!loading ? { scale: 1.02, y: -2 } : {}}
+                whileHover={!loading ? { scale: 1.02, y: -1 } : {}}
                 whileTap={!loading ? { scale: 0.98 } : {}}
                 type="submit"
-                className={`flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-900 to-blue-600 px-12 py-5 text-lg font-black shadow-xl shadow-blue-900/20 md:w-auto ${
-                  loading ? "cursor-not-allowed opacity-50" : ""
-                }`}
+                className={`flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-900 to-blue-600 px-6 py-3 text-sm font-black shadow-lg shadow-blue-900/20 ${loading ? "cursor-not-allowed opacity-50" : ""
+                  }`}
               >
                 {loading ? (
                   <>
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                     Submitting...
                   </>
                 ) : (
-                  "Submit Enrollment Application"
+                  "Submit Application"
                 )}
               </motion.button>
             </div>
-          </motion.form>
 
-          <motion.aside
-            initial={{ opacity: 0, x: 45 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.75, delay: 0.1 }}
-            className="space-y-6 lg:sticky lg:top-10"
-          >
-            <div className="group relative overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-900/50 p-8 shadow-2xl backdrop-blur-2xl">
-              <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-cyan-400/5 blur-3xl" />
+          </div>
 
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-2xl text-cyan-300">
-                <FaBookOpen />
-              </div>
-
-              <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                Selected Program
-              </p>
-              <h2 className="mb-4 text-2xl font-black text-cyan-300">
-                {form.course}
-              </h2>
-
-              <p className="text-sm font-medium leading-relaxed text-slate-400">
-                {courseDescriptions[form.course] ||
-                  "Master job-ready skills with our professional certification program designed for the industry."}
-              </p>
-
-              <div className="my-8 h-px w-full bg-slate-800/50" />
-
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1 rounded-lg bg-cyan-400/10 p-2 text-cyan-300">
-                    <FaPhoneAlt size={14} />
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-black uppercase tracking-widest text-slate-500">
-                      Assistance
-                    </p>
-                    <p className="font-bold text-slate-200">+91 75980 98675</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="mt-1 rounded-lg bg-cyan-400/10 p-2 text-cyan-300">
-                    <FaEnvelope size={14} />
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs font-black uppercase tracking-widest text-slate-500">
-                      Support Email
-                    </p>
-                    <p className="break-all text-sm font-bold leading-tight text-slate-200">
-                      azhagiyamandapam.tn@gteceducation.com
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
-                <p className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Next Steps
-                </p>
-                <p className="text-xs font-medium leading-relaxed text-slate-400">
-                  Our academic team will process your application and contact you within
-                  24 hours with schedule details.
-                </p>
-              </div>
-            </div>
-          </motion.aside>
-        </div>
+        </form>
       </div>
     </section>
   );
