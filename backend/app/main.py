@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from sqlalchemy import text
@@ -15,8 +16,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
-
-
+from gemini_engine import generate_ai_questions
+from sqlalchemy.sql.expression import func
 from app.db import models, database
 from app.schemas import schemas
 
@@ -126,16 +127,23 @@ try:
 except Exception as e:
     print(f"Error executing database migrations: {e}")
 
-app = FastAPI()
+app = FastAPI(
+    title="AI Game Backend"
+)
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
@@ -757,3 +765,80 @@ def get_countries():
     ]
 
 
+
+@app.get("/generate-ai-questions")
+def generate_questions_api(topic: str, db: Session = Depends(database.get_db)):
+
+    existing = (
+        db.query(models.AIQuestion)
+        .filter(models.AIQuestion.topic == topic)
+        .count()
+    )
+
+    if existing > 50:
+
+        return {
+            "message": "Questions already exist"
+        }
+
+    try:
+        ai_questions = generate_ai_questions(topic)
+    except Exception as e:
+        print(f"Error generating AI questions: {e}")
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=500, content={"error": str(e), "message": "Failed to generate questions. Please try again later."})
+
+    for q in ai_questions:
+
+        question = models.AIQuestion(
+            topic=topic,
+
+            question=q["question"],
+
+            option1=q["options"][0],
+            option2=q["options"][1],
+            option3=q["options"][2],
+            option4=q["options"][3],
+
+            correct=q["correct"]
+        )
+
+        db.add(question)
+
+    db.commit()
+
+    return {
+        "success": True
+    }
+
+
+@app.get("/questions")
+
+def get_questions(topic: str, db: Session = Depends(database.get_db)):
+
+    questions = (
+        db.query(models.AIQuestion)
+        .filter(models.AIQuestion.topic == topic)
+        .order_by(func.random())
+        .limit(10)
+        .all()
+    )
+
+    final = []
+
+    for q in questions:
+
+        final.append({
+            "q": q.question,
+
+            "options": [
+                q.option1,
+                q.option2,
+                q.option3,
+                q.option4
+            ],
+
+            "correct": q.correct
+        })
+
+    return final

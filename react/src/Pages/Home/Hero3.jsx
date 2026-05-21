@@ -6,7 +6,7 @@ function Hero3() {
 
   return (
     <>
-      <section className="relative h-[calc(100vh-120px)] flex items-center justify-center overflow-hidden bg-slate-950 text-white px-6">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950 text-white px-6 py-20 lg:py-0">
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
         <div className="absolute w-[500px] h-[500px] bg-blue-500/20 blur-3xl rounded-full top-[-100px] left-[-100px]"></div>
@@ -89,7 +89,7 @@ function Hero3() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="hidden md:block relative"
+            className="hidden md:block relative mt-10 md:mt-0"
           >
             <div className="absolute inset-0 bg-cyan-300/20 blur-2xl rounded-2xl"></div>
 

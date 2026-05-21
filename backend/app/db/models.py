@@ -108,4 +108,20 @@ class GameScore(Base):
     created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
-
+
+class AIQuestion(Base):
+
+    __tablename__ = "ai_questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    topic = Column(String, index=True)
+
+    question = Column(String)
+
+    option1 = Column(String)
+    option2 = Column(String)
+    option3 = Column(String)
+    option4 = Column(String)
+
+    correct = Column(Integer)

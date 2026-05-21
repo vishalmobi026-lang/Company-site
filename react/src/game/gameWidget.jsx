@@ -42,10 +42,10 @@ export default function GameWidget() {
         }}
       >
         {!open && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ 
-              opacity: 1, 
+            animate={{
+              opacity: 1,
               scale: 1,
               y: [0, -10, 0],
             }}
@@ -58,7 +58,7 @@ export default function GameWidget() {
             }}
             className="relative w-full h-full flex items-center justify-center cursor-pointer group"
           >
-            
+
             {/* FLOATING PARTICLES */}
             {[...Array(6)].map((_, i) => (
               <motion.div
@@ -123,9 +123,9 @@ export default function GameWidget() {
                 <Zap size={10} className="text-yellow-400" />
                 <span className="text-[7px] font-black uppercase tracking-widest text-white/80">Play & Win</span>
               </motion.div>
-              
+
               {/* TINY PULSING ORB */}
-              <motion.div 
+              <motion.div
                 animate={{ scale: [1, 1.8, 1], opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="absolute right-0 h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,1)]"
@@ -135,8 +135,8 @@ export default function GameWidget() {
             {/* 3. CENTRAL PREMIUM SQUIRCLE BUTTON (SCALED DOWN) */}
             <motion.button
               onClick={() => setOpen(true)}
-              whileHover={{ 
-                scale: 1.1, 
+              whileHover={{
+                scale: 1.1,
                 rotate: [0, -5, 5, 0],
                 transition: { rotate: { duration: 0.5, repeat: Infinity } }
               }}
@@ -144,8 +144,8 @@ export default function GameWidget() {
               className="relative z-10 h-16 w-16 rounded-[1.6rem] bg-[#07132f] border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.8)] flex items-center justify-center overflow-hidden"
             >
               {/* CYBER GRID TEXTURE */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none" 
-                   style={{ backgroundImage: 'linear-gradient(rgba(34,211,238,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.2) 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+              <div className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{ backgroundImage: 'linear-gradient(rgba(34,211,238,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.2) 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
 
               {/* GLITCH EFFECT ON HOVER */}
               <motion.div
@@ -165,20 +165,20 @@ export default function GameWidget() {
               />
 
               <motion.div
-                animate={{ 
+                animate={{
                   opacity: [0.1, 0.3, 0.1],
                   scale: [1, 1.2, 1]
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
                 className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-cyan-500/20 to-transparent"
               />
-              
+
               <div className="relative z-20 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500">
                 <Gamepad2 size={30} className="text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
               </div>
 
               {/* AMBIENT GLOW */}
-              <motion.div 
+              <motion.div
                 animate={{ opacity: [0, 0.5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                 className="absolute inset-0 bg-cyan-500/10 blur-xl"

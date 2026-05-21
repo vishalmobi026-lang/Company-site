@@ -7,7 +7,6 @@ import {
   ChevronDown, AlertCircle, Rocket, Gamepad2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ALL_QUESTIONS } from "./questions";
 
 const API_CATEGORY_MAP = {
   "IT / Technical": 18,
@@ -23,6 +22,8 @@ const decodeHTML = (html) => {
   txt.innerHTML = html;
   return txt.value;
 };
+
+
 
 const smoothEase = [0.16, 1, 0.3, 1];
 
@@ -128,67 +129,63 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   const submitForm = async () => {
-    if (formData.name.trim().length < 3) return setFormError("Name must be at least 3 characters.");
-    
-    if (formData.countryCode === "+91") {
-      if (formData.phone.length !== 10) {
-        return setFormError("Indian phone numbers must be exactly 10 digits.");
-      }
-      if (!/^[6789]/.test(formData.phone)) {
-        return setFormError("Indian phone numbers must start with 6, 7, 8, or 9.");
-      }
-    } else {
-      if (formData.phone.length < 6) return setFormError("Please enter a valid phone number.");
-    }
-    
-    if (!formData.course) return setFormError("Please select a target course.");
 
-    setFormError("");
-    setIsFetchingQs(true);
-
-    const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
-    try {
-      const checkRes = await fetch(`http://localhost:8000/gamescores/check?phone=${encodeURIComponent(fullPhoneNumber)}`);
-      const checkData = await checkRes.json();
-      if (checkData.exists) {
-        setIsFetchingQs(false);
-        return setFormError("This phone number has already been registered for a scholarship session.");
-      }
-    } catch (err) {
-      console.error("Failed to check phone number duplicate status:", err);
+    if (!formData.course) {
+      return setFormError("Please select a target course.")
     }
 
-    let finalQuestions = [];
+    setFormError("")
+    setIsFetchingQs(true)
+
+    let finalQuestions = []
 
     try {
-      // Use the expanded local question bank (100 questions per field)
-      const localPool = ALL_QUESTIONS[formData.course] || ALL_QUESTIONS["IT / Technical"];
-      
-      // Randomize the questions
-      finalQuestions = [...localPool].sort(() => Math.random() - 0.5);
-      
-      // Shuffle options for each question to increase variety
-      finalQuestions = finalQuestions.map(item => {
-        const optionsWithIndex = item.options.map((opt, idx) => ({ text: opt, isCorrect: idx === item.correct }));
-        const shuffledOptions = [...optionsWithIndex].sort(() => Math.random() - 0.5);
-        const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
-        
-        return {
-          q: item.q,
-          options: shuffledOptions.map(o => o.text),
-          correct: newCorrectIndex
-        };
-      });
+
+      // FETCH QUESTIONS FROM YOUR FASTAPI
+      const response = await fetch(
+        `http://localhost:8000/questions?topic=${encodeURIComponent(formData.course)}`
+      )
+
+      finalQuestions = await response.json()
+
+      // IF DATABASE EMPTY OR ERROR → AUTO GENERATE
+      if (!Array.isArray(finalQuestions) || finalQuestions.length === 0) {
+
+        await fetch(
+          `http://localhost:8000/generate-ai-questions?topic=${encodeURIComponent(formData.course)}`
+        )
+
+        // FETCH AGAIN
+        const retryResponse = await fetch(
+          `http://localhost:8000/questions?topic=${encodeURIComponent(formData.course)}`
+        )
+
+        finalQuestions = await retryResponse.json()
+      }
+
+      // STILL EMPTY
+      if (!Array.isArray(finalQuestions) || finalQuestions.length === 0) {
+
+        setFormError("No questions available or generation failed.")
+
+        setIsFetchingQs(false)
+
+        return
+      }
+
+      startGame(finalQuestions)
 
     } catch (error) {
-      console.error("Error setting up questions:", error);
-      // Minimal fallback
-      finalQuestions = [{ q: "Error loading questions. Restart?", options: ["Restart", "Exit", "Retry"], correct: 0 }];
-    }
 
-    setIsFetchingQs(false);
-    startGame(finalQuestions);
-  };
+      console.error(error)
+
+      setFormError("Failed to load questions.")
+
+    } finally {
+
+      setIsFetchingQs(false)
+    }
+  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -337,7 +334,7 @@ export default function NeonStrikeGame({ onClose }) {
     const code = `GTEC-${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const count = stateRef.current.correctCount;
     const calculatedDiscount = count >= 20 ? 7 : count >= 10 ? 5 : count >= 7 ? 4 : count >= 5 ? 3 : count >= 3 ? 2 : 1;
-    
+
     setCouponCode(code);
     setDiscount(calculatedDiscount);
     setGameState("result");
@@ -347,11 +344,11 @@ export default function NeonStrikeGame({ onClose }) {
       await fetch("http://localhost:8000/gamescores/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          name: formData.name, 
-          phone: fullPhoneNumber, 
-          course: formData.course, 
-          score: finalScore, 
+        body: JSON.stringify({
+          name: formData.name,
+          phone: fullPhoneNumber,
+          course: formData.course,
+          score: finalScore,
           couponCode: code,
           discount: calculatedDiscount,
           correctAnswers: count
@@ -367,11 +364,10 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   return (
-    <div className={`fixed inset-0 z-[99999] flex items-center justify-center font-sans overflow-hidden select-none w-full h-full transition-colors duration-500 ${
-      gameState === "playing" 
-        ? "bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930]" 
+    <div className={`fixed inset-0 z-[99999] flex items-center justify-center font-sans overflow-hidden select-none w-full h-full transition-colors duration-500 ${gameState === "playing"
+        ? "bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930]"
         : "bg-slate-950/40 backdrop-blur-sm"
-    }`}>
+      }`}>
 
       {gameState === "playing" ? (
         <>
@@ -394,19 +390,19 @@ export default function NeonStrikeGame({ onClose }) {
       <motion.div
         animate={shake ? { x: [-10, 10, -10, 10, 0], y: [-5, 5, -5, 5, 0] } : {}}
         transition={{ duration: 0.3 }}
-        className="w-full h-full relative z-10 flex flex-col justify-center max-w-[1920px] mx-auto"
+        className="w-full h-full relative z-10 flex flex-col justify-start md:justify-center max-w-[1920px] mx-auto overflow-y-auto overflow-x-hidden"
       >
         <AnimatePresence mode="wait">
 
           {/* ----- 1. INTRO SCREEN ----- */}
           {gameState === "intro" && (
-            <motion.div 
+            <motion.div
               key="intro"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
               transition={{ duration: 0.8, ease: smoothEase }}
-              className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-10 relative overflow-hidden"
+              className="min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center p-4 py-16 md:p-10 relative"
             >
               <div className="absolute inset-0 cyber-grid opacity-20 z-0" />
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.1)_0%,transparent_60%)] z-0" />
@@ -420,18 +416,18 @@ export default function NeonStrikeGame({ onClose }) {
                 {/* LEFT PANEL: TITLE CARD */}
                 <motion.div
                   whileHover={{ y: -6, scale: 1.005 }}
-                  className="flex-1 bg-white/90 backdrop-blur-xl border border-slate-100 p-8 md:p-12 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] flex flex-col justify-between overflow-hidden relative group transition-all duration-500 hover:shadow-[0_48px_80px_-16px_rgba(37,99,235,0.12)] hover:border-blue-100/80"
+                  className="flex-1 bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-6 md:p-12 rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] flex flex-col justify-between overflow-hidden relative group transition-all duration-500 hover:shadow-[0_0_80px_-15px_rgba(34,211,238,0.25)] hover:border-cyan-400/40"
                 >
                   {/* Inset Border Glow */}
-                  <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+                  <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
 
                   {/* Rotating Mesh Glow */}
-                  <motion.div 
+                  <motion.div
                     animate={{ rotate: [0, 360] }}
                     transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                    className="absolute -top-[30%] -left-[10%] w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08)_0%,rgba(6,182,212,0.03)_50%,transparent_100%)] blur-[80px] rounded-full pointer-events-none" 
+                    className="absolute -top-[30%] -left-[10%] w-[80%] h-[80%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08)_0%,rgba(6,182,212,0.03)_50%,transparent_100%)] blur-[80px] rounded-full pointer-events-none"
                   />
-                  
+
                   <div className="absolute top-0 right-0 p-8 opacity-65 flex items-center gap-2 z-10">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(37,99,235,1)]" />
                     <span className="font-mono text-[9px] text-slate-400 tracking-widest uppercase font-bold">SYS_REF: G-TEC_BRAIN_V3</span>
@@ -441,18 +437,18 @@ export default function NeonStrikeGame({ onClose }) {
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                      className="w-20 h-20 bg-blue-50/50 border border-blue-100/50 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100/40"
+                      className="w-20 h-20 bg-cyan-950/50 border border-cyan-500/30 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.15)]"
                     >
-                      <BrainCircuit size={40} className="text-blue-600" />
+                      <BrainCircuit size={40} className="text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
                     </motion.div>
 
                     <div className="space-y-3">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50/80 border border-blue-100/50 text-blue-600 text-xs font-bold uppercase tracking-widest">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                         <ShieldAlert size={14} /> Security Clearance: Level 1
                       </div>
-                      <h1 className="text-5xl md:text-7xl lg:text-[4.5rem] font-black text-slate-900 leading-[1.05] uppercase tracking-tighter">
-                        KNOWLEDGE <br /> 
-                        <motion.span 
+                      <h1 className="text-4xl md:text-7xl lg:text-[4.5rem] font-black text-white leading-[1.05] uppercase tracking-tighter drop-shadow-md">
+                        KNOWLEDGE <br />
+                        <motion.span
                           animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
                           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                           style={{ backgroundSize: "200% auto" }}
@@ -465,33 +461,33 @@ export default function NeonStrikeGame({ onClose }) {
                   </div>
 
                   {/* Ultimate System Diagnostics Logger Panel */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
-                    className="mt-12 relative z-10 bg-slate-50/80 border border-slate-100 p-5 rounded-2xl flex flex-col gap-3 backdrop-blur-md"
+                    className="mt-12 relative z-10 bg-[#060b18]/60 border border-cyan-500/20 p-5 rounded-2xl flex flex-col gap-3 backdrop-blur-md"
                   >
-                    <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
-                      <span className="font-mono text-[9px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Connection Status
+                    <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                      <span className="font-mono text-[9px] text-cyan-200/60 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" /> Connection Status
                       </span>
-                      <span className="font-mono text-[9px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-bold uppercase tracking-widest border border-blue-100">Handshake Active</span>
+                      <span className="font-mono text-[9px] text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded font-bold uppercase tracking-widest border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">Handshake Active</span>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="text-[9px] text-slate-400 font-bold font-sans uppercase">Handshake target</div>
-                        <div className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-1 mt-0.5">
-                          100% Grant <span className="text-[9px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.2 rounded font-mono font-bold">SECURED</span>
+                        <div className="text-[9px] text-cyan-200/50 font-bold font-sans uppercase">Handshake target</div>
+                        <div className="text-sm font-black text-white tracking-tight flex items-center gap-1 mt-0.5">
+                          100% Grant <span className="text-[9px] text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-1.5 py-0.2 rounded font-mono font-bold">SECURED</span>
                         </div>
                       </div>
                       <div>
-                        <div className="text-[9px] text-slate-400 font-bold font-sans uppercase">Server Node</div>
-                        <div className="text-sm font-bold text-slate-600 font-mono tracking-wider mt-0.5">AP-SOUTH_GATE_1</div>
+                        <div className="text-[9px] text-cyan-200/50 font-bold font-sans uppercase">Server Node</div>
+                        <div className="text-sm font-bold text-cyan-100 font-mono tracking-wider mt-0.5">AP-SOUTH_GATE_1</div>
                       </div>
                     </div>
-                    <div className="text-[11px] text-slate-500 font-semibold leading-relaxed border-t border-slate-200/50 pt-2 flex items-center justify-between">
-                      <span>System diagnostics: <span className="text-slate-800 font-bold">Stable</span></span>
-                      <span className="text-[9px] font-mono text-slate-400">Ping: 12ms</span>
+                    <div className="text-[11px] text-cyan-200/60 font-semibold leading-relaxed border-t border-cyan-500/20 pt-2 flex items-center justify-between">
+                      <span>System diagnostics: <span className="text-emerald-400 font-bold">Stable</span></span>
+                      <span className="text-[9px] font-mono text-cyan-200/50">Ping: 12ms</span>
                     </div>
                   </motion.div>
                 </motion.div>
@@ -501,9 +497,9 @@ export default function NeonStrikeGame({ onClose }) {
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: smoothEase }}
-                  className="lg:w-[450px] bg-white/90 backdrop-blur-xl border border-slate-100 p-8 md:p-10 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] relative flex flex-col justify-between overflow-hidden"
+                  className="lg:w-[450px] bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-6 md:p-10 rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative flex flex-col justify-between overflow-hidden"
                 >
-                  <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+                  <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
 
                   <motion.div
                     animate={{ top: ['0%', '100%', '0%'] }}
@@ -512,38 +508,38 @@ export default function NeonStrikeGame({ onClose }) {
                   />
 
                   <div>
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
-                      <h3 className="text-slate-900 font-black text-xl uppercase tracking-widest flex items-center gap-3">
-                        <Sparkles className="text-blue-600" size={24} /> Directives
+                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-cyan-500/20">
+                      <h3 className="text-white font-black text-xl uppercase tracking-widest flex items-center gap-3">
+                        <Sparkles className="text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]" size={24} /> Directives
                       </h3>
-                      <div className="text-[10px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-2 font-bold">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> LIVE
+                      <div className="text-[10px] bg-emerald-950/50 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-2 font-bold shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> LIVE
                       </div>
                     </div>
 
                     {/* Elastic Hover-Physics List */}
                     <div className="space-y-4">
                       {[
-                        { label: "01_LIMIT", text: "One session attempt per verified UID.", icon: <User size={14} className="text-blue-600" /> },
-                        { label: "02_TIMER", text: "Sixty-second response window per node.", icon: <Clock size={14} className="text-blue-600" /> },
-                        { label: "03_CRED", text: "Identity verification mandatory for grant.", icon: <ShieldAlert size={14} className="text-blue-600" /> },
-                        { label: "04_DATA", text: "System logs IP and attempt metadata.", icon: <BookOpen size={14} className="text-blue-600" /> }
+                        { label: "01_LIMIT", text: "One session attempt per verified UID.", icon: <User size={14} className="text-cyan-400" /> },
+                        { label: "02_TIMER", text: "Sixty-second response window per node.", icon: <Clock size={14} className="text-cyan-400" /> },
+                        { label: "03_CRED", text: "Identity verification mandatory for grant.", icon: <ShieldAlert size={14} className="text-cyan-400" /> },
+                        { label: "04_DATA", text: "System logs IP and attempt metadata.", icon: <BookOpen size={14} className="text-cyan-400" /> }
                       ].map((item, idx) => (
-                        <motion.div 
-                          key={idx} 
+                        <motion.div
+                          key={idx}
                           whileHover={{ x: 6, scale: 1.01 }}
                           transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                          className="group flex gap-4 items-center bg-slate-50/50 hover:bg-blue-50/40 border border-slate-100 hover:border-blue-100/40 p-4 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md cursor-default"
+                          className="group flex gap-4 items-center bg-[#131b31]/60 hover:bg-cyan-900/30 border border-cyan-500/10 hover:border-cyan-400/40 p-4 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] cursor-default"
                         >
-                          <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 group-hover:border-blue-100/80 shadow-sm flex items-center justify-center shrink-0 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-xl bg-[#060b18] border border-cyan-500/20 group-hover:border-cyan-400/80 shadow-sm flex items-center justify-center shrink-0 transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]">
                             {item.icon}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <p className="text-[9px] text-blue-600 font-mono font-black uppercase tracking-wider">{item.label}</p>
-                              <span className="text-[9px] text-slate-400 font-mono font-bold">[{item.label.split('_')[0]}]</span>
+                              <p className="text-[9px] text-cyan-400 font-mono font-black uppercase tracking-wider drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">{item.label}</p>
+                              <span className="text-[9px] text-cyan-200/40 font-mono font-bold">[{item.label.split('_')[0]}]</span>
                             </div>
-                            <p className="text-slate-600 text-xs md:text-sm font-semibold group-hover:text-slate-900 transition-colors mt-0.5 leading-snug">{item.text}</p>
+                            <p className="text-slate-300 text-xs md:text-sm font-semibold group-hover:text-white transition-colors mt-0.5 leading-snug">{item.text}</p>
                           </div>
                         </motion.div>
                       ))}
@@ -555,7 +551,7 @@ export default function NeonStrikeGame({ onClose }) {
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setGameState("form")}
-                      className="group relative w-full bg-gradient-to-r from-blue-950 via-blue-800 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_20px_40px_-12px_rgba(37,99,235,0.25)] hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.35)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-blue-400/20 overflow-hidden"
+                      className="group relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_0_30px_-5px_rgba(34,211,238,0.4)] hover:shadow-[0_0_50px_-5px_rgba(34,211,238,0.6)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 overflow-hidden"
                     >
                       <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
                       <span className="relative z-10 flex items-center gap-3 font-extrabold">
@@ -577,21 +573,21 @@ export default function NeonStrikeGame({ onClose }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: -20 }}
               transition={{ duration: 1, ease: smoothEase }}
-              className="w-full max-w-5xl mx-auto bg-white/90 backdrop-blur-xl p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(37,99,235,0.06)] relative overflow-hidden"
+              className="w-full max-w-5xl my-16 md:my-auto mx-auto bg-[#0b1021]/80 backdrop-blur-2xl p-5 sm:p-8 md:p-12 rounded-[2.5rem] border border-cyan-500/20 shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative overflow-hidden"
             >
               {/* Inset Border Glow */}
-              <div className="absolute inset-0 rounded-[2.5rem] border border-white/60 pointer-events-none z-20" />
+              <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
 
-              <div className="absolute -top-[50%] -right-[20%] w-[100%] h-[150%] bg-gradient-to-b from-blue-500/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
+              <div className="absolute -top-[50%] -right-[20%] w-[100%] h-[150%] bg-gradient-to-b from-cyan-500/10 to-transparent blur-[120px] rounded-full pointer-events-none" />
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative z-10">
                 <motion.div variants={containerVariants} initial="hidden" animate="show" className="space-y-6">
                   <motion.div variants={itemVariants}>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold uppercase tracking-widest mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
                       <Sparkles size={14} /> Security Clearance
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-3 tracking-tight">Pilot Registration</h2>
-                    <p className="text-slate-500 text-sm md:text-base font-semibold leading-relaxed">
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-3 tracking-tight drop-shadow-md">Pilot Registration</h2>
+                    <p className="text-cyan-100/60 text-sm md:text-base font-semibold leading-relaxed">
                       Authenticate your credentials to generate your secure scholarship pass and enter the arena.
                     </p>
                   </motion.div>
@@ -599,61 +595,70 @@ export default function NeonStrikeGame({ onClose }) {
                   <motion.div variants={itemVariants} className="space-y-5">
                     {/* Full Name Input Field */}
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Full Name</label>
+                      <label className="text-[10px] text-cyan-200/50 font-bold uppercase tracking-wider pl-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Full Name</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
-                          <User className="text-slate-400 group-focus-within:text-blue-600 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
+                          <User className="text-cyan-600 group-focus-within:text-cyan-400 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
                         </div>
                         <input
                           type="text" placeholder="Enter full name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-12 pr-4 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out text-base placeholder:text-slate-400 font-semibold shadow-inner"
+                          className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-12 pr-4 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out text-base placeholder:text-cyan-600/50 font-semibold shadow-inner focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                         />
                       </div>
                     </div>
 
                     {/* Phone Number Input Field */}
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Contact Number</label>
+                      <label className="text-[10px] text-cyan-200/50 font-bold uppercase tracking-wider pl-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Contact Number</label>
                       <div className="flex gap-3 relative">
                         <div className="relative w-[35%] shrink-0 group">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
-                            <Phone className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={18} />
+                            <Phone className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={18} />
                           </div>
                           <select
                             value={formData.countryCode} onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-10 pr-8 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out appearance-none text-sm md:text-base font-semibold cursor-pointer relative z-10"
+                            className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-10 pr-8 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out appearance-none text-sm md:text-base font-semibold cursor-pointer relative z-10 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                           >
                             <option value="+91">IN (+91)</option>
                             {Array.isArray(countries) && countries.map((c) => <option key={c.id} value={`+${c.phonecode}`}>{c.id} (+{c.phonecode})</option>)}
                           </select>
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none z-20">
-                            <ChevronDown className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={16} />
+                            <ChevronDown className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={16} />
                           </div>
                         </div>
 
                         <input
                           type="text" placeholder="Phone Number" value={formData.phone} onChange={handlePhoneChange} maxLength={formData.countryCode === "+91" ? 10 : 15}
-                          className="w-[65%] bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 px-5 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out font-mono tracking-wider text-base md:text-lg placeholder:text-slate-400 placeholder:font-sans font-semibold shadow-inner"
+                          className="w-[65%] bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 px-5 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out font-mono tracking-wider text-base md:text-lg placeholder:text-cyan-600/50 placeholder:font-sans font-semibold shadow-inner focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                         />
                       </div>
                     </div>
 
                     {/* Course Selection Input Field */}
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider pl-1">Target Sector</label>
+                      <label className="text-[10px] text-cyan-200/50 font-bold uppercase tracking-wider pl-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Target Sector</label>
                       <div className="relative group">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-20">
-                          <BookOpen className="text-slate-400 group-focus-within:text-blue-600 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
+                          <BookOpen className="text-cyan-600 group-focus-within:text-cyan-400 group-focus-within:-translate-y-0.5 transition-all duration-300 ease-out" size={20} />
                         </div>
                         <select
                           value={formData.course} onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl py-4 pl-12 pr-10 hover:bg-slate-100/50 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 outline-none transition-colors duration-200 ease-out appearance-none text-base md:text-lg font-semibold cursor-pointer relative z-10"
+                          className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-12 pr-10 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out appearance-none text-base md:text-lg font-semibold cursor-pointer relative z-10 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                         >
-                          <option value="" disabled>Select Target Sector</option>
-                          {Object.keys(ALL_QUESTIONS).map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
+                          <option value="" disabled className="text-slate-400">Select Target Sector</option>
+                          {[
+                            "IT / Technical",
+                            "IT / Non-Technical",
+                            "Designing",
+                            "Accounting",
+                            "Civil"
+                          ].map((c) => (
+                            <option key={c} value={c} className="text-slate-900 bg-white">
+                              {c}
+                            </option>
+                          ))}                        </select>
                         <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-20">
-                          <ChevronDown className="text-slate-400 group-focus-within:text-blue-600 transition-colors duration-200 ease-out" size={20} />
+                          <ChevronDown className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={20} />
                         </div>
                       </div>
                     </div>
@@ -671,11 +676,11 @@ export default function NeonStrikeGame({ onClose }) {
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={submitForm} disabled={isFetchingQs}
-                    className="group relative w-full bg-gradient-to-r from-blue-950 via-blue-800 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_20px_40px_-12px_rgba(37,99,235,0.25)] hover:shadow-[0_24px_48px_-12px_rgba(37,99,235,0.35)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-blue-400/20 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
+                    className="group relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_0_30px_-5px_rgba(34,211,238,0.4)] hover:shadow-[0_0_50px_-5px_rgba(34,211,238,0.6)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
                   >
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
                     <span className="relative z-10 flex items-center gap-3 font-extrabold">
-                      {isFetchingQs ? <><Loader2 className="animate-spin" size={20} /> Calibrating...</> : <><Rocket size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300 ease-out" /> Ready to Launch</>}
+                      {isFetchingQs ? <><Loader2 className="animate-spin text-white" size={20} /> Calibrating...</> : <><Rocket size={20} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300 ease-out text-white" /> Ready to Launch</>}
                     </span>
                   </motion.button>
                 </motion.div>
@@ -694,7 +699,7 @@ export default function NeonStrikeGame({ onClose }) {
                     className="relative z-10 flex flex-col items-center justify-center w-full max-w-[320px]"
                   >
                     <div className="relative w-full aspect-square flex items-center justify-center scale-95 mt-2" style={{ perspective: "1000px" }}>
-                      
+
                       {/* Telemetry coordinate guides */}
                       <div className="absolute top-0 right-0 font-mono text-[8px] text-slate-400/60 uppercase tracking-widest">ALT: 1042.8M</div>
                       <div className="absolute bottom-0 left-0 font-mono text-[8px] text-slate-400/60 uppercase tracking-widest">HDG: 042.89°</div>
@@ -751,7 +756,7 @@ export default function NeonStrikeGame({ onClose }) {
 
                       {/* CENTRAL ENERGY CORE */}
                       <motion.div
-                        animate={{ 
+                        animate={{
                           rotate: 45,
                           scale: [1, 1.15, 1],
                           opacity: [0.8, 1, 0.8]
@@ -760,15 +765,15 @@ export default function NeonStrikeGame({ onClose }) {
                         className="relative z-20 w-16 h-16 bg-gradient-to-tr from-blue-900 to-blue-600 rounded-xl shadow-[0_0_40px_rgba(37,99,235,0.4)] border border-white/40 flex items-center justify-center overflow-hidden"
                       >
                         <div className="absolute inset-0 bg-white/20 blur-sm mix-blend-overlay" />
-                        <motion.div 
-                          animate={{ rotate: -90 }} 
+                        <motion.div
+                          animate={{ rotate: -90 }}
                           transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                           className="w-8 h-8 border border-white/40 rounded-sm"
                         />
                       </motion.div>
 
                       {/* PULSING BACKGROUND GLOW */}
-                      <motion.div 
+                      <motion.div
                         animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.4, 0.2] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                         className="absolute w-40 h-40 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"
@@ -799,7 +804,7 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-cyan-400/60"></div>
                     <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-cyan-400/60"></div>
                     <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-cyan-400/60"></div>
-                    
+
                     {/* Pulsing indicator */}
                     <div className="absolute top-2 right-4 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]"></span>
@@ -810,7 +815,7 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="font-black font-mono text-2xl md:text-3xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)] flex items-baseline gap-1.5 leading-none">
                       {score.toLocaleString()} <span className="text-[10px] text-cyan-400 font-bold tracking-widest font-sans uppercase">PTS</span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-cyan-400/20">
                       <span className="font-mono text-[7px] text-slate-400 font-bold uppercase tracking-widest">Shields</span>
                       <div className="flex gap-1">
@@ -837,7 +842,7 @@ export default function NeonStrikeGame({ onClose }) {
                         <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
                         <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
                         <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
-                        
+
                         {/* Faint Grid Scanline Overlay */}
                         <div className="absolute inset-0 bg-[linear-gradient(transparent_96%,rgba(34,211,238,0.08)_96%)] bg-[length:100%_8px] opacity-40 pointer-events-none"></div>
 
@@ -908,7 +913,7 @@ export default function NeonStrikeGame({ onClose }) {
                     {/* Thin sliding horizontal neon lines */}
                     <div className="absolute inset-0 bg-[linear-gradient(transparent_97%,rgba(34,211,238,0.45)_97%)] bg-[length:100%_120px] animate-[slideDown_0.6s_linear_infinite]"></div>
                   </div>
-                  
+
                   {/* Glowing Laser Lane Separators */}
                   <div className="absolute inset-0 flex justify-evenly pointer-events-none opacity-80">
                     <div className="w-[1.5px] md:w-[2.5px] h-full bg-cyan-400/60 shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
@@ -926,14 +931,14 @@ export default function NeonStrikeGame({ onClose }) {
 
                     return (
                       <div key={ent.id}
-                           className="absolute flex flex-col items-center justify-center pointer-events-auto"
-                           style={{
-                             left: `${xPos}%`,
-                             top: `${ent.top}%`,
-                             transform: `translate(-50%, -50%) scale(${scale})`,
-                             zIndex: Math.floor(ent.top),
-                             width: '25%'
-                           }}>
+                        className="absolute flex flex-col items-center justify-center pointer-events-auto"
+                        style={{
+                          left: `${xPos}%`,
+                          top: `${ent.top}%`,
+                          transform: `translate(-50%, -50%) scale(${scale})`,
+                          zIndex: Math.floor(ent.top),
+                          width: '25%'
+                        }}>
 
                         {!ent.revealed && (
                           <div className="relative overflow-hidden bg-[#050917]/95 border-2 border-cyan-400/70 p-3 md:p-6 rounded-2xl text-white font-bold text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] backdrop-blur-md flex items-center justify-center min-h-[60px] md:min-h-[100px] w-full break-words transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_40px_rgba(34,211,238,0.45)]">
@@ -942,10 +947,10 @@ export default function NeonStrikeGame({ onClose }) {
                             <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
                             <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
                             <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
-                            
+
                             {/* Faint Scanline Grid Overlay */}
                             <div className="absolute inset-0 bg-[linear-gradient(rgba(18,24,45,0)_95%,rgba(34,211,238,0.15)_95%)] bg-[length:100%_6px] opacity-35 pointer-events-none"></div>
-                            
+
                             <span className="relative z-10 text-[10px] leading-tight sm:text-xs md:text-lg md:leading-snug bg-gradient-to-b from-white to-slate-200 bg-clip-text text-transparent drop-shadow-sm select-text">{ent.text}</span>
                           </div>
                         )}
@@ -989,14 +994,14 @@ export default function NeonStrikeGame({ onClose }) {
                   <div className={`w-32 h-32 md:w-48 md:h-48 relative flex items-center justify-center transition-all duration-300 drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] ${stateRef.current.flashTimer > 0 ? 'opacity-30' : 'opacity-100'}`}>
                     {/* CUSTOM NEON SHIP */}
                     <motion.div
-                      animate={{ 
+                      animate={{
                         y: [0, -4, 0],
                         rotateX: [10, 25, 10]
                       }}
-                      transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
                       }}
                       className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
                     >
@@ -1032,7 +1037,7 @@ export default function NeonStrikeGame({ onClose }) {
                         {/* Left Engine Pod */}
                         <path d="M20 80 L30 40 L35 40 L40 80 L35 100 L25 100 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
                         <path d="M25 70 L30 45 L32 45 L35 70 Z" fill="url(#accentCyan)" opacity="0.7" />
-                        
+
                         {/* Right Engine Pod */}
                         <path d="M100 80 L90 40 L85 40 L80 80 L85 100 L95 100 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
                         <path d="M95 70 L90 45 L88 45 L85 70 Z" fill="url(#accentCyan)" opacity="0.7" />
@@ -1042,7 +1047,7 @@ export default function NeonStrikeGame({ onClose }) {
 
                         {/* Main Fuselage */}
                         <path d="M45 90 L60 5 L75 90 L65 105 L55 105 Z" fill="url(#bodyBase)" filter="url(#dropShadow)" />
-                        
+
                         {/* Fuselage Accents */}
                         <path d="M50 80 L60 15 L70 80 L60 90 Z" fill="#334155" />
                         <path d="M55 70 L60 25 L65 70 Z" fill="url(#accentCyan)" opacity="0.4" />
@@ -1050,7 +1055,7 @@ export default function NeonStrikeGame({ onClose }) {
                         {/* Cockpit Canopy */}
                         <path d="M54 55 Q60 30 66 55 L64 65 Q60 70 56 65 Z" fill="url(#cockpitVisor)" />
                         <path d="M56 65 Q60 70 64 65 L62 60 L58 60 Z" fill="#22d3ee" opacity="0.5" filter="url(#neonCoreGlow)" />
-                        
+
                         {/* Center Energy Core */}
                         <circle cx="60" cy="75" r="5" fill="#fff" filter="url(#neonCoreGlow)" />
                         <circle cx="60" cy="75" r="2" fill="#cffafe" />
@@ -1058,7 +1063,7 @@ export default function NeonStrikeGame({ onClose }) {
                         {/* Neon Trims */}
                         <path d="M45 90 L60 5 L75 90" fill="none" stroke="#22d3ee" strokeWidth="2" strokeOpacity="0.9" filter="url(#neonCoreGlow)" />
                         <path d="M60 5 L60 25" fill="none" stroke="#fff" strokeWidth="1" opacity="0.9" />
-                        
+
                         {/* Wing Tip Glows */}
                         <line x1="15" y1="85" x2="25" y2="95" stroke="#22d3ee" strokeWidth="2" filter="url(#neonCoreGlow)" />
                         <line x1="105" y1="85" x2="95" y2="95" stroke="#22d3ee" strokeWidth="2" filter="url(#neonCoreGlow)" />
@@ -1067,15 +1072,15 @@ export default function NeonStrikeGame({ onClose }) {
 
                       {/* MAIN THRUSTER GLOW */}
                       <motion.div
-                        animate={{ 
+                        animate={{
                           scale: [1, 1.2, 1],
                           opacity: [0.7, 1, 0.7],
                           y: [0, 4, 0]
                         }}
-                        transition={{ 
-                          duration: 0.08, 
-                          repeat: Infinity, 
-                          ease: "linear" 
+                        transition={{
+                          duration: 0.08,
+                          repeat: Infinity,
+                          ease: "linear"
                         }}
                         className="absolute bottom-[-10px] w-14 h-28 bg-gradient-to-t from-cyan-400 via-blue-500/50 to-transparent blur-xl rounded-full z-0"
                       />
@@ -1091,19 +1096,19 @@ export default function NeonStrikeGame({ onClose }) {
                         transition={{ duration: 0.12, repeat: Infinity, ease: "linear", delay: 0.05 }}
                         className="absolute bottom-2 right-4 w-6 h-16 bg-gradient-to-t from-cyan-300 via-blue-500/40 to-transparent blur-md rounded-full z-0"
                       />
-                      
+
                       {/* ENGINE SPARKS */}
-                      <motion.div 
+                      <motion.div
                         animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0], y: [0, 15, 30] }}
                         transition={{ duration: 0.3, repeat: Infinity, delay: 0.1 }}
                         className="absolute bottom-0 w-1.5 h-6 bg-white blur-[1px] rounded-full z-0"
                       />
-                      <motion.div 
+                      <motion.div
                         animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], y: [0, 20, 35] }}
                         transition={{ duration: 0.4, repeat: Infinity, delay: 0.2 }}
                         className="absolute bottom-0 left-6 w-1 h-4 bg-cyan-200 blur-[1px] rounded-full z-0"
                       />
-                      <motion.div 
+                      <motion.div
                         animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0], y: [0, 20, 35] }}
                         transition={{ duration: 0.4, repeat: Infinity, delay: 0.3 }}
                         className="absolute bottom-0 right-6 w-1 h-4 bg-cyan-200 blur-[1px] rounded-full z-0"
@@ -1121,13 +1126,13 @@ export default function NeonStrikeGame({ onClose }) {
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-[2px] bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,1)]"></div>
 
                 {/* Left Thrust Button */}
-                <button 
-                  onPointerDown={() => movePlayer(-1)} 
+                <button
+                  onPointerDown={() => movePlayer(-1)}
                   className="relative flex-1 max-w-[350px] h-full bg-slate-900/40 backdrop-blur-md border border-cyan-500/30 rounded-2xl flex items-center justify-center active:scale-95 transition-all duration-300 hover:bg-cyan-950/60 hover:border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.05)] hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] group overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
-                  
+
                   <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
                     <ChevronLeft size={44} className="text-cyan-500 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:-translate-x-2 transition-all duration-300" />
                     <div className="flex flex-col items-start text-left">
@@ -1135,7 +1140,7 @@ export default function NeonStrikeGame({ onClose }) {
                       <span className="hidden md:block text-cyan-500/80 font-mono font-black tracking-[0.2em] uppercase text-sm group-hover:text-cyan-300 transition-colors">Port Thrust</span>
                     </div>
                   </div>
-                  
+
                   <div className="absolute top-3 right-3 flex gap-1 opacity-20 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
                     <div className="w-1 h-1 bg-cyan-400 rounded-full animate-pulse delay-75"></div>
@@ -1144,13 +1149,13 @@ export default function NeonStrikeGame({ onClose }) {
                 </button>
 
                 {/* Right Thrust Button */}
-                <button 
-                  onPointerDown={() => movePlayer(1)} 
+                <button
+                  onPointerDown={() => movePlayer(1)}
                   className="relative flex-1 max-w-[350px] h-full bg-slate-900/40 backdrop-blur-md border border-cyan-500/30 rounded-2xl flex items-center justify-center active:scale-95 transition-all duration-300 hover:bg-cyan-950/60 hover:border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.05)] hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] group overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-l from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute right-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
-                  
+
                   <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
                     <div className="flex flex-col items-end text-right">
                       <span className="hidden md:block text-[10px] text-cyan-500/50 font-mono font-bold uppercase tracking-widest group-hover:text-cyan-400/80 transition-colors">System Override</span>
@@ -1179,8 +1184,8 @@ export default function NeonStrikeGame({ onClose }) {
               className="text-center px-4 w-full max-w-5xl mx-auto relative z-20"
             >
               <div className="mb-4 relative">
-                <motion.h2 
-                  animate={{ 
+                <motion.h2
+                  animate={{
                     opacity: [0.5, 1, 0.5],
                     textShadow: ["0 0 10px rgba(34,211,238,0)", "0 0 20px rgba(34,211,238,0.5)", "0 0 10px rgba(34,211,238,0)"]
                   }}
@@ -1193,9 +1198,9 @@ export default function NeonStrikeGame({ onClose }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch perspective-1000">
-                
+
                 {/* LEFT: CANDIDATE INFO */}
-                <motion.div 
+                <motion.div
                   initial={{ x: -30, opacity: 0, rotateY: -5 }}
                   animate={{ x: 0, opacity: 1, rotateY: 0 }}
                   transition={{ duration: 0.8, ease: smoothEase }}
@@ -1213,7 +1218,7 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="flex items-center gap-6 mb-12">
                       <div className="w-16 h-16 bg-gradient-to-br from-cyan-500/20 to-blue-600/10 rounded-2xl flex items-center justify-center border border-cyan-500/30 group-hover:border-cyan-400 transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.1)] relative overflow-hidden">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/20 to-transparent" />
-                        <motion.div 
+                        <motion.div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                           className="w-10 h-10 border-2 border-dashed border-cyan-500/20 rounded-full flex items-center justify-center"
@@ -1234,7 +1239,7 @@ export default function NeonStrikeGame({ onClose }) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <h3 className="text-cyan-500/30 text-[9px] font-black uppercase tracking-[0.2em] mb-1">Subject Identity</h3>
                     <p className="text-3xl md:text-4xl font-black text-white tracking-tighter truncate leading-tight">
                       {formData.name}
@@ -1245,11 +1250,11 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="flex items-center gap-4">
                       <div className="flex gap-1.5">
                         {[...Array(5)].map((_, i) => (
-                          <motion.div 
+                          <motion.div
                             key={i}
                             animate={{ opacity: [0.2, 1, 0.2] }}
                             transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
-                            className="w-1.5 h-6 bg-cyan-500/30 rounded-full" 
+                            className="w-1.5 h-6 bg-cyan-500/30 rounded-full"
                           />
                         ))}
                       </div>
@@ -1265,26 +1270,26 @@ export default function NeonStrikeGame({ onClose }) {
                 {/* RIGHT: STATS STACK */}
                 <div className="md:col-span-5 flex flex-col gap-8">
                   {/* DISCOUNT CARD */}
-                  <motion.div 
+                  <motion.div
                     initial={{ x: 30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.1 }}
                     className="flex-1 bg-gradient-to-br from-indigo-900/40 to-blue-900/20 backdrop-blur-3xl border border-cyan-400/30 rounded-[2rem] p-6 text-left relative overflow-hidden group shadow-lg"
                   >
                     {/* ANIMATED GLOW BACKGROUND */}
-                    <motion.div 
+                    <motion.div
                       animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.4, 0.2] }}
                       transition={{ duration: 5, repeat: Infinity }}
-                      className="absolute top-0 right-0 w-48 h-48 bg-cyan-400 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" 
+                      className="absolute top-0 right-0 w-48 h-48 bg-cyan-400 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2"
                     />
-                    
+
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
                           <Zap size={12} className="fill-cyan-400" /> Scholarship Grant
                         </p>
                       </div>
-                      
+
                       <div className="flex items-baseline gap-2">
                         <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">
                           {discount}
@@ -1296,14 +1301,14 @@ export default function NeonStrikeGame({ onClose }) {
                   </motion.div>
 
                   {/* SOLVED CARD */}
-                  <motion.div 
+                  <motion.div
                     initial={{ x: 30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="bg-[#0b132b]/60 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-6 text-left relative overflow-hidden group shadow-lg"
                   >
                     <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full translate-x-1/4 translate-y-1/4" />
-                    
+
                     <div className="relative z-10 flex items-center justify-between">
                       <div>
                         <p className="text-zinc-500 text-[8px] font-black uppercase tracking-[0.2em] mb-1">Total Solved</p>
@@ -1313,7 +1318,7 @@ export default function NeonStrikeGame({ onClose }) {
                       </div>
                       <div className="w-16 h-16 bg-white/5 rounded-[1.5rem] flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-all duration-500 overflow-hidden relative">
                         <div className="absolute inset-0 bg-blue-500/5 scanline-horizontal" />
-                        <motion.div 
+                        <motion.div
                           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
                           transition={{ duration: 2, repeat: Infinity }}
                           className="w-8 h-8 bg-blue-500/20 rounded-full blur-sm"
@@ -1324,7 +1329,7 @@ export default function NeonStrikeGame({ onClose }) {
                   </motion.div>
                 </div>
 
-                <motion.div 
+                <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
@@ -1335,7 +1340,7 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="w-12 h-1 bg-black rounded-full" />
                     <div className="w-6 h-1 bg-black rounded-full" />
                   </div>
-                  
+
                   {/* SIGNATURE TECH STRIPE */}
                   <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-b from-cyan-500 via-blue-600 to-indigo-800" />
 
@@ -1366,13 +1371,13 @@ export default function NeonStrikeGame({ onClose }) {
                         <div className="text-4xl md:text-6xl font-mono font-black tracking-tighter text-black leading-none break-all">
                           {couponCode || "GTEC-SCORE-XXXX"}
                         </div>
-                        
+
                         <div className="mt-6 flex justify-center md:justify-end items-center gap-3">
                           <div className="w-12 h-1.5 bg-cyan-500/10 rounded-full overflow-hidden">
-                            <motion.div 
+                            <motion.div
                               animate={{ x: ["-100%", "100%"] }}
                               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                              className="w-1/2 h-full bg-cyan-500" 
+                              className="w-1/2 h-full bg-cyan-500"
                             />
                           </div>
                         </div>
@@ -1397,12 +1402,12 @@ export default function NeonStrikeGame({ onClose }) {
                   {/* SYSTEM INTEGRITY BAR */}
                   <div className="hidden lg:flex items-center gap-4 px-6 py-3 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex-1">
                     <div className="flex gap-1">
-                      {[1,2,3,4,5].map(i => (
-                        <motion.div 
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <motion.div
                           key={i}
                           animate={{ height: [8, 16, 8] }}
                           transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity }}
-                          className="w-1 bg-cyan-500/40 rounded-full" 
+                          className="w-1 bg-cyan-500/40 rounded-full"
                         />
                       ))}
                     </div>
@@ -1431,10 +1436,10 @@ export default function NeonStrikeGame({ onClose }) {
                     <motion.button
                       initial={{ x: 20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
-                      whileHover={{ 
-                        scale: 1.05, 
+                      whileHover={{
+                        scale: 1.05,
                         boxShadow: "0 0 30px rgba(37, 99, 235, 0.3)",
-                        backgroundColor: "#2563eb" 
+                        backgroundColor: "#2563eb"
                       }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleExit}
@@ -1450,7 +1455,7 @@ export default function NeonStrikeGame({ onClose }) {
                     </motion.button>
                   </div>
                 </div>
-                
+
                 {/* FOOTER HASH */}
                 <div className="text-[8px] font-mono text-zinc-700 uppercase tracking-widest opacity-50">
                   Transaction_Hash: {Math.random().toString(36).substring(2, 15).toUpperCase()}
