@@ -214,7 +214,7 @@ export default function NeonStrikeGame({ onClose }) {
     stateRef.current = {
       lane: 1, score: 0, lives: 3, combo: 1, speed: 0.35, entities: [],
       flashTimer: 0, frame: 0, questions: questionsToPlay, qIndex: 0,
-      isQuestionActive: false, spawnTimer: 30, correctCount: 0
+      isQuestionActive: false, spawnTimer: 166, correctCount: 0
     };
 
     setCorrectCount(0);
@@ -298,7 +298,7 @@ export default function NeonStrikeGame({ onClose }) {
         if (state.qIndex >= state.questions.length) state.qIndex = 0;
         setCurrentQuestion(state.questions[state.qIndex].q);
 
-        state.spawnTimer = 70;
+        state.spawnTimer = 166;
       }, 800);
     }
 
