@@ -75,6 +75,7 @@ class Enrollment(Base):
     college_status = Column(String)
     college_degree_type = Column(String)
     college_degree = Column(String)
+    id_proof = Column(String)
 
 class Course(Base):
     __tablename__ = "courses"
@@ -93,6 +94,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     slug = Column(String, unique=True, index=True, nullable=False)
+    image_url = Column(String, nullable=True)
 
 class GameScore(Base):
     __tablename__ = "game_scores"

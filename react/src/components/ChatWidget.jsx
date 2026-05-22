@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLottie } from "lottie-react";
 import successAnimation from "../Assets/Success.json";
@@ -15,7 +15,7 @@ function ChatBadgeIcon({ open }) {
         animate={{ rotate: 0, scale: 1, opacity: 1 }}
         exit={{ rotate: 90, scale: 0.7, opacity: 0 }}
         transition={{ duration: 0.2 }}
-      className="text-3xl font-bold text-blue-900 transition hover:text-cyan-200  "
+        className="text-3xl font-bold text-blue-900 transition hover:text-cyan-200  "
       >
         x
       </motion.span>
@@ -103,9 +103,8 @@ function Toast({ toast, removeToast }) {
       </div>
 
       <h3
-        className={`text-2xl font-black mb-3 tracking-tight uppercase ${
-          toast.type === "success" ? "text-emerald-600" : "text-rose-600"
-        }`}
+        className={`text-2xl font-black mb-3 tracking-tight uppercase ${toast.type === "success" ? "text-emerald-600" : "text-rose-600"
+          }`}
       >
         {toast.type === "success" ? "Success!" : "Submission Error"}
       </h3>
@@ -163,17 +162,42 @@ export default function ChatWidget() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(24);
+  const chatRef = useRef(null);
 
   useEffect(() => {
-    const MARGIN = 16; // extra gap above footer
+    function handleClickOutside(event) {
+      if (chatRef.current && !chatRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    const MARGIN_DESKTOP = 16; // extra gap above footer
+    const MARGIN_MOBILE = 8;
     const BASE = 24;  // default bottom (px)
 
     const update = () => {
       const footer = document.querySelector("footer");
       if (!footer) { setBottomOffset(BASE); return; }
+
+      const isMobile = window.innerWidth < 640;
       const rect = footer.getBoundingClientRect();
       const overlap = window.innerHeight - rect.top;
-      setBottomOffset(overlap > 0 ? BASE + overlap + MARGIN : BASE);
+
+      if (overlap > 0) {
+        setBottomOffset(isMobile ? overlap + MARGIN_MOBILE : BASE + overlap + MARGIN_DESKTOP);
+      } else {
+        setBottomOffset(BASE);
+      }
     };
 
     window.addEventListener("scroll", update, { passive: true });
@@ -233,142 +257,146 @@ export default function ChatWidget() {
   };
 
   return (
-    <div className="font-sans antialiased text-slate-800">
+    <div className="font-sans antialiased text-slate-800" ref={chatRef}>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
 
       {/* FLOATING MOTION CHAT POSITION */}
       <div
-        className="fixed right-4 sm:right-6 z-40 h-24 w-24 flex items-center justify-center"
+        className="fixed z-40 right-0 sm:right-6"
         style={{
           bottom: bottomOffset,
           transition: "bottom 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
-        {!open && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: 14,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="absolute h-[78px] w-[78px] rounded-full border border-cyan-300/80"
-            />
-
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="absolute h-[66px] w-[66px] rounded-full border border-blue-300/80 border-dashed"
-            />
-
-            <motion.div
-              animate={{
-                scale: [1, 1.35, 1],
-                opacity: [0.35, 0, 0.35],
-              }}
-              transition={{
-                duration: 2.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute h-[74px] w-[74px] rounded-full bg-cyan-300/30"
-            />
-
-            <motion.div
-              animate={{ y: [0, -7, 0] }}
-              transition={{
-                duration: 2.6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -top-2 -left-8 hidden sm:block rounded-full border border-cyan-300/40 bg-[#07132f]/95 px-4 py-2 shadow-xl backdrop-blur-md"
-            >
-              <p className="text-[10px] font-black uppercase tracking-wider text-cyan-100">
-                Need Help?
-              </p>
-            </motion.div>
-
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -bottom-1 -right-8 hidden sm:block rounded-full border border-blue-200 bg-white px-4 py-2 shadow-xl"
-            >
-              <p className="text-[10px] font-black uppercase tracking-wider text-blue-700">
-                Enquiry
-              </p>
-            </motion.div>
-
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute right-6 top-5 h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.9)]"
-            />
-
-            <motion.div
-              animate={{ scale: [1, 1.25, 1], opacity: [0.5, 1, 0.5] }}
-              transition={{
-                duration: 2.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute bottom-7 left-6 h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_16px_rgba(165,243,252,0.9)]"
-            />
-          </motion.div>
-        )}
-
-        <motion.button
-          onClick={() => setOpen(!open)}
-          whileHover={{ scale: 1.08, y: -2 }}
-          whileTap={{ scale: 0.94 }}
-          aria-label={open ? "Close chat form" : "Open chat form"}
-          className="relative z-10 h-[25px] w-[25px] rounded-[1.35rem] via-blue-600 to-blue-900 text-white shadow-[0_18px_40px_rgba(37,99,235,0.45)] ring-[3px] ring-white/80 flex items-center justify-center overflow-hidden"
+        <div
+          className={`h-24 w-24 flex items-center justify-center transition-transform duration-[2000ms] ease-out ${!open ? 'translate-x-[45%] hover:-translate-x-4 sm:translate-x-0 sm:hover:translate-x-0' : '-translate-x-4 sm:translate-x-0'}`}
         >
-          <span className="absolute inset-[4px] rounded-[1.1rem] border border-white/30" />
+          {!open && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 14,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="absolute h-[78px] w-[78px] rounded-full border border-cyan-300/80"
+              />
 
-          <span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_30%),linear-gradient(135deg,transparent,rgba(255,255,255,0.18))]" />
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="absolute h-[66px] w-[66px] rounded-full border border-blue-300/80 border-dashed"
+              />
 
-          <motion.span
-            animate={{ x: ["-130%", "140%"] }}
-            transition={{
-              duration: 2.9,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute inset-y-0 w-8 rotate-12 bg-white/30 blur-sm"
-          />
+              <motion.div
+                animate={{
+                  scale: [1, 1.35, 1],
+                  opacity: [0.35, 0, 0.35],
+                }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute h-[74px] w-[74px] rounded-full bg-cyan-300/30"
+              />
 
-          <motion.span
-            animate={{ y: [0, -3, 0] }}
-            transition={{
-              duration: 2.3,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm"
+              <motion.div
+                animate={{ y: [0, -7, 0] }}
+                transition={{
+                  duration: 2.6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -top-2 -left-8 hidden sm:block rounded-full border border-cyan-300/40 bg-[#07132f]/95 px-4 py-2 shadow-xl backdrop-blur-md"
+              >
+                <p className="text-[10px] font-black uppercase tracking-wider text-cyan-100">
+                  Need Help?
+                </p>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -bottom-1 -right-8 hidden sm:block rounded-full border border-blue-200 bg-white px-4 py-2 shadow-xl"
+              >
+                <p className="text-[10px] font-black uppercase tracking-wider text-blue-700">
+                  Enquiry
+                </p>
+              </motion.div>
+
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute right-6 top-5 h-2.5 w-2.5 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,0.9)]"
+              />
+
+              <motion.div
+                animate={{ scale: [1, 1.25, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute bottom-7 left-6 h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_16px_rgba(165,243,252,0.9)]"
+              />
+            </motion.div>
+          )}
+
+          <motion.button
+            onClick={() => setOpen(!open)}
+            whileHover={{ scale: 1.08, y: -2 }}
+            whileTap={{ scale: 0.94 }}
+            aria-label={open ? "Close chat form" : "Open chat form"}
+            className="relative z-10 h-[25px] w-[25px] rounded-[1.35rem] via-blue-600 to-blue-900 text-white shadow-[0_18px_40px_rgba(37,99,235,0.45)] ring-[3px] ring-white/80 flex items-center justify-center overflow-hidden"
           >
-            <AnimatePresence mode="wait">
-              <ChatBadgeIcon open={open} />
-            </AnimatePresence>
-          </motion.span>
-        </motion.button>
+            <span className="absolute inset-[4px] rounded-[1.1rem] border border-white/30" />
+
+            <span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.7),transparent_30%),linear-gradient(135deg,transparent,rgba(255,255,255,0.18))]" />
+
+            <motion.span
+              animate={{ x: ["-130%", "140%"] }}
+              transition={{
+                duration: 2.9,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="absolute inset-y-0 w-8 rotate-12 bg-white/30 blur-sm"
+            />
+
+            <motion.span
+              animate={{ y: [0, -3, 0] }}
+              transition={{
+                duration: 2.3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm"
+            >
+              <AnimatePresence mode="wait">
+                <ChatBadgeIcon open={open} />
+              </AnimatePresence>
+            </motion.span>
+          </motion.button>
+        </div>
       </div>
 
       {/* CHAT FORM CARD */}
@@ -463,11 +491,10 @@ export default function ChatWidget() {
                     value={form[field.name]}
                     onChange={handleChange}
                     placeholder={field.placeholder}
-                    className={`w-full rounded-2xl border-2 px-4 py-3.5 text-sm font-semibold outline-none transition-all placeholder:text-slate-400 ${
-                      errors[field.name]
+                    className={`w-full rounded-2xl border-2 px-4 py-3.5 text-sm font-semibold outline-none transition-all placeholder:text-slate-400 ${errors[field.name]
                         ? "border-rose-200 bg-rose-50 text-rose-700"
                         : "border-slate-100 bg-slate-50 focus:border-cyan-400 focus:bg-white focus:shadow-[0_0_0_4px_rgba(34,211,238,0.12)]"
-                    }`}
+                      }`}
                   />
                 </div>
               ))}
@@ -477,11 +504,10 @@ export default function ChatWidget() {
                 whileHover={!loading ? { y: -2, scale: 1.01 } : {}}
                 whileTap={!loading ? { y: 0, scale: 0.98 } : {}}
                 type="submit"
-                className={`w-full rounded-2xl py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl transition-all ${
-                  loading
+                className={`w-full rounded-2xl py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl transition-all ${loading
                     ? "cursor-not-allowed bg-slate-300 shadow-none"
                     : "bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 shadow-blue-200 hover:shadow-blue-300"
-                }`}
+                  }`}
               >
                 {loading ? "Processing..." : "Send Enquiry"}
               </motion.button>

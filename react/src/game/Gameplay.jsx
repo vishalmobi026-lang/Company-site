@@ -64,6 +64,7 @@ export default function NeonStrikeGame({ onClose }) {
   const [discount, setDiscount] = useState(0);
 
   const [countries, setCountries] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({ name: "", countryCode: "+91", phone: "", course: "" });
   const [formError, setFormError] = useState("");
   const [isFetchingQs, setIsFetchingQs] = useState(false);
@@ -93,6 +94,15 @@ export default function NeonStrikeGame({ onClose }) {
         console.error("Failed to fetch countries:", err);
         setCountries([]);
       });
+
+    fetch("http://localhost:8000/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch categories:", err));
   }, []);
 
   // Lock body scroll when overlay is open
@@ -610,26 +620,26 @@ export default function NeonStrikeGame({ onClose }) {
                     {/* Phone Number Input Field */}
                     <div className="space-y-1">
                       <label className="text-[10px] text-cyan-200/50 font-bold uppercase tracking-wider pl-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">Contact Number</label>
-                      <div className="flex gap-3 relative">
-                        <div className="relative w-[35%] shrink-0 group">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
-                            <Phone className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={18} />
+                      <div className="flex gap-2 sm:gap-3 relative">
+                        <div className="relative w-[42%] sm:w-[35%] shrink-0 group">
+                          <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none z-20">
+                            <Phone className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={16} />
                           </div>
                           <select
                             value={formData.countryCode} onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                            className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-10 pr-8 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out appearance-none text-sm md:text-base font-semibold cursor-pointer relative z-10 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+                            className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-8 sm:pl-10 pr-6 sm:pr-8 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out appearance-none text-xs sm:text-base font-semibold cursor-pointer relative z-10 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                           >
                             <option value="+91">IN (+91)</option>
                             {Array.isArray(countries) && countries.map((c) => <option key={c.id} value={`+${c.phonecode}`}>{c.id} (+{c.phonecode})</option>)}
                           </select>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none z-20">
+                          <div className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center pointer-events-none z-20">
                             <ChevronDown className="text-cyan-600 group-focus-within:text-cyan-400 transition-colors duration-200 ease-out" size={16} />
                           </div>
                         </div>
 
                         <input
                           type="text" placeholder="Phone Number" value={formData.phone} onChange={handlePhoneChange} maxLength={formData.countryCode === "+91" ? 10 : 15}
-                          className="w-[65%] bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 px-5 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out font-mono tracking-wider text-base md:text-lg placeholder:text-cyan-600/50 placeholder:font-sans font-semibold shadow-inner focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+                          className="w-[58%] sm:w-[65%] bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 px-3 sm:px-5 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out font-mono tracking-wider text-sm sm:text-lg placeholder:text-cyan-600/50 placeholder:font-sans font-semibold shadow-inner focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                         />
                       </div>
                     </div>
@@ -646,15 +656,9 @@ export default function NeonStrikeGame({ onClose }) {
                           className="w-full bg-[#060b18]/80 border border-cyan-500/20 text-white rounded-2xl py-4 pl-12 pr-10 hover:bg-[#0a1128] focus:bg-[#0a1128] focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none transition-all duration-300 ease-out appearance-none text-base md:text-lg font-semibold cursor-pointer relative z-10 focus:shadow-[0_0_15px_rgba(34,211,238,0.2)]"
                         >
                           <option value="" disabled className="text-slate-400">Select Target Sector</option>
-                          {[
-                            "IT / Technical",
-                            "IT / Non-Technical",
-                            "Designing",
-                            "Accounting",
-                            "Civil"
-                          ].map((c) => (
-                            <option key={c} value={c} className="text-slate-900 bg-white">
-                              {c}
+                          {categories.map((c) => (
+                            <option key={c.id || c.name} value={c.name} className="text-slate-900 bg-white">
+                              {c.name}
                             </option>
                           ))}                        </select>
                         <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none z-20">

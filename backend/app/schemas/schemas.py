@@ -88,6 +88,7 @@ class EnrollmentCreate(BaseModel):
     college_status: Optional[str] = None
     college_degree_type: Optional[str] = None
     college_degree: Optional[str] = None
+    id_proof: Optional[str] = None
 
 class EnrollmentUpdate(BaseModel):
     name: Optional[str] = None
@@ -108,6 +109,7 @@ class EnrollmentUpdate(BaseModel):
     college_status: Optional[str] = None
     college_degree_type: Optional[str] = None
     college_degree: Optional[str] = None
+    id_proof: Optional[str] = None
 
 class EnrollmentResponse(EnrollmentCreate):
     id: int
@@ -140,6 +142,7 @@ class CourseResponse(CourseCreate):
 class CategoryCreate(BaseModel):
     name: str
     slug: str
+    image_url: Optional[str] = None
 
 class CategoryResponse(CategoryCreate):
     id: int

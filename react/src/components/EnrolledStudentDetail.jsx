@@ -261,7 +261,7 @@ export default function EnrolledStudentDetail() {
   const fetchLocationForEdit = async (pincode) => {
     try {
       const res = await axios.get(
-        `https://api.postalpincode.in/pincode/${pincode}`
+        `${API}/api/pincode/${pincode}`
       );
 
       const data = res.data?.[0];
@@ -479,6 +479,13 @@ export default function EnrolledStudentDetail() {
                                 : "N/A"}
                             </span>
                           </div>
+
+                          {e.id_proof && (
+                            <div className="flex items-center gap-2 text-gray-600 sm:col-span-2">
+                              <span className="font-semibold text-slate-700">ID Proof:</span>
+                              <span className="text-emerald-600 font-medium">Available (View in Edit mode)</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -671,6 +678,16 @@ export default function EnrolledStudentDetail() {
                         className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-medium text-slate-700 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
                       />
                     </div>
+                    {editForm.id_proof && (
+                      <div className="lg:col-span-3 mt-2">
+                        <label className="mb-1.5 block text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          Uploaded ID Proof
+                        </label>
+                        <div className="p-2 border border-slate-200 bg-white rounded-xl inline-block">
+                          <img src={editForm.id_proof} alt="ID Proof" className="max-h-48 rounded-lg" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

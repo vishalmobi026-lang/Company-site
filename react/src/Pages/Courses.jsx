@@ -1,47 +1,55 @@
-import { FaCheckCircle, FaArrowRight, FaLayerGroup } from "react-icons/fa";
+import { FaCheckCircle, FaArrowRight, FaLayerGroup, FaLaptopCode, FaBriefcase, FaPaintBrush, FaCalculator, FaHardHat, FaCode } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const CATEGORY_IMAGES = {
+  "it / technical": "https://images.unsplash.com/photo-1518770660439-4636190af475",
+  "non technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+  "non-technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+  "designing": "https://images.unsplash.com/photo-1552664730-d307ca884978",
+  "accounting": "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+  "civil": "https://images.unsplash.com/photo-1559028012-481c04fa702d",
+  "coding": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+};
+
+const CATEGORY_TAGS = {
+  "it / technical": "Most Popular",
+  "non technical": "Career Skills",
+  "non-technical": "Career Skills",
+  "designing": "Creative",
+  "accounting": "Finance",
+  "civil": "Professional",
+  "coding": "Trending",
+};
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=800&q=80";
 
 export default function Courses() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      title: "IT/Technical",
-      desc: "Build complete web applications and master job-ready technical skills.",
-      img: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-      path: "/courses/technical",
-      tag: "Most Popular",
-    },
-    {
-      title: "Non-Technical",
-      desc: "Improve communication, management, business, and workplace skills.",
-      img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-      path: "/courses/non-technical",
-      tag: "Career Skills",
-    },
-    {
-      title: "Designing",
-      desc: "Learn creative tools, visual design, branding, and digital design basics.",
-      img: "https://images.unsplash.com/photo-1552664730-d307ca884978",
-      path: "/courses/designing",
-      tag: "Creative",
-    },
-    {
-      title: "Accounting",
-      desc: "Build practical accounting, finance, billing, and office-ready skills.",
-      img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-      path: "/courses/accounting",
-      tag: "Finance",
-    },
-    {
-      title: "Civil",
-      desc: "Learn civil design tools, drafting basics, and project documentation.",
-      img: "https://images.unsplash.com/photo-1559028012-481c04fa702d",
-      path: "/courses/civil",
-      tag: "Professional",
-    },
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/categories");
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const getImage = (cat) =>
+    cat.image_url || CATEGORY_IMAGES[cat.name?.toLowerCase()] || FALLBACK_IMAGE;
+
+  const getTag = (name) =>
+    CATEGORY_TAGS[name?.toLowerCase()] || "Certificate Course";
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-16 px-4 sm:px-6 overflow-hidden">
@@ -72,80 +80,92 @@ export default function Courses() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-          {courses.map((course, index) => (
-            <motion.div
-              key={course.title}
-              initial={{ opacity: 0, y: 60, scale: 0.94 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: false, amount: 0.25 }}
-              transition={{
-                duration: 0.65,
-                delay: index * 0.08,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              whileHover={{ y: -10, scale: 1.03 }}
-              className={`group overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-xl shadow-xl transition ${
-                index === 0
-                  ? "lg:col-span-2 border-cyan-400/40"
-                  : "border-slate-700 hover:border-cyan-400/50"
-              }`}
-            >
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={course.img}
-                  alt={course.title}
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/400x300?text=Course";
-                  }}
-                />
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            {categories.map((cat, index) => (
+              <motion.div
+                key={cat.id}
+                initial={{ opacity: 0, y: 60, scale: 0.94 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.25 }}
+                transition={{
+                  duration: 0.65,
+                  delay: index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                whileHover={{ y: -10, scale: 1.03 }}
+                className={`group overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-xl shadow-xl transition ${
+                  index === 0
+                    ? "lg:col-span-2 border-cyan-400/40"
+                    : "border-slate-700 hover:border-cyan-400/50"
+                }`}
+              >
+                <div className="relative h-56 overflow-hidden">
+                  <img
+                    src={getImage(cat)}
+                    alt={cat.name}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    onError={(e) => {
+                      e.target.src = FALLBACK_IMAGE;
+                    }}
+                  />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
 
-                <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/70 px-4 py-2 text-xs text-cyan-200 backdrop-blur">
-                  {course.tag}
-                </div>
-
-                {index === 0 && (
-                  <div className="absolute bottom-4 left-4 right-4 text-left">
-                    <h2 className="text-3xl font-bold">{course.title}</h2>
-                    <p className="mt-2 max-w-xl text-sm text-gray-300">
-                      Start with technical skills that open doors to web development, software projects, and modern IT careers.
-                    </p>
+                  <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/70 px-4 py-2 text-xs text-cyan-200 backdrop-blur">
+                    {getTag(cat.name)}
                   </div>
-                )}
-              </div>
 
-              <div className="p-6">
-                {index !== 0 && (
-                  <>
-                    <h2 className="text-xl font-semibold mb-2">
-                      {course.title}
-                    </h2>
-
-                    <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                      {course.desc}
-                    </p>
-                  </>
-                )}
-
-                <div className="flex items-center gap-2 text-cyan-300 mb-5">
-                  <FaCheckCircle />
-                  <span className="text-sm">Certificate Course</span>
+                  {index === 0 && (
+                    <div className="absolute bottom-4 left-4 right-4 text-left">
+                      <h2 className="text-3xl font-bold">{cat.name}</h2>
+                      <p className="mt-2 max-w-xl text-sm text-gray-300">
+                        Start with skills that open doors to real careers, software projects, and modern tech roles.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                <button
-                  onClick={() => navigate(course.path)}
-                  className="group/btn w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-900 to-blue-500 flex items-center justify-center gap-2 hover:scale-105 transition duration-300 shadow-md shadow-blue-900/30"
-                >
-                  View Course
-                  <FaArrowRight className="transition group-hover/btn:translate-x-1" />
-                </button>
+                <div className="p-6">
+                  {index !== 0 && (
+                    <>
+                      <h2 className="text-xl font-semibold mb-2">
+                        {cat.name}
+                      </h2>
+
+                      <p className="text-gray-400 text-sm mb-5 leading-relaxed">
+                        Professional training in {cat.name} — build real skills with hands-on projects.
+                      </p>
+                    </>
+                  )}
+
+                  <div className="flex items-center gap-2 text-cyan-300 mb-5">
+                    <FaCheckCircle />
+                    <span className="text-sm">Certificate Course</span>
+                  </div>
+
+                  <button
+                    onClick={() => navigate(`/courses/${cat.slug}`)}
+                    className="group/btn w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-blue-900 to-blue-500 flex items-center justify-center gap-2 hover:scale-105 transition duration-300 shadow-md shadow-blue-900/30"
+                  >
+                    View Course
+                    <FaArrowRight className="transition group-hover/btn:translate-x-1" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+
+            {categories.length === 0 && !loading && (
+              <div className="col-span-3 text-center py-20 text-gray-400">
+                No course categories found. Please check back soon!
               </div>
-            </motion.div>
-          ))}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

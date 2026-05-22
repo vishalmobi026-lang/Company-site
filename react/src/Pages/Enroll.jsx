@@ -16,6 +16,7 @@ import LottieLib from "lottie-react";
 const Lottie = LottieLib.default ?? LottieLib;
 import successAnimation from "../Assets/Success.json";
 import failAnimation from "../Assets/Fail.json";
+import { COUNTRY_CODES } from "../data/countries";
 
 function SubmitAlert({ type, onClose }) {
   const success = type === "success";
@@ -157,7 +158,7 @@ function Enroll() {
   const selectedCourseName = location.state?.course || "Full-Stack Development";
   const courseList = allCourses.length > 0 ? allCourses.map((c) => c.title) : [selectedCourseName];
 
-  const [eduTab, setEduTab] = useState("school");
+  const [eduTab, setEduTab] = useState("college");
   const [idProofName, setIdProofName] = useState("");
 
   const [form, setForm] = useState({
@@ -179,6 +180,7 @@ function Enroll() {
     college_status: "Pursuing",
     college_degree_type: "Bachelor",
     college_degree: "",
+    id_proof: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -269,7 +271,7 @@ function Enroll() {
 
   const fetchLocation = async (pincode) => {
     try {
-      const res = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+      const res = await axios.get(`http://localhost:8000/api/pincode/${pincode}`);
       const data = res.data?.[0];
 
       if (data?.Status === "Success" && data?.PostOffice?.length > 0) {
@@ -356,7 +358,7 @@ function Enroll() {
   };
 
   return (
-    <section className="relative h-screen overflow-hidden bg-slate-950 px-4 py-4 md:py-6 text-white flex flex-col justify-between">
+    <section className="relative h-screen overflow-hidden bg-slate-950 px-2 py-2 sm:px-4 sm:py-4 md:py-6 text-white flex flex-col justify-between">
       <SubmitAlert
         type={submitStatus}
         onClose={() => {
@@ -373,7 +375,7 @@ function Enroll() {
       <div className="absolute bottom-[-150px] right-[-150px] h-[400px] w-[400px] rounded-full bg-cyan-400/10 blur-[100px] pointer-events-none" />
 
       {/* TOP HEADER BLOCK (Extremely compact) */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl flex items-center justify-between border-b border-slate-900 pb-3 shrink-0">
+      <div className="relative z-10 mx-auto w-full max-w-7xl flex items-center justify-between border-b border-slate-900 pb-2 sm:pb-3 shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
@@ -391,8 +393,8 @@ function Enroll() {
       </div>
 
       {/* SELECT PROGRAM & CONTACT INFO COMPACT STRIP (Takes almost no vertical space) */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl mt-3 shrink-0">
-        <div className="bg-slate-900/60 border border-slate-900 rounded-2xl p-3 flex items-center gap-3 backdrop-blur-xl">
+      <div className="relative z-10 mx-auto w-full max-w-7xl mt-2 sm:mt-3 shrink-0">
+        <div className="bg-slate-900/60 border border-slate-900 rounded-xl sm:rounded-2xl p-2 sm:p-3 flex items-center gap-2 sm:gap-3 backdrop-blur-xl">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0">
             <FaBookOpen size={14} />
           </div>
@@ -404,12 +406,12 @@ function Enroll() {
       </div>
 
       {/* SPLIT SCROLLABLE DASHBOARD PANEL */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl mt-3 flex-1 min-h-0 overflow-hidden flex flex-col justify-start lg:justify-center">
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-5 h-fit lg:max-h-[640px] w-full min-h-0">
+      <div className="relative z-10 mx-auto w-full max-w-7xl mt-2 sm:mt-3 flex-1 min-h-0 overflow-hidden flex flex-col justify-start">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-5 h-full w-full min-h-0">
 
           {/* LEFT PANE: PERSONAL & CONTACT */}
-          <div className="relative rounded-[2rem] border border-slate-900 bg-slate-950/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
-            <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-900 shrink-0">
+          <div className="relative rounded-2xl sm:rounded-[2rem] border border-slate-900 bg-slate-950/40 p-3 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
+            <div className="flex items-center gap-2 mb-2 sm:mb-4 pb-2 border-b border-slate-900 shrink-0">
               <div className="rounded-lg bg-cyan-500/10 p-1.5 text-cyan-400">
                 <FaUser size={14} />
               </div>
@@ -418,7 +420,7 @@ function Enroll() {
               </h2>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-4 min-h-0 pb-4">
+            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-3 sm:space-y-4 min-h-0 pb-3 sm:pb-4">
               <div className="space-y-1">
                 <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                   Full Name *
@@ -438,7 +440,7 @@ function Enroll() {
                 )}
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
                   <label className="ml-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
                     Date of Birth *
@@ -492,18 +494,16 @@ function Enroll() {
                     Phone Number *
                   </label>
                   <div className="relative flex items-center">
-                    {form.country === "India" && (
-                      <span className="absolute left-4 font-mono font-bold text-cyan-400 select-none z-20 text-sm">
-                        +91
-                      </span>
-                    )}
+                    <span className="absolute left-4 font-mono font-bold text-cyan-400 select-none z-20 text-sm">
+                      {COUNTRY_CODES.find(c => c.name === form.country)?.code || ""}
+                    </span>
                     <input
                       name="phone"
-                      placeholder="10-digit mobile number"
+                      placeholder={form.country === "India" ? "10-digit mobile number" : "Mobile number"}
                       value={form.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className={`${inputClass("phone")} ${form.country === "India" ? "pl-14" : ""}`}
+                      className={`${inputClass("phone")} pl-16`}
                     />
                   </div>
                   {errors.phone && touched.phone && (
@@ -531,12 +531,11 @@ function Enroll() {
                     onBlur={handleBlur}
                     className={inputClass("country")}
                   >
-                    <option value="India">India</option>
-                    <option value="United States">United States</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Other">Other</option>
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.name} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -555,7 +554,7 @@ function Enroll() {
                 />
               </div>
 
-              <div className="grid gap-3 grid-cols-3">
+              <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-3">
                 <div className="space-y-1">
                   <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
                     Pincode
@@ -605,8 +604,8 @@ function Enroll() {
           </div>
 
           {/* RIGHT PANE: ACADEMIC DETAILS & SUBMISSION */}
-          <div className="relative rounded-[2rem] border border-slate-900 bg-slate-950/40 p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-900 shrink-0">
+          <div className="relative rounded-2xl sm:rounded-[2rem] border border-slate-900 bg-slate-950/40 p-3 sm:p-5 shadow-2xl backdrop-blur-xl flex flex-col h-full min-h-0">
+            <div className="flex items-center justify-between mb-2 sm:mb-4 pb-2 border-b border-slate-900 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="rounded-lg bg-cyan-500/10 p-1.5 text-cyan-400">
                   <FaGraduationCap size={14} />
@@ -640,7 +639,7 @@ function Enroll() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-5 min-h-0 pb-4">
+            <div className="flex-1 overflow-y-auto pr-1.5 custom-scrollbar space-y-3 sm:space-y-5 min-h-0 pb-3 sm:pb-4">
 
               <AnimatePresence mode="wait">
                 {eduTab === "school" && (
@@ -866,7 +865,7 @@ function Enroll() {
                 </div>
               </div>
               {/* Sleek Dynamic Helper Card to fill vertical space beautifully */}
-              <div className="mt-6 rounded-2xl border border-slate-900/60 bg-slate-950/40 p-4.5 shadow-xl flex items-start gap-4 backdrop-blur-md transition-all duration-300 hover:border-cyan-500/20">
+              <div className="rounded-2xl border border-slate-900/60 bg-slate-950/40 p-3 shadow-xl flex items-start gap-4 backdrop-blur-md transition-all duration-300 hover:border-cyan-500/20">
                 <div className="rounded-xl bg-cyan-500/10 p-2.5 text-cyan-400 shrink-0">
                   <FaCheckCircle size={18} className="animate-pulse" />
                 </div>
@@ -874,42 +873,50 @@ function Enroll() {
                   <h4 className="text-xs font-black uppercase tracking-wider text-cyan-300">
                     Enrollment Instructions
                   </h4>
-                  <p className="mt-1.5 text-[11px] font-semibold text-slate-400 leading-relaxed">
+                  <p className="mt-1 text-[10px] font-semibold text-slate-400 leading-relaxed">
                     Verify all active academic details before submitting. Our admissions board will cross-reference your records during the onboarding session. If you need any assistance, reach out directly via our secure helpdesk link.
                   </p>
                 </div>
               </div>
 
-            </div>
-
-            {/* SINGLE IMAGE FIELD (Fixed below the form, above submit button) */}
-            <div className="pt-3 border-t border-slate-900/60 shrink-0 mb-3 mt-1">
-              <div className="space-y-1">
-                <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
-                  Upload ID Proof (Image)
-                </label>
-                <div className="relative flex flex-col items-center justify-center border border-dashed border-slate-800 bg-slate-900/40 hover:bg-slate-900/60 hover:border-cyan-500/40 rounded-xl py-2 px-3 text-center cursor-pointer transition-all duration-300">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) setIdProofName(file.name);
-                    }}
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                  />
-                  <div className="text-cyan-400/80 mb-0.5">
-                    <FaImage size={14} />
+              {/* SINGLE IMAGE FIELD (Moved inside scrollable area) */}
+              <div className="pt-3 border-t border-slate-900/60 shrink-0">
+                <div className="space-y-1">
+                  <label className="ml-1 text-[9px] font-black uppercase tracking-wider text-slate-400">
+                    Upload ID Proof (Image)
+                  </label>
+                  <div className="relative flex flex-col items-center justify-center border border-dashed border-slate-800 bg-slate-900/40 hover:bg-slate-900/60 hover:border-cyan-500/40 rounded-xl py-3 px-3 text-center cursor-pointer transition-all duration-300">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setIdProofName(file.name);
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setForm((prev) => ({ ...prev, id_proof: reader.result }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                    />
+                    <div className="text-cyan-400/80 mb-0.5">
+                      <FaImage size={14} />
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-300 truncate max-w-full">
+                      {idProofName || "Choose Image File"}
+                    </span>
+                    <span className="text-[7px] text-slate-500 font-semibold uppercase">
+                      ID Proof (Aadhaar/PAN)
+                    </span>
                   </div>
-                  <span className="text-[9px] font-bold text-slate-300 truncate max-w-full">
-                    {idProofName || "Choose Image File"}
-                  </span>
-                  <span className="text-[7px] text-slate-500 font-semibold uppercase">
-                    ID Proof (Aadhaar/PAN)
-                  </span>
                 </div>
               </div>
+
             </div>
+            {/* END OF SCROLLABLE AREA */}
 
             {/* SUBMIT BUTTON CONTAINER */}
             <div className="border-t border-slate-900 pt-3 flex items-center justify-between shrink-0">

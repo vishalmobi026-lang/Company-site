@@ -511,19 +511,32 @@ export default function PricingManager() {
                 <input
                   placeholder="Division Name"
                   value={newCat.name}
-                  onChange={(e) =>
-                    setNewCat({ ...newCat, name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    const autoSlug = name
+                      .toLowerCase()
+                      .trim()
+                      .replace(/[^a-z0-9\s-]/g, "")
+                      .replace(/\s+/g, "-");
+                    setNewCat({ name, slug: autoSlug });
+                  }}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 font-bold outline-none focus:ring-4 focus:ring-blue-100"
                 />
-                <input
-                  placeholder="Slug"
-                  value={newCat.slug}
-                  onChange={(e) =>
-                    setNewCat({ ...newCat, slug: e.target.value })
-                  }
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 font-mono text-xs font-bold text-slate-500 outline-none focus:ring-4 focus:ring-blue-100"
-                />
+                <div className="relative">
+                  <input
+                    placeholder="Slug (auto-generated)"
+                    value={newCat.slug}
+                    onChange={(e) =>
+                      setNewCat({ ...newCat, slug: e.target.value })
+                    }
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 font-mono text-xs font-bold text-slate-500 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
+                  {newCat.slug && (
+                    <p className="mt-1 ml-2 text-[10px] font-bold text-blue-500">
+                      URL: /courses/{newCat.slug}
+                    </p>
+                  )}
+                </div>
                 <button className="w-full rounded-2xl bg-gradient-to-r from-blue-900 to-blue-600 py-4 text-lg font-black text-white">
                   Add New Division
                 </button>

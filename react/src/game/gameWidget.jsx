@@ -8,7 +8,8 @@ export default function GameWidget() {
   const [bottomOffset, setBottomOffset] = useState(24);
 
   useEffect(() => {
-    const MARGIN = 16;
+    const MARGIN_DESKTOP = 16;
+    const MARGIN_MOBILE = 0;
     const BASE = 24;
 
     const update = () => {
@@ -17,9 +18,16 @@ export default function GameWidget() {
         setBottomOffset(BASE);
         return;
       }
+      
+      const isMobile = window.innerWidth < 640;
       const rect = footer.getBoundingClientRect();
       const overlap = window.innerHeight - rect.top;
-      setBottomOffset(overlap > 0 ? BASE + overlap + MARGIN : BASE);
+      
+      if (overlap > 0) {
+        setBottomOffset(isMobile ? overlap + MARGIN_MOBILE : BASE + overlap + MARGIN_DESKTOP);
+      } else {
+        setBottomOffset(BASE);
+      }
     };
 
     window.addEventListener("scroll", update, { passive: true });
@@ -35,12 +43,15 @@ export default function GameWidget() {
     <>
       {/* FLOATING TRIGGER (LEFT SIDE) - SCALED DOWN CYBER STYLE */}
       <div
-        className="fixed left-6 sm:left-10 z-[10000] h-36 w-36 flex items-center justify-center"
+        className="fixed z-40 left-0 sm:left-10"
         style={{
           bottom: bottomOffset + 10,
           transition: "bottom 600ms cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
+        <div
+          className={`h-36 w-36 flex items-center justify-center transition-transform duration-[2000ms] ease-out ${!open ? '-translate-x-[45%] hover:translate-x-2 sm:translate-x-0 sm:hover:translate-x-0' : 'translate-x-2 sm:translate-x-0'}`}
+        >
         {!open && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -192,6 +203,7 @@ export default function GameWidget() {
         )}
 
 
+        </div>
       </div>
 
       {/* GAME OVERLAY */}

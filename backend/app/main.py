@@ -14,6 +14,7 @@ from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 import smtplib
 from email.mime.text import MIMEText
+import requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from gemini_engine import generate_ai_questions
@@ -123,6 +124,7 @@ try:
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_status VARCHAR"))
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree_type VARCHAR"))
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree VARCHAR"))
+        conn.execute(text("ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR"))
     print("Successfully applied database migrations!")
 except Exception as e:
     print(f"Error executing database migrations: {e}")
@@ -765,6 +767,18 @@ def get_countries():
     ]
 
 
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+@app.get("/api/pincode/{pincode}")
+def get_pincode_info(pincode: str):
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        response = requests.get(f"https://api.postalpincode.in/pincode/{pincode}", headers=headers, verify=False, timeout=10)
+        return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/generate-ai-questions")
 def generate_questions_api(topic: str, db: Session = Depends(database.get_db)):

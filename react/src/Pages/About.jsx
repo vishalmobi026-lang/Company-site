@@ -46,8 +46,9 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
+    <>
+      <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
       <div className="absolute w-[520px] h-[520px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-140px]"></div>
       <div className="absolute w-[420px] h-[420px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
@@ -225,6 +226,44 @@ export default function About() {
           </div>
         </motion.div>
       </div>
-    </section>
+      </section>
+
+      {/* NEW 100VH SCREEN WITH WHITE BACKGROUND FOR "OUR MODEL" */}
+      <section className="relative h-screen w-full bg-white flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center justify-center h-full w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
+            className="w-full flex flex-col items-center justify-center"
+          >
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-600">
+              <FaCheckCircle />
+              Our Model
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight mb-6">
+              The G-TEC Learning Model
+            </h2>
+            <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
+              Discover our interactive methodology and structural approach to career-focused education.
+            </p>
+            
+            {/* Visual Placeholder for the Model */}
+            <div className="relative w-full max-w-4xl aspect-video rounded-[2rem] border border-slate-200 bg-slate-50 shadow-2xl flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5" />
+              <div className="text-slate-400 font-bold uppercase tracking-widest text-sm flex flex-col items-center gap-3">
+                <svg className="w-12 h-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                </svg>
+                [ 3D Model / Visualization Container ]
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }

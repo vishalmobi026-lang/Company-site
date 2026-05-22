@@ -91,27 +91,27 @@ function Navbar() {
       <div className="bg-white shadow-md px-6 py-1 flex justify-between items-center">
         {/* LEFT */}
         <div
-          className="flex items-center gap-6 cursor-pointer"
+          className="flex items-center gap-3 md:gap-6 cursor-pointer"
           onClick={() => navigate("/")}
         >
           <div className="flex flex-col items-center">
-            <div className="bg-blue-800 p-3.5 rounded-2xl shadow-lg">
-              <img src="/logo.webp" alt="logo" className="h-12 w-25" />
+            <div className="bg-blue-800 p-2 md:p-3.5 rounded-xl md:rounded-2xl shadow-lg">
+              <img src="/logo.webp" alt="logo" className="h-10 w-auto md:h-12 md:w-25" />
             </div>
 
             <a
               href="https://www.gtech-Nagercoil.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-gray-600 mt-1 hover:text-blue-600"
+              className="hidden md:block text-xs text-gray-600 mt-1 hover:text-blue-600"
             >
               www.gtech-Nagercoil.com
             </a>
           </div>
 
-          <div className="text-gray-700 text-xl font-medium flex items-center gap-2">
-            <IoLocationSharp className="text-[#ed1c25]" />
-            Azhagiyamandapam
+          <div className="text-gray-700 text-base md:text-xl font-medium flex items-center gap-1 md:gap-2">
+            <IoLocationSharp className="text-[#ed1c25] shrink-0" />
+            <span className="whitespace-nowrap">Azhagiyamandapam</span>
           </div>
         </div>
 
@@ -367,7 +367,7 @@ function Navbar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.98 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="md:hidden bg-white px-6 py-4 space-y-4 shadow-lg"
+            className="md:hidden absolute top-full left-0 w-full bg-white px-6 py-4 space-y-4 shadow-xl max-h-[calc(100vh-70px)] overflow-y-auto border-t border-gray-100"
           >
             <motion.div
               initial={{ opacity: 0, x: -25 }}
