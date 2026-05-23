@@ -140,7 +140,11 @@ export default function PricingManager() {
 
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [showCatManager, setShowCatManager] = useState(false);
-  const [newCat, setNewCat] = useState({ name: "", slug: "" });
+const [newCat, setNewCat] = useState({
+  name: "",
+  slug: "",
+  image_url: ""
+});
   const [newCourse, setNewCourse] = useState({ title: "", description: "", image_url: "", category: "", tag: "" });
 
   const notify = (type, message) => setNotice({ type, message });
@@ -222,7 +226,11 @@ export default function PricingManager() {
     try {
       const res = await axios.post(`${API}/admin/categories`, newCat, auth(user));
       setCategories((p) => [...p, res.data]);
-      setNewCat({ name: "", slug: "" });
+    setNewCat({
+  name: "",
+  slug: "",
+  image_url: ""
+});
       notify("success", `Category "${res.data.name}" added.`);
     } catch (err) {
       handleApiError(err, "Failed to add category.");
@@ -537,6 +545,18 @@ export default function PricingManager() {
                     </p>
                   )}
                 </div>
+                <div className="relative">
+  <FaImage className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
+
+  <input
+    placeholder="Division Image URL"
+    value={newCat.image_url}
+    onChange={(e) =>
+      setNewCat({ ...newCat, image_url: e.target.value })
+    }
+    className="w-full rounded-2xl border border-slate-200 bg-white py-4 pl-12 pr-5 text-sm font-bold text-slate-500 outline-none focus:ring-4 focus:ring-blue-100"
+  />
+</div>
                 <button className="w-full rounded-2xl bg-gradient-to-r from-blue-900 to-blue-600 py-4 text-lg font-black text-white">
                   Add New Division
                 </button>
@@ -616,6 +636,7 @@ export default function PricingManager() {
                 />
               </div>
             </div>
+            
 
             <div className="space-y-5">
               <input

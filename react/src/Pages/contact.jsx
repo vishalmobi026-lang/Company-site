@@ -44,9 +44,8 @@ function SubmitAlert({ type, onClose }) {
             </div>
 
             <h2
-              className={`mb-3 text-4xl font-black uppercase tracking-tight ${
-                success ? "text-cyan-400" : "text-rose-500"
-              }`}
+              className={`mb-3 text-4xl font-black uppercase tracking-tight ${success ? "text-cyan-400" : "text-rose-500"
+                }`}
             >
               {success ? "Message Sent!" : "Submission Failed"}
             </h2>
@@ -180,16 +179,19 @@ function Contact() {
     {
       title: "Visit Center",
       text: "NIYAS ARCADE, opp. of MOSQUE, Azhagiyamandapam, 629167",
+      href: "https://maps.google.com/?q=G-Tec+Computer+Education+Azhagiyamandapam",
       icon: <FaMapMarkerAlt />,
     },
     {
       title: "Call Directly",
       text: "+91 75980 98675",
+      href: "tel:+917598098675",
       icon: <FaPhoneAlt />,
     },
     {
       title: "Open Days",
       text: "Monday - Saturday",
+      href: "#",
       icon: <FaClock />,
     },
   ];
@@ -200,10 +202,11 @@ function Contact() {
         type={submitStatus}
         onClose={() => setSubmitStatus(null)}
       />
-      <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
+     <div className="pointer-events-none absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
-      <div className="absolute w-[380px] sm:w-[560px] h-[380px] sm:h-[560px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-160px]"></div>
-      <div className="absolute w-[340px] sm:w-[460px] h-[340px] sm:h-[460px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-140px] right-[-140px]"></div>
+      <div className="pointer-events-none absolute w-[380px] sm:w-[560px] h-[380px] sm:h-[560px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-160px]"></div>
+
+<div className="pointer-events-none absolute w-[340px] sm:w-[460px] h-[340px] sm:h-[460px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-140px] right-[-140px]"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
@@ -251,24 +254,32 @@ function Contact() {
 
               <div className="grid sm:grid-cols-3 lg:grid-cols-1 gap-3">
                 {contactInfo.map((item, index) => (
-                  <motion.div
+                  <motion.a
                     key={item.title}
+                    href={item.href}
+                    target={item.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noopener noreferrer"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: false, amount: 0.25 }}
                     transition={{ duration: 0.45, delay: index * 0.1 }}
                     whileHover={{ x: 6 }}
-                    className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5"
+                    className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-3.5 cursor-pointer hover:border-cyan-400/40 transition-all"
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-cyan-300">
                       {item.icon}
                     </div>
 
                     <div>
-                      <h3 className="font-semibold text-sm sm:text-base">{item.title}</h3>
-                      <p className="text-xs sm:text-sm text-gray-400">{item.text}</p>
+                      <h3 className="font-semibold text-sm sm:text-base">
+                        {item.title}
+                      </h3>
+
+                      <p className="text-xs sm:text-sm text-gray-400">
+                        {item.text}
+                      </p>
                     </div>
-                  </motion.div>
+                  </motion.a>
                 ))}
               </div>
 

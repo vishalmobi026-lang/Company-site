@@ -96,8 +96,9 @@ function CourseDivision() {
           setCategoryName(currentCat.name);
           // 2. Fetch courses for this category
           // Note: Backend stores category name in 'category' field
-          const res = await axios.get(`http://localhost:8000/courses?category=${encodeURIComponent(currentCat.name)}`);
-          const formatted = res.data.map(c => ({
+        const res = await axios.get(
+  `http://localhost:8000/courses?category=${currentCat.name}`
+);          const formatted = res.data.map(c => ({
             title: c.title,
             desc: c.description,
             img: c.image_url,

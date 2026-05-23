@@ -133,19 +133,25 @@ class CourseUpdate(BaseModel):
     tag: Optional[str] = None
     is_active: Optional[int] = None
 
-class CourseResponse(CourseCreate):
-    id: int
-
-    class Config:
-        from_attributes = True
-
 class CategoryCreate(BaseModel):
     name: str
     slug: str
     image_url: Optional[str] = None
 
+
 class CategoryResponse(CategoryCreate):
     id: int
+
+    class Config:
+        from_attributes = True
+class CourseResponse(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    category: str
+    tag: Optional[str] = None
+    is_active: Optional[int] = 1
 
     class Config:
         from_attributes = True

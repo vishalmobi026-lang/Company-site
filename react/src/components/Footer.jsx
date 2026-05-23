@@ -29,7 +29,7 @@ function Footer() {
       icon: <FaMapMarkerAlt />,
       label: "Location",
       value: "NIYAS ARCADE, Opp. Of Mosque, Azhagiyamandapam.",
-      href: "https://www.google.com/maps",
+      href: "https://maps.google.com/?q=G-Tec+Computer+Education+Azhagiyamandapam",
     },
   ];
 

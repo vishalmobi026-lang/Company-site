@@ -37,6 +37,7 @@ Follow these steps to set up the project on a new device.
    SECRET_KEY=4eb8d58c899c72e259e863690d54030678e760c6d525712e
    ALGORITHM=HS256
    ACCESS_TOKEN_EXPIRE_MINUTES=30
+   
    ```
    *Replace `YOUR_PASSWORD` with your PostgreSQL password.*
 

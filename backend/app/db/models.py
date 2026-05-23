@@ -84,10 +84,9 @@ class Course(Base):
     title = Column(String, nullable=False)
     description = Column(String)
     image_url = Column(String)
-    category = Column(String, index=True) # Technical, NonTechnical, etc.
+    category = Column(String, index=True)
     tag = Column(String)
     is_active = Column(Integer, default=1)
-
 class Category(Base):
     __tablename__ = "categories"
 

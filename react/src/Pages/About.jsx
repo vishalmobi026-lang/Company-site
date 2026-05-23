@@ -51,7 +51,7 @@ export default function About() {
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
       <div className="absolute w-[520px] h-[520px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-140px]"></div>
-      <div className="absolute w-[420px] h-[420px] bg-cyan-400/20 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
+      <div className="absolute w-[420px] h-[420px] bg-cyan-400/30 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* HERO */}
@@ -62,7 +62,7 @@ export default function About() {
           transition={{ duration: 0.75 }}
           className="text-center mb-12"
         >
-          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
+          <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300 bg-white px-5 py-2.5 text-sm font-bold text-cyan-700 shadow-md backdrop-blur-sm">
             <FaBookOpen />
             About G-TEC Education
           </span>
@@ -84,7 +84,7 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
             viewport={{ once: false, amount: 0.25 }}
             transition={{ duration: 0.75 }}
-            className="relative overflow-hidden rounded-3xl border border-slate-700 bg-white/5 p-5 sm:p-7 backdrop-blur-xl shadow-2xl"
+            className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white/5 p-5 sm:p-7 backdrop-blur-xl shadow-2xl"
           >
             <img
               src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
@@ -228,42 +228,265 @@ export default function About() {
       </div>
       </section>
 
-      {/* NEW 100VH SCREEN WITH WHITE BACKGROUND FOR "OUR MODEL" */}
-      <section className="relative h-screen w-full bg-white flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none" />
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto flex flex-col items-center justify-center h-full w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8 }}
-            className="w-full flex flex-col items-center justify-center"
-          >
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-600">
-              <FaCheckCircle />
-              Our Model
-            </span>
-            <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight mb-6">
-              The G-TEC Learning Model
-            </h2>
-            <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
-              Discover our interactive methodology and structural approach to career-focused education.
-            </p>
-            
-            {/* Visual Placeholder for the Model */}
-            <div className="relative w-full max-w-4xl aspect-video rounded-[2rem] border border-slate-200 bg-slate-50 shadow-2xl flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5" />
-              <div className="text-slate-400 font-bold uppercase tracking-widest text-sm flex flex-col items-center gap-3">
-                <svg className="w-12 h-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                </svg>
-                [ 3D Model / Visualization Container ]
-              </div>
-            </div>
-          </motion.div>
+      {/* OUR MODEL SECTION WITH HERO2 STYLE */}
+<section className="relative min-h-[85vh]  flex items-center justify-center overflow-hidden bg-white px-6 py-20 lg:py-0 text-slate-900">
+  {/* Animated Grid */}
+<div className="absolute inset-0 opacity-[0.08] bg-[linear-gradient(#94a3b8_1px,transparent_1px),linear-gradient(90deg,#94a3b8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
+  {/* Glow Orbs */}
+ <div className="absolute w-[520px] h-[520px] bg-blue-300/30 blur-3xl rounded-full top-[-140px] left-[-140px]"></div>
+
+<div className="absolute w-[420px] h-[420px] bg-cyan-300/30 blur-3xl rounded-full bottom-[-120px] right-[-120px]"></div>
+
+  <div className="max-w-7xl w-full grid lg:grid-cols-2 items-center gap-12 lg:gap-16 relative z-10">
+
+    {/* LEFT SIDE CONTENT */}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.3 }}
+      transition={{ duration: 0.8 }}
+      className="w-full"
+    >
+  <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300 bg-white px-5 py-2.5 text-sm font-bold text-cyan-700 shadow-md backdrop-blur-sm">
+  <FaCheckCircle className="text-cyan-500" />
+  Our Model
+</span>
+
+      <h2 className="text-4xl md:text-6xl font-black tracking-tight mb-6 bg-gradient-to-r from-slate-900 via-blue-800 to-cyan-500 bg-clip-text text-transparent">
+        The G-TEC Learning Model
+      </h2>
+
+      <p className="text-slate-700 text-lg md:text-xl max-w-2xl leading-relaxed mb-10">
+        Discover our interactive methodology and structural approach to career-focused education.
+      </p>
+
+      <div className="flex flex-wrap gap-4">
+        <div className="rounded-xl border border-cyan-400/20 bg-white/5 px-5 py-4 backdrop-blur">
+          <h4 className="text-cyan-600 font-bold mb-1">Practical Training</h4>
+          <p className="text-sm text-slate-700">Hands-on real world learning modules.</p>
         </div>
-      </section>
+
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-xl px-5 py-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+          <h4 className="text-cyan-600 font-bold mb-1">Industry Focused</h4>
+          <p className="text-sm text-slate-700">Career-oriented skill development programs.</p>
+        </div>
+      </div>
+    </motion.div>
+
+    {/* RIGHT SIDE VISUAL */}
+    <motion.div
+      initial={{ opacity: 0, x: 80, scale: 0.95 }}
+      whileInView={{ opacity: 1, x: 0, scale: 1 }}
+      viewport={{ once: false, amount: 0.3 }}
+      transition={{ duration: 0.9 }}
+      className="relative"
+    >
+      <div className="absolute inset-0 bg-cyan-400/30 blur-3xl rounded-[2rem]"></div>
+
+      <div className="relative overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950 shadow-2xl">
+
+        {/* Top Bar */}
+        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950 px-4 py-3">
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-red-500"></span>
+            <span className="h-3 w-3 rounded-full bg-yellow-400"></span>
+            <span className="h-3 w-3 rounded-full bg-green-500"></span>
+          </div>
+
+          <div className="text-xs text-slate-400">
+            learning-model.jsx
+          </div>
+        </div>
+
+        {/* Visualization Container */}
+      <div className="relative min-h-[620px] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,41,59,.98)),linear-gradient(#334155_1px,transparent_1px),linear-gradient(90deg,#334155_1px,transparent_1px)] bg-[size:auto,28px_28px,28px_28px]">
+
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10"></div>
+
+          <div className="relative z-10 w-full h-full p-6 flex flex-col justify-between">
+
+  {/* TOP STATUS */}
+  <div className="flex items-center justify-between mb-6">
+    <div>
+      <p className="text-xs uppercase tracking-[0.25em] text-cyan-300/70">
+        Learning Ecosystem
+      </p>
+
+      <h3 className="mt-2 text-3xl font-black text-white">
+        Student Growth System
+      </h3>
+    </div>
+
+    <div className="flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2">
+      <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+
+      <span className="text-xs font-semibold text-cyan-200">
+        Active Learning
+      </span>
+    </div>
+  </div>
+
+  {/* CENTER DASHBOARD */}
+  <div className="grid grid-cols-2 gap-4">
+
+    {/* CARD 1 */}
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 backdrop-blur-xl"
+    >
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-slate-300">
+          Live Projects
+        </h4>
+
+        <div className="rounded-lg bg-cyan-400/10 px-2 py-1 text-xs font-bold text-cyan-300">
+          100+
+        </div>
+      </div>
+
+      <div className="mt-6 h-2 overflow-hidden rounded-full bg-slate-800">
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: "85%" }}
+          transition={{ duration: 1.2 }}
+          className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500"
+        />
+      </div>
+
+      <p className="mt-3 text-xs text-slate-400">
+        Real-world implementation and portfolio building.
+      </p>
+    </motion.div>
+
+    {/* CARD 2 */}
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      className="rounded-2xl border border-slate-700 bg-slate-900/70 p-5 backdrop-blur-xl"
+    >
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-slate-300">
+          Placement Support
+        </h4>
+
+        <div className="rounded-lg bg-emerald-400/10 px-2 py-1 text-xs font-bold text-emerald-300">
+          Career
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-end gap-1 h-16">
+        {[40, 70, 55, 90, 75].map((h, i) => (
+          <motion.div
+            key={i}
+            initial={{ height: 0 }}
+            whileInView={{ height: `${h}%` }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+            className="flex-1 rounded-t-md bg-gradient-to-t from-cyan-500 to-blue-400"
+          />
+        ))}
+      </div>
+
+      <p className="mt-3 text-xs text-slate-400">
+        Interview preparation and career guidance system.
+      </p>
+    </motion.div>
+
+    {/* CARD 3 */}
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      className="col-span-2 rounded-2xl border border-slate-700 bg-slate-900/70 p-5 backdrop-blur-xl"
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-lg font-bold text-white">
+            Learning Workflow
+          </h4>
+
+          <p className="mt-1 text-sm text-slate-400">
+            Structured practical education pipeline
+          </p>
+        </div>
+
+        <div className="text-cyan-300 text-2xl font-black">
+          AI
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between">
+
+        {[
+          "Learn",
+          "Practice",
+          "Projects",
+          "Certification",
+        ].map((item, i) => (
+          <div key={item} className="flex items-center flex-1">
+
+            <div className="flex flex-col items-center">
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-400/10 text-sm font-bold text-cyan-300"
+              >
+                {i + 1}
+              </motion.div>
+
+              <span className="mt-2 text-xs text-slate-300">
+                {item}
+              </span>
+            </div>
+
+            {i !== 3 && (
+              <div className="mx-2 h-[2px] flex-1 bg-gradient-to-r from-cyan-400/40 to-blue-500/40"></div>
+            )}
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  </div>
+
+  {/* BOTTOM STATS */}
+  <div className="mt-6 flex items-center justify-between rounded-2xl border border-slate-700 bg-slate-900/60 px-5 py-4 backdrop-blur-xl">
+
+    <div>
+      <p className="text-3xl font-black text-cyan-300">
+        10K+
+      </p>
+
+      <span className="text-xs text-slate-400">
+        Students Guided
+      </span>
+    </div>
+
+    <div className="h-10 w-px bg-slate-700"></div>
+
+    <div>
+      <p className="text-3xl font-black text-cyan-300">
+        25+
+      </p>
+
+      <span className="text-xs text-slate-400">
+        Career Courses
+      </span>
+    </div>
+
+    <div className="h-10 w-px bg-slate-700"></div>
+
+    <div>
+      <p className="text-3xl font-black text-cyan-300">
+        100+
+      </p>
+
+      <span className="text-xs text-slate-400">
+        Projects
+      </span>
+    </div>
+
+  </div>
+</div>
+        </div>
+      </div>
+    </motion.div>
+  </div>
+</section>
     </>
   );
 }
