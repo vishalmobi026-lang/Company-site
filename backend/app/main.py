@@ -161,6 +161,7 @@ origins = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
     "https://company-site-mu-pink.vercel.app",
+    "https://g-tec-azhagiyamandapam.vercel.app",
 ]
 
 app.add_middleware(
