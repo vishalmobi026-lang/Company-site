@@ -85,6 +85,7 @@ class Course(Base):
     description = Column(String)
     image_url = Column(String)
     category = Column(String, index=True)
+    category_id = Column(Integer)
     tag = Column(String)
     is_active = Column(Integer, default=1)
 class Category(Base):
