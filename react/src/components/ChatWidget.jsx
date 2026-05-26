@@ -242,7 +242,7 @@ export default function ChatWidget() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:8000/contacts", form);
+      await axios.post("https://company-site-jrbr.onrender.com/contacts", form);
 
       addToast("Information received! We will be in touch shortly.", "success");
       setForm({ name: "", phone: "", email: "" });

@@ -89,7 +89,7 @@ function CourseDivision() {
       try {
         setLoading(true);
         // 1. Fetch categories to find the name for this slug
-        const catRes = await axios.get("http://localhost:8000/categories");
+        const catRes = await axios.get("https://company-site-jrbr.onrender.com/categories");
         const currentCat = catRes.data.find(c => c.slug === categorySlug);
         
         if (currentCat) {
@@ -97,7 +97,7 @@ function CourseDivision() {
           // 2. Fetch courses for this category
           // Note: Backend stores category name in 'category' field
         const res = await axios.get(
-  `http://localhost:8000/courses?category=${currentCat.name}`
+  `https://company-site-jrbr.onrender.com/courses?category=${currentCat.name}`
 );          const formatted = res.data.map(c => ({
             title: c.title,
             desc: c.description,

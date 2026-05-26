@@ -14,7 +14,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-const API = "http://localhost:8000";
+const API = "https://company-site-jrbr.onrender.com";
 
 const reveal = {
   hidden: { opacity: 0, y: 45, scale: 0.97 },

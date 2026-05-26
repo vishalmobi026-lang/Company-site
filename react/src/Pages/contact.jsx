@@ -139,7 +139,7 @@ function Contact() {
       };
 
       // Call Backend API
-      const response = await fetch("http://localhost:8000/contacts", {
+      const response = await fetch("https://company-site-jrbr.onrender.com/contacts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,7 +152,7 @@ function Contact() {
       }
 
       // ALSO save to Professional Inquiries as requested
-      await fetch("http://localhost:8000/professional-contacts", {
+      await fetch("https://company-site-jrbr.onrender.com/professional-contacts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

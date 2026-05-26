@@ -54,7 +54,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/admin/login",
+        "https://company-site-jrbr.onrender.com/admin/login",
         {
           username: form.username,
           password: form.password,

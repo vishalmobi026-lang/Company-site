@@ -88,7 +88,7 @@ function Civil() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/courses?category=Civil");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/courses?category=Civil");
         const formatted = res.data.map(c => ({
           title: c.title,
           desc: c.description,

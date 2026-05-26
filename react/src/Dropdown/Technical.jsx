@@ -85,7 +85,7 @@ function Technical() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/courses?category=Technical");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/courses?category=Technical");
         // Map backend fields to frontend props
         const formatted = res.data.map(c => ({
           title: c.title,

@@ -7,7 +7,7 @@ import {
   FaLayerGroup, FaBookOpen, FaCrown
 } from "react-icons/fa";
 
-const API = "http://localhost:8000";
+const API = "https://company-site-jrbr.onrender.com";
 const auth = (user) => ({ headers: { Authorization: `Bearer ${user?.access_token}` } });
 
 const defaults = [

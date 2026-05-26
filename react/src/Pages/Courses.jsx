@@ -34,7 +34,7 @@ export default function Courses() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/categories");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
         setCategories(res.data);
       } catch (err) {
         console.error("Failed to fetch categories", err);

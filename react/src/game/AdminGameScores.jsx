@@ -18,7 +18,7 @@ import {
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API = "http://localhost:8000";
+const API = "https://company-site-jrbr.onrender.com";
 
 const reveal = {
   hidden: { opacity: 0, y: 30, scale: 0.98 },

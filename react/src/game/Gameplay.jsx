@@ -80,7 +80,7 @@ export default function NeonStrikeGame({ onClose }) {
   const gameLoopRef = useRef(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/countries")
+    fetch("https://company-site-jrbr.onrender.com/api/countries")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -95,7 +95,7 @@ export default function NeonStrikeGame({ onClose }) {
         setCountries([]);
       });
 
-    fetch("http://localhost:8000/categories")
+    fetch("https://company-site-jrbr.onrender.com/categories")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -153,7 +153,7 @@ export default function NeonStrikeGame({ onClose }) {
 
       // FETCH QUESTIONS FROM YOUR FASTAPI
       const response = await fetch(
-        `http://localhost:8000/questions?topic=${encodeURIComponent(formData.course)}`
+        `https://company-site-jrbr.onrender.com/questions?topic=${encodeURIComponent(formData.course)}`
       )
 
       finalQuestions = await response.json()
@@ -162,12 +162,12 @@ export default function NeonStrikeGame({ onClose }) {
       if (!Array.isArray(finalQuestions) || finalQuestions.length === 0) {
 
         await fetch(
-          `http://localhost:8000/generate-ai-questions?topic=${encodeURIComponent(formData.course)}`
+          `https://company-site-jrbr.onrender.com/generate-ai-questions?topic=${encodeURIComponent(formData.course)}`
         )
 
         // FETCH AGAIN
         const retryResponse = await fetch(
-          `http://localhost:8000/questions?topic=${encodeURIComponent(formData.course)}`
+          `https://company-site-jrbr.onrender.com/questions?topic=${encodeURIComponent(formData.course)}`
         )
 
         finalQuestions = await retryResponse.json()
@@ -351,7 +351,7 @@ export default function NeonStrikeGame({ onClose }) {
 
     const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
     try {
-      await fetch("http://localhost:8000/gamescores/add", {
+      await fetch("https://company-site-jrbr.onrender.com/gamescores/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
