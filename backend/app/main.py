@@ -219,25 +219,6 @@ def get_staff_or_admin_user(current_user: models.User = Depends(get_current_user
 def send_contact_email(name, email, phone, subject, message, professional_email=None, target_email=None):
     if not target_email:
         target_email = os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
-    
-    smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-
-    if not smtp_user or not smtp_password or "your-email" in smtp_user or "your-app-password" in smtp_password:
-        print("SMTP credentials not configured or using placeholders. Skipping email.")
-        return
-
-    msg = MIMEMultipart('related')
-    msg['From'] = smtp_user
-    msg['To'] = target_email
-    msg['Subject'] = f"\U0001f4ec New Inquiry: {subject or 'No Subject'}"
-
-    # Try to embed logo
-    logo_cid = "gtec_logo"
-    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'react', 'public', 'logo.webp')
-    logo_tag = f'<img src="cid:{logo_cid}" alt="G-Tech" style="height:64px;width:auto;object-fit:contain;display:block;margin:0 auto 20px;" />'
 
     html_body = f"""
 <!DOCTYPE html>
@@ -256,7 +237,6 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 36px;text-align:center;">
-              {logo_tag}
               <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:7px 22px;margin-bottom:14px;">
                 <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tech Azhagiyamandapam</span>
               </div>
@@ -389,30 +369,33 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
 </body>
 </html>
 """
-    alt_part = MIMEMultipart('alternative')
-    alt_part.attach(MIMEText(html_body, 'html'))
-    msg.attach(alt_part)
 
-    # Attach logo as inline image
-    try:
-        with open(logo_path, 'rb') as f:
-            logo_data = f.read()
-        logo_img = MIMEImage(logo_data, 'webp')
-        logo_img.add_header('Content-ID', f'<{logo_cid}>')
-        logo_img.add_header('Content-Disposition', 'inline', filename='logo.webp')
-        msg.attach(logo_img)
-    except Exception as e:
-        print(f"Could not attach logo: {e}")
+    resend_api_key = os.getenv("RESEND_API_KEY")
+    if not resend_api_key:
+        print("RESEND_API_KEY not configured. Skipping email.")
+        return
 
     try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.send_message(msg)
-        server.quit()
-        print("Email sent successfully!")
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {resend_api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "G-Tech Azhagiyamandapam <onboarding@resend.dev>",
+                "to": [target_email],
+                "subject": f"New Inquiry: {subject or 'No Subject'}",
+                "html": html_body
+            },
+            timeout=10
+        )
+        if response.status_code in (200, 201):
+            print("Email sent successfully via Resend!")
+        else:
+            print(f"Resend error: {response.status_code} - {response.text}")
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"Error sending email via Resend: {e}")
 
 
 @app.post("/admin/register", response_model=schemas.UserResponse)
