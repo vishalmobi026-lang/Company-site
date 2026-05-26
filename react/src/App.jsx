@@ -19,7 +19,7 @@ import AdminGameScores from "./game/AdminGameScores";
 
 import Home from "./Pages/Home/Home";
 import About from "./Pages/About";
-import Contact from "./Pages/Contact";
+import Contact from "./Pages/contact";
 import Login from "./Pages/Login";
 import Courses from "./Pages/Courses";
 import Enroll from "./Pages/Enroll";
