@@ -121,7 +121,8 @@ class CourseCreate(BaseModel):
     title: str
     description: Optional[str] = None
     image_url: Optional[str] = None
-    category: str
+    category: Optional[str] = None
+    category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = 1
 
@@ -130,6 +131,7 @@ class CourseUpdate(BaseModel):
     description: Optional[str] = None
     image_url: Optional[str] = None
     category: Optional[str] = None
+    category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = None
 
@@ -149,7 +151,8 @@ class CourseResponse(BaseModel):
     title: str
     description: Optional[str] = None
     image_url: Optional[str] = None
-    category: str
+    category: Optional[str] = None
+    category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = 1
 
