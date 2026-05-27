@@ -553,6 +553,19 @@ def create_contact(message: schemas.ContactMessageCreate, background_tasks: Back
         print(f"Error in create_contact: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/contacts/widget", response_model=schemas.ContactMessageResponse)
+def create_contact_widget(message: schemas.ContactMessageCreate, db: Session = Depends(database.get_db)):
+    """ChatWidget submissions - saved to Inbox only, no email sent."""
+    try:
+        new_message = models.ContactMessage(**message.dict())
+        db.add(new_message)
+        db.commit()
+        db.refresh(new_message)
+        return new_message
+    except Exception as e:
+        print(f"Error in create_contact_widget: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/professional-contacts", response_model=schemas.ProfessionalInquiryResponse)
 def create_professional_inquiry(inquiry: schemas.ProfessionalInquiryCreate, db: Session = Depends(database.get_db)):
     try:
