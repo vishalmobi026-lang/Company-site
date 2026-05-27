@@ -567,12 +567,25 @@ def create_contact_widget(message: schemas.ContactMessageCreate, db: Session = D
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/professional-contacts", response_model=schemas.ProfessionalInquiryResponse)
-def create_professional_inquiry(inquiry: schemas.ProfessionalInquiryCreate, db: Session = Depends(database.get_db)):
+def create_professional_inquiry(inquiry: schemas.ProfessionalInquiryCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
     try:
         new_inquiry = models.ProfessionalInquiry(**inquiry.dict())
         db.add(new_inquiry)
         db.commit()
         db.refresh(new_inquiry)
+
+        # Send email notification for Contact Us page submissions
+        background_tasks.add_task(
+            send_contact_email,
+            new_inquiry.name,
+            new_inquiry.email,
+            new_inquiry.phone,
+            new_inquiry.subject,
+            new_inquiry.message,
+            None,
+            os.getenv("EMAIL_TARGET", "revaldoambrose90@gmail.com")
+        )
+
         return new_inquiry
     except Exception as e:
         print(f"Error in create_professional_inquiry: {e}")
