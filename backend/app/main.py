@@ -162,6 +162,8 @@ origins = [
     "http://127.0.0.1:8000",
     "https://company-site-mu-pink.vercel.app",
     "https://g-tec-azhagiyamandapam.vercel.app",
+    # Vercel preview deployment URLs (auto-generated per commit)
+    "https://g-tec-azhagiyamandapam-omz50aq86-vishal-mobi-s-projects.vercel.app",
 ]
 
 app.add_middleware(
