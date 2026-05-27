@@ -772,14 +772,14 @@ def create_enrollment(enrollment: schemas.EnrollmentCreate, background_tasks: Ba
     db.commit()
     db.refresh(new_enrollment)
 
-    # Send confirmation email to student
-    if new_enrollment.email:
-        background_tasks.add_task(
-            send_enrollment_confirmation_email,
-            new_enrollment.name,
-            new_enrollment.email,
-            new_enrollment.course
-        )
+    # Send confirmation email to student (TEMPORARILY DISABLED)
+    # if new_enrollment.email:
+    #     background_tasks.add_task(
+    #         send_enrollment_confirmation_email,
+    #         new_enrollment.name,
+    #         new_enrollment.email,
+    #         new_enrollment.course
+    #     )
 
     return new_enrollment
 
