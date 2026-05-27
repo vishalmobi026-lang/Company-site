@@ -231,36 +231,29 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>New Contact Message</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 0;">
+<body style="margin:0;padding:0;background-color:#ECEFF1;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ECEFF1;padding:40px 0;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
 
-          <!-- Top Accent Bar -->
-          <tr>
-            <td style="height:6px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
-          </tr>
-
           <!-- Header -->
           <tr>
-            <td style="background:#8ecfcf;padding:48px 40px 24px;text-align:center;">
+            <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 32px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.15);position:relative;z-index:10;">
               <a href="https://g-tec-nagercoil.vercel.app" target="_blank" style="display:inline-block;text-decoration:none;border:none;outline:none;cursor:pointer;">
-                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);" />
+                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.2);" />
               </a>
-              <div style="display:inline-block;background:#f8fafc;border-radius:50px;padding:6px 20px;margin-bottom:16px;border:1px solid #e2e8f0;">
-                <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">Azhagiyamandapam</span>
+              <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:6px 20px;margin-bottom:16px;">
+                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
               </div>
-              <h1 style="margin:0 0 8px;color:#0f172a;font-size:26px;font-weight:800;letter-spacing:-0.5px;">New Contact Inquiry</h1>
-              <p style="margin:0;color:#64748b;font-size:14px;font-weight:500;">Someone reached out via your website contact form</p>
+              <h1 style="margin:0 0 8px;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">New Contact Inquiry</h1>
+              <p style="margin:0;color:#93c5fd;font-size:13px;font-weight:500;">Someone reached out via your website contact form</p>
             </td>
           </tr>
 
-          <!-- Divider -->
+          <!-- Accent Bar -->
           <tr>
-            <td style="background:#ffffff;padding:0 40px;">
-              <div style="height:1px;background:#e2e8f0;width:100%;"></div>
-            </td>
+            <td style="height:4px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
           </tr>
 
           <!-- Body -->
@@ -426,36 +419,29 @@ def send_enrollment_confirmation_email(name, email, course):
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registration Confirmation</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 0;">
+<body style="margin:0;padding:0;background-color:#ECEFF1;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ECEFF1;padding:40px 0;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
 
-          <!-- Top Accent Bar -->
-          <tr>
-            <td style="height:6px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
-          </tr>
-
           <!-- Header -->
           <tr>
-            <td style="background:#ffffff;padding:48px 40px 24px;text-align:center;">
+            <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 32px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.15);position:relative;z-index:10;">
               <a href="https://g-tec-nagercoil.vercel.app" target="_blank" style="display:inline-block;text-decoration:none;border:none;outline:none;cursor:pointer;">
-                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);" />
+                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.2);" />
               </a>
-              <div style="display:inline-block;background:#f8fafc;border-radius:50px;padding:6px 20px;margin-bottom:16px;border:1px solid #e2e8f0;">
-                <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
+              <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:6px 20px;margin-bottom:16px;">
+                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
               </div>
-              <h1 style="margin:0 0 8px;color:#0f172a;font-size:26px;font-weight:800;letter-spacing:-0.5px;">🎉 Registration Successful!</h1>
-              <p style="margin:0;color:#64748b;font-size:14px;font-weight:500;">Welcome to G-Tec Computer Education</p>
+              <h1 style="margin:0 0 8px;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">🎉 Registration Successful!</h1>
+              <p style="margin:0;color:#93c5fd;font-size:13px;font-weight:500;">Welcome to G-Tec Computer Education</p>
             </td>
           </tr>
 
-          <!-- Divider -->
+          <!-- Accent Bar -->
           <tr>
-            <td style="background:#ffffff;padding:0 40px;">
-              <div style="height:1px;background:#e2e8f0;width:100%;"></div>
-            </td>
+            <td style="height:4px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
           </tr>
 
           <!-- Body -->
