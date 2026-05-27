@@ -5,14 +5,15 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const CATEGORY_IMAGES = {
-  "it / technical": "https://images.unsplash.com/photo-1518770660439-4636190af475",
-  "non technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-  "non-technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-  "designing": "https://images.unsplash.com/photo-1552664730-d307ca884978",
-  "accounting": "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-  "civil": "https://images.unsplash.com/photo-1559028012-481c04fa702d",
-  "coding": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+  "it / technical": "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=800&q=80",
+  "non technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+  "non-technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+  "designing": "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&w=800&q=80",
+  "accounting": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
+  "civil": "https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&w=800&q=80",
+  "coding": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
 };
+
 
 const CATEGORY_TAGS = {
   "it / technical": "Most Popular",
