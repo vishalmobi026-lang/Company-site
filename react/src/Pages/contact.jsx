@@ -151,14 +151,7 @@ function Contact() {
         throw new Error("Failed to send message");
       }
 
-      // ALSO save to Professional Inquiries as requested
-      await fetch("https://company-site-jrbr.onrender.com/professional-contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(contactData),
-      });
+      // Removed duplicate submission to professional-contacts
 
       setSubmitStatus("success");
 
