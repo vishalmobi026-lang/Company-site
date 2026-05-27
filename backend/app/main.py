@@ -36,18 +36,18 @@ def seed_all_data():
     db = next(database.get_db())
     try:
         # 1. Seed Admin User
-        if not db.query(models.User).filter(models.User.username == "G-Tech").first():
-            hashed_pw = hash_password("reo007")
-            admin_user = models.User(username="G-Tech", hashed_password=hashed_pw, role="admin")
+        if not db.query(models.User).filter(models.User.username == "G-Tec").first():
+            hashed_pw = hash_password("6091")
+            admin_user = models.User(username="G-Tec", hashed_password=hashed_pw, role="admin")
             db.add(admin_user)
-            print("Successfully seeded Admin user: G-Tech")
+            print("Successfully seeded Admin user: G-Tec")
 
         # 2. Seed Staff User
-        if not db.query(models.User).filter(models.User.username == "G-TechStaff").first():
-            hashed_pw = hash_password("G-tech@2026")
-            staff_user = models.User(username="G-TechStaff", hashed_password=hashed_pw, role="staff")
+        if not db.query(models.User).filter(models.User.username == "G-TecStaff").first():
+            hashed_pw = hash_password("G-tec@2026")
+            staff_user = models.User(username="G-TecStaff", hashed_password=hashed_pw, role="staff")
             db.add(staff_user)
-            print("Successfully seeded Staff user: G-TechStaff")
+            print("Successfully seeded Staff user: G-TecStaff")
 
         # 3. Seed Initial Pricing (Only if table is empty)
         if db.query(models.Pricing).count() == 0:
