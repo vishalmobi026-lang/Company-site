@@ -97,7 +97,7 @@ function CourseDivision() {
           // 2. Fetch courses for this category
           // Note: Backend stores category name in 'category' field
         const res = await axios.get(
-  `https://company-site-jrbr.onrender.com/courses?category=${currentCat.name}`
+  `https://company-site-jrbr.onrender.com/courses?category=${encodeURIComponent(currentCat.name)}`
 );          const formatted = res.data.map(c => ({
             title: c.title,
             desc: c.description,
