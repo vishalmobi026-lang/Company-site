@@ -25,6 +25,14 @@ const CATEGORY_TAGS = {
   "coding": "Trending",
 };
 
+const FALLBACK_CATEGORIES = [
+  { id: 1, name: "IT / Technical", slug: "it-technical" },
+  { id: 2, name: "Non Technical", slug: "non-technical" },
+  { id: 3, name: "Designing", slug: "designing" },
+  { id: 4, name: "Accounting", slug: "accounting" },
+  { id: 5, name: "Civil", slug: "civil" },
+];
+
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&w=800&q=80";
 
 export default function Courses() {
@@ -36,9 +44,14 @@ export default function Courses() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
-        setCategories(res.data);
+        if (res.data && res.data.length > 0) {
+          setCategories(res.data);
+        } else {
+          setCategories(FALLBACK_CATEGORIES);
+        }
       } catch (err) {
         console.error("Failed to fetch categories", err);
+        setCategories(FALLBACK_CATEGORIES);
       } finally {
         setLoading(false);
       }

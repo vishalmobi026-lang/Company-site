@@ -4,6 +4,28 @@ import { FaCheckCircle, FaArrowRight, FaLaptopCode, FaCode } from "react-icons/f
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 
+const FALLBACK_COURSES = {
+  "it / technical": [
+    { title: "Full-Stack Development", desc: "Build complete applications with frontend, backend, database, and deployment skills.", img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c", tag: "Popular" },
+    { title: "MERN Stack Development", desc: "Create full-stack web apps using MongoDB, Express, React, and Node.js.", img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97", tag: "Web Dev" },
+    { title: "Python Developer", desc: "Learn Python programming for applications, automation, and backend development.", img: "https://images.unsplash.com/photo-1526379095098-d400fd0bfce8", tag: "Code" },
+    { title: "UI/UX Design", desc: "Design user-centered interfaces and experiences with modern design tools.", img: "https://images.unsplash.com/photo-1561070791-2526d30994b5", tag: "Design" }
+  ],
+  "accounting": [
+    { title: "Tally Prime", desc: "Master professional accounting and GST management with Tally Prime.", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f", tag: "Finance" },
+    { title: "GST Accounting", desc: "Understand GST billing, tax entries, returns, and practical filing basics.", img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c", tag: "Tax" }
+  ],
+  "non technical": [
+    { title: "Digital Marketing", desc: "Learn SEO, SEM, social media, and content marketing strategies.", img: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a", tag: "Business" },
+    { title: "Office Management", desc: "Master MS Office tools for efficient workplace documentation and operations.", img: "https://images.unsplash.com/photo-1497215728101-856f4ea42174", tag: "Basics" }
+  ],
+  "designing": [
+    { title: "Graphic Designing", desc: "Master Photoshop, Illustrator, and CorelDRAW for professional branding.", img: "https://insdpunebaner.com/wp-content/uploads/2024/07/graphic-design-1024x559.webp", tag: "Creative" },
+    { title: "UI/UX Design", desc: "Design user-centered interfaces and experiences with modern design tools.", img: "https://images.unsplash.com/photo-1561070791-2526d30994b5", tag: "Modern" }
+  ]
+};
+
+
 function CourseCard({ course, index, navigate }) {
   const [imageError, setImageError] = useState(false);
 
@@ -96,20 +118,44 @@ function CourseDivision() {
           setCategoryName(currentCat.name);
           // 2. Fetch courses for this category
           // Note: Backend stores category name in 'category' field
-        const res = await axios.get(
-  `https://company-site-jrbr.onrender.com/courses?category=${encodeURIComponent(currentCat.name)}`
-);          const formatted = res.data.map(c => ({
-            title: c.title,
-            desc: c.description,
-            img: c.image_url,
-            tag: c.tag
-          }));
-          setCourses(formatted);
+          try {
+            const res = await axios.get(
+              `https://company-site-jrbr.onrender.com/courses?category=${encodeURIComponent(currentCat.name)}`
+            );
+            if (res.data && res.data.length > 0) {
+              const formatted = res.data.map(c => ({
+                title: c.title,
+                desc: c.description,
+                img: c.image_url,
+                tag: c.tag
+              }));
+              setCourses(formatted);
+            } else {
+              setCourses(FALLBACK_COURSES[currentCat.name.toLowerCase()] || []);
+            }
+          } catch (courseErr) {
+            console.error("Failed to fetch courses from API, using fallbacks", courseErr);
+            setCourses(FALLBACK_COURSES[currentCat.name.toLowerCase()] || []);
+          }
         } else {
           setCategoryName("Courses");
         }
       } catch (err) {
-        console.error("Failed to fetch courses", err);
+        console.error("Failed to fetch categories", err);
+        // If category fetch fails, try to infer from slug and use fallbacks
+        const slugMap = {
+          "it-technical": "IT / Technical",
+          "accounting": "Accounting",
+          "non-technical": "Non Technical",
+          "designing": "Designing"
+        };
+        const inferredName = slugMap[categorySlug];
+        if (inferredName) {
+          setCategoryName(inferredName);
+          setCourses(FALLBACK_COURSES[inferredName.toLowerCase()] || []);
+        } else {
+          setCategoryName("Courses");
+        }
       } finally {
         setLoading(false);
       }

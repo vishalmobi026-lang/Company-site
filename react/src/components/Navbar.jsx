@@ -24,6 +24,14 @@ import {
 import { IoLocationSharp } from "react-icons/io5";
 
 
+const FALLBACK_CATEGORIES = [
+  { id: 1, name: "IT / Technical", slug: "it-technical" },
+  { id: 2, name: "Non Technical", slug: "non-technical" },
+  { id: 3, name: "Designing", slug: "designing" },
+  { id: 4, name: "Accounting", slug: "accounting" },
+  { id: 5, name: "Civil", slug: "civil" },
+];
+
 function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [openCourses, setOpenCourses] = useState(false);
@@ -39,9 +47,14 @@ function Navbar() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
-        setCategories(res.data);
+        if (res.data && res.data.length > 0) {
+          setCategories(res.data);
+        } else {
+          setCategories(FALLBACK_CATEGORIES);
+        }
       } catch (err) {
-        console.error("Failed to fetch categories", err);
+        console.error("Failed to fetch categories, using fallbacks", err);
+        setCategories(FALLBACK_CATEGORIES);
       }
     };
     fetchCategories();
