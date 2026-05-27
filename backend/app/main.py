@@ -244,12 +244,12 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
 
           <!-- Header -->
           <tr>
-            <td style="background:#ffffff;padding:48px 40px 24px;text-align:center;">
+            <td style="background:#8ecfcf;padding:48px 40px 24px;text-align:center;">
               <a href="https://g-tec-nagercoil.vercel.app" target="_blank" style="display:inline-block;text-decoration:none;border:none;outline:none;cursor:pointer;">
-                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;" />
+                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="100" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;" />
               </a>
               <div style="display:inline-block;background:#f8fafc;border-radius:50px;padding:6px 20px;margin-bottom:16px;border:1px solid #e2e8f0;">
-                <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
+                <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">Azhagiyamandapam</span>
               </div>
               <h1 style="margin:0 0 8px;color:#0f172a;font-size:26px;font-weight:800;letter-spacing:-0.5px;">New Contact Inquiry</h1>
               <p style="margin:0;color:#64748b;font-size:14px;font-weight:500;">Someone reached out via your website contact form</p>
