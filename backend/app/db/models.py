@@ -76,6 +76,7 @@ class Enrollment(Base):
     college_degree_type = Column(String)
     college_degree = Column(String)
     id_proof = Column(String)
+    staff_feedback = Column(String)
 
 class Course(Base):
     __tablename__ = "courses"

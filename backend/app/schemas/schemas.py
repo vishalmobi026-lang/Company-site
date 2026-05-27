@@ -89,6 +89,7 @@ class EnrollmentCreate(BaseModel):
     college_degree_type: Optional[str] = None
     college_degree: Optional[str] = None
     id_proof: Optional[str] = None
+    staff_feedback: Optional[str] = None
 
 class EnrollmentUpdate(BaseModel):
     name: Optional[str] = None
@@ -110,6 +111,7 @@ class EnrollmentUpdate(BaseModel):
     college_degree_type: Optional[str] = None
     college_degree: Optional[str] = None
     id_proof: Optional[str] = None
+    staff_feedback: Optional[str] = None
 
 class EnrollmentResponse(EnrollmentCreate):
     id: int

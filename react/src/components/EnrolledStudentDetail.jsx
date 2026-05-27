@@ -486,6 +486,15 @@ export default function EnrolledStudentDetail() {
                               <span className="text-emerald-600 font-medium">Available (View in Edit mode)</span>
                             </div>
                           )}
+
+                          {e.staff_feedback && (
+                            <div className="flex items-start gap-2 text-gray-600 sm:col-span-2 lg:col-span-3 mt-2 rounded-xl bg-green-50 p-4 border border-green-200 shadow-sm">
+                              <span className="font-bold text-green-700 whitespace-nowrap pt-0.5">Staff Feedback:</span>
+                              <span className="text-green-800 leading-relaxed font-medium">
+                                {e.staff_feedback}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -499,14 +508,16 @@ export default function EnrolledStudentDetail() {
                           <FaEdit /> Edit
                         </motion.button>
 
-                        <motion.button
-                          whileHover={{ scale: 1.04, y: -1 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleDelete(e.id)}
-                          className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-red-50 hover:text-red-600"
-                        >
-                          <FaTrash /> Delete
-                        </motion.button>
+                        {user?.user?.role === "admin" && (
+                          <motion.button
+                            whileHover={{ scale: 1.04, y: -1 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleDelete(e.id)}
+                            className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-red-50 hover:text-red-600"
+                          >
+                            <FaTrash /> Delete
+                          </motion.button>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -688,6 +699,30 @@ export default function EnrolledStudentDetail() {
                         </div>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-[1.5rem] border border-green-100 bg-white p-5 shadow-sm">
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="rounded-xl bg-green-50 p-3 text-green-600">
+                      <FaEdit />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-slate-900">Staff Feedback</h4>
+                      <p className="text-xs font-semibold text-slate-400">
+                        Add internal notes or follow-up feedback about this student
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <textarea
+                      name="staff_feedback"
+                      value={editForm.staff_feedback || ""}
+                      onChange={handleEditChange}
+                      rows="4"
+                      placeholder="Type your feedback here..."
+                      className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-medium text-slate-700 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+                    />
                   </div>
                 </div>
 

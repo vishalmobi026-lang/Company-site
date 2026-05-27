@@ -130,6 +130,7 @@ try:
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_status VARCHAR"))
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree_type VARCHAR"))
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree VARCHAR"))
+        conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS staff_feedback VARCHAR"))
         conn.execute(text("ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR"))
         conn.execute(
             text(
@@ -788,11 +789,11 @@ def create_enrollment(enrollment: schemas.EnrollmentCreate, background_tasks: Ba
     return new_enrollment
 
 @app.get("/admin/enrollments", response_model=List[schemas.EnrollmentResponse])
-def get_enrollments(db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+def get_enrollments(db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
     return db.query(models.Enrollment).all()
 
 @app.put("/admin/enrollments/{id}", response_model=schemas.EnrollmentResponse)
-def update_enrollment(id: int, enrollment: schemas.EnrollmentUpdate, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+def update_enrollment(id: int, enrollment: schemas.EnrollmentUpdate, db: Session = Depends(database.get_db), user: models.User = Depends(get_staff_or_admin_user)):
     db_enroll = db.query(models.Enrollment).filter(models.Enrollment.id == id).first()
     if not db_enroll:
         raise HTTPException(status_code=404, detail="Enrollment not found")

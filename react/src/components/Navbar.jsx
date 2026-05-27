@@ -297,6 +297,26 @@ function Navbar() {
                       ) : (
                         /* STAFF ONLY VIEW */
                         <div className="p-3">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Records & Results</p>
+                          <div className="space-y-1">
+                            <AdminLink 
+                              icon={<FaUserGraduate />} 
+                              label="Student Enrollments" 
+                              path="/admin/enrollments" 
+                              active={location.pathname === "/admin/enrollments"}
+                              onClick={() => { navigate("/admin/enrollments"); setOpenAdmin(false); }}
+                            />
+                            <AdminLink 
+                              icon={<FaTrophy />} 
+                              label="Scholarship Results" 
+                              path="/admin/game-scores" 
+                              active={location.pathname === "/admin/game-scores"}
+                              onClick={() => { navigate("/admin/game-scores"); setOpenAdmin(false); }}
+                            />
+                          </div>
+
+                          <div className="h-px bg-gray-800 mx-4 my-2" />
+
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Inquiry Portal</p>
                           <div className="space-y-1">
                             <AdminLink 
@@ -487,10 +507,18 @@ function Navbar() {
                           </div>
                         </>
                       ) : (
-                        <div className="space-y-2">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inquiry Portal</p>
-                          <div onClick={() => handleMobileNavigate("/admin/contacts")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Inbox Inquiries</div>
-                        </div>
+                        <>
+                          <div className="space-y-2">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Records</p>
+                            <div onClick={() => handleMobileNavigate("/admin/enrollments")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Student Enrollments</div>
+                            <div onClick={() => handleMobileNavigate("/admin/game-scores")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Scholarship Results</div>
+                          </div>
+
+                          <div className="space-y-2 mt-2">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inquiry Portal</p>
+                            <div onClick={() => handleMobileNavigate("/admin/contacts")} className="text-sm py-1 hover:text-blue-600 cursor-pointer">Inbox Inquiries</div>
+                          </div>
+                        </>
                       )}
                     </motion.div>
                   )}
