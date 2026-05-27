@@ -240,7 +240,7 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 36px;text-align:center;">
-              <img src="https://g-tec-azhagiyamandapam.vercel.app/logo.webp" alt="G-TEC Logo" width="80" height="80" style="border-radius:50%;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;border:3px solid rgba(255,255,255,0.3);" />
+              <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 14px;border-radius:12px;" />
               <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:7px 22px;margin-bottom:14px;">
                 <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
               </div>
