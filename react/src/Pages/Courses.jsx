@@ -5,12 +5,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const CATEGORY_IMAGES = {
-  "it / technical": "https://images.unsplash.com/photo-1605379399642-870262d3d051?auto=format&fit=crop&w=800&q=80",
+  "it / technical": "https://images.unsplash.com/photo-1518770660439-4636190af475",
   "non technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
   "non-technical": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
-  "designing": "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&w=800&q=80",
+  "designing": "https://insdpunebaner.com/wp-content/uploads/2024/07/graphic-design-1024x559.webp",
   "accounting": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-  "civil": "https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&w=800&q=80",
+  "civil": "https://thumbs.dreamstime.com/b/female-civil-engineer-examines-urban-traffic-patterns-female-civil-engineer-examines-urban-traffic-patterns-d-mapping-446739853.jpg",
   "coding": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
 };
 
