@@ -99,11 +99,7 @@ export default function Courses() {
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 whileHover={{ y: -10, scale: 1.03 }}
-                className={`group overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-xl shadow-xl transition ${
-                  index === 0
-                    ? "lg:col-span-2 border-cyan-400/40"
-                    : "border-slate-700 hover:border-cyan-400/50"
-                }`}
+                className="group overflow-hidden rounded-2xl border bg-white/5 backdrop-blur-xl shadow-xl transition border-slate-700 hover:border-cyan-400/50"
               >
                 <div className="relative h-56 overflow-hidden">
                   <img
@@ -119,30 +115,15 @@ export default function Courses() {
 
                   <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/70 px-4 py-2 text-xs text-cyan-200 backdrop-blur">
                     {getTag(cat.name)}
-                  </div>
-
-                  {index === 0 && (
-                    <div className="absolute bottom-4 left-4 right-4 text-left">
-                      <h2 className="text-3xl font-bold">{cat.name}</h2>
-                      <p className="mt-2 max-w-xl text-sm text-gray-300">
-                        Start with skills that open doors to real careers, software projects, and modern tech roles.
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 <div className="p-6">
-                  {index !== 0 && (
-                    <>
-                      <h2 className="text-xl font-semibold mb-2">
-                        {cat.name}
-                      </h2>
-
-                      <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                        Professional training in {cat.name} — build real skills with hands-on projects.
-                      </p>
-                    </>
-                  )}
+                  <h2 className="text-xl font-semibold mb-2">
+                    {cat.name}
+                  </h2>
+                  <p className="text-gray-400 text-sm mb-5 leading-relaxed">
+                    Professional training in {cat.name} — build real skills with hands-on projects.
+                  </p>
 
                   <div className="flex items-center gap-2 text-cyan-300 mb-5">
                     <FaCheckCircle />
