@@ -240,8 +240,9 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
           <!-- Header -->
           <tr>
             <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 36px;text-align:center;">
+              <img src="https://g-tec-azhagiyamandapam.vercel.app/logo.webp" alt="G-TEC Logo" width="80" height="80" style="border-radius:50%;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;border:3px solid rgba(255,255,255,0.3);" />
               <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:7px 22px;margin-bottom:14px;">
-                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tech Azhagiyamandapam</span>
+                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
               </div>
               <h1 style="margin:0 0 8px;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">New Contact Inquiry</h1>
               <p style="margin:0;color:#93c5fd;font-size:13px;font-weight:500;">Someone reached out via your website contact form</p>
@@ -399,6 +400,112 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
             print(f"Resend error: {response.status_code} - {response.text}")
     except Exception as e:
         print(f"Error sending email via Resend: {e}")
+
+
+def send_enrollment_confirmation_email(name, email, course):
+    """Send a registration confirmation email to the student."""
+    resend_api_key = os.getenv("RESEND_API_KEY")
+    if not resend_api_key:
+        print("RESEND_API_KEY not configured. Skipping enrollment confirmation email.")
+        return
+
+    html_body = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Confirmation</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.12);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0891b2 100%);padding:44px 40px 36px;text-align:center;">
+              <img src="https://g-tec-azhagiyamandapam.vercel.app/logo.webp" alt="G-TEC Logo" width="80" height="80" style="border-radius:50%;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;border:3px solid rgba(255,255,255,0.3);" />
+              <div style="display:inline-block;background:rgba(255,255,255,0.15);border-radius:50px;padding:7px 22px;margin-bottom:14px;">
+                <span style="color:#bfdbfe;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
+              </div>
+              <h1 style="margin:0 0 8px;color:#ffffff;font-size:26px;font-weight:800;letter-spacing:-0.5px;">🎉 Registration Successful!</h1>
+              <p style="margin:0;color:#93c5fd;font-size:13px;font-weight:500;">Welcome to G-Tec Computer Education</p>
+            </td>
+          </tr>
+
+          <!-- Accent Bar -->
+          <tr>
+            <td style="height:4px;background:linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);"></td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background:#ffffff;padding:40px;">
+              <p style="font-size:16px;color:#1e293b;font-weight:600;margin-bottom:8px;">Dear {name},</p>
+              <p style="font-size:15px;color:#475569;line-height:1.7;margin-bottom:28px;">
+                You have successfully registered for the course at <strong>G-Tec Computer Education, Azhagiyamandapam</strong>. Our team will review your application and get back to you shortly.
+              </p>
+
+              <!-- Course Badge -->
+              <div style="text-align:center;margin-bottom:32px;">
+                <span style="display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:14px;font-weight:700;padding:12px 28px;border-radius:50px;border:1px solid #bfdbfe;">
+                  📚 {course}
+                </span>
+              </div>
+
+              <!-- Info Box -->
+              <div style="background:#f0f9ff;border-left:4px solid #1d4ed8;border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:32px;">
+                <p style="margin:0;color:#1e293b;font-size:14px;line-height:1.7;">
+                  ✅ Your enrollment has been received.<br/>
+                  📞 We will contact you within <strong>1-2 working days</strong>.<br/>
+                  📍 <strong>Location:</strong> NIYAS ARCADE, Opp. of Mosque, Azhagiyamandapam - 629167.
+                </p>
+              </div>
+
+              <p style="font-size:13px;color:#94a3b8;text-align:center;">
+                If you have any questions, contact us at <a href="mailto:azhagiyamandapam.tn@gteceducation.com" style="color:#1d4ed8;">azhagiyamandapam.tn@gteceducation.com</a> or call <strong>+91 75980 98675</strong>.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#0f172a;padding:28px 40px;text-align:center;">
+              <p style="margin:0;color:#94a3b8;font-size:12px;font-weight:700;letter-spacing:0.5px;">G-Tec Azhagiyamandapam &copy; 2026</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+
+    try:
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {resend_api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "G-Tec Azhagiyamandapam <onboarding@resend.dev>",
+                "to": [email],
+                "subject": f"✅ Registration Successful – {course}",
+                "html": html_body
+            },
+            timeout=10
+        )
+        if response.status_code in (200, 201):
+            print(f"Enrollment confirmation email sent to {email}")
+        else:
+            print(f"Resend error: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"Error sending enrollment confirmation email: {e}")
 
 
 @app.post("/admin/register", response_model=schemas.UserResponse)
@@ -659,11 +766,21 @@ def permanent_delete_contact(id: int, db: Session = Depends(database.get_db), ad
     return {"detail": "Message permanently deleted"}
 
 @app.post("/enrollments", response_model=schemas.EnrollmentResponse)
-def create_enrollment(enrollment: schemas.EnrollmentCreate, db: Session = Depends(database.get_db)):
+def create_enrollment(enrollment: schemas.EnrollmentCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
     new_enrollment = models.Enrollment(**enrollment.dict())
     db.add(new_enrollment)
     db.commit()
     db.refresh(new_enrollment)
+
+    # Send confirmation email to student
+    if new_enrollment.email:
+        background_tasks.add_task(
+            send_enrollment_confirmation_email,
+            new_enrollment.name,
+            new_enrollment.email,
+            new_enrollment.course
+        )
+
     return new_enrollment
 
 @app.get("/admin/enrollments", response_model=List[schemas.EnrollmentResponse])
