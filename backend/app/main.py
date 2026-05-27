@@ -246,7 +246,7 @@ def send_contact_email(name, email, phone, subject, message, professional_email=
           <tr>
             <td style="background:#8ecfcf;padding:48px 40px 24px;text-align:center;">
               <a href="https://g-tec-nagercoil.vercel.app" target="_blank" style="display:inline-block;text-decoration:none;border:none;outline:none;cursor:pointer;">
-                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="100" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;" />
+                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);" />
               </a>
               <div style="display:inline-block;background:#f8fafc;border-radius:50px;padding:6px 20px;margin-bottom:16px;border:1px solid #e2e8f0;">
                 <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">Azhagiyamandapam</span>
@@ -441,7 +441,7 @@ def send_enrollment_confirmation_email(name, email, course):
           <tr>
             <td style="background:#ffffff;padding:48px 40px 24px;text-align:center;">
               <a href="https://g-tec-nagercoil.vercel.app" target="_blank" style="display:inline-block;text-decoration:none;border:none;outline:none;cursor:pointer;">
-                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;" />
+                <img src="https://gtecpathanapuram.com/wp-content/uploads/2025/11/NEW-LOGO-WITH-CURVED-EDGE-scaled.png" alt="G-TEC Education Logo" width="180" height="auto" style="display:block;margin:0 auto 16px;border-radius:12px;border:none;outline:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);" />
               </a>
               <div style="display:inline-block;background:#f8fafc;border-radius:50px;padding:6px 20px;margin-bottom:16px;border:1px solid #e2e8f0;">
                 <span style="color:#64748b;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">G-Tec Azhagiyamandapam</span>
