@@ -115,6 +115,7 @@ export default function Courses() {
 
                   <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-slate-950/70 px-4 py-2 text-xs text-cyan-200 backdrop-blur">
                     {getTag(cat.name)}
+                  </div>
                 </div>
 
                 <div className="p-6">
