@@ -100,7 +100,7 @@ function Navbar() {
             </div>
 
             <a
-              href="https://g-tec-nagercoil.vercel.app/courses/it-non-technical"
+              href="https://g-tec-nagercoil.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:block text-xs text-gray-600 mt-1 hover:text-blue-600"
