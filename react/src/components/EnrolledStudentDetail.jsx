@@ -499,6 +499,12 @@ export default function EnrolledStudentDetail() {
                       </div>
 
                       <div className="flex items-center gap-3 self-end lg:self-center">
+                        {e.staff_feedback && (
+                          <div className="flex items-center gap-1.5 rounded-full border border-green-300 bg-green-50 px-3 py-1.5 shadow-sm">
+                            <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_6px_2px_rgba(34,197,94,0.5)]" />
+                            <span className="text-[11px] font-black uppercase tracking-wider text-green-700">OK</span>
+                          </div>
+                        )}
                         <motion.button
                           whileHover={{ scale: 1.04, y: -1 }}
                           whileTap={{ scale: 0.95 }}
