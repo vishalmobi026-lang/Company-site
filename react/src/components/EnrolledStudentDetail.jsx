@@ -487,43 +487,40 @@ export default function EnrolledStudentDetail() {
                             </div>
                           )}
 
-                          {e.staff_feedback && (
-                            <div className="flex items-start gap-2 text-gray-600 sm:col-span-2 lg:col-span-3 mt-2 rounded-xl bg-green-50 p-4 border border-green-200 shadow-sm">
-                              <span className="font-bold text-green-700 whitespace-nowrap pt-0.5">Staff Feedback:</span>
-                              <span className="text-green-800 leading-relaxed font-medium">
-                                {e.staff_feedback}
-                              </span>
-                            </div>
-                          )}
+
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 self-end lg:self-center">
+                      <div className="flex flex-col items-end gap-3 self-end lg:self-start">
                         {e.staff_feedback && (
-                          <div className="flex items-center gap-1.5 rounded-full border border-green-300 bg-green-50 px-3 py-1.5 shadow-sm">
-                            <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_6px_2px_rgba(34,197,94,0.5)]" />
-                            <span className="text-[11px] font-black uppercase tracking-wider text-green-700">OK</span>
+                          <div className="flex items-start gap-2 rounded-xl bg-green-50 p-3 border border-green-200 shadow-sm w-full max-w-xs">
+                            <span className="font-bold text-green-700 whitespace-nowrap text-xs pt-0.5">Staff Feedback:</span>
+                            <span className="text-green-800 text-xs leading-relaxed font-medium">
+                              {e.staff_feedback}
+                            </span>
                           </div>
                         )}
-                        <motion.button
-                          whileHover={{ scale: 1.04, y: -1 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => startEdit(e)}
-                          className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          <FaEdit /> Edit
-                        </motion.button>
-
-                        {user?.user?.role === "admin" && (
+                        <div className="flex items-center gap-3">
                           <motion.button
                             whileHover={{ scale: 1.04, y: -1 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => handleDelete(e.id)}
-                            className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-red-50 hover:text-red-600"
+                            onClick={() => startEdit(e)}
+                            className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-blue-50 hover:text-blue-600"
                           >
-                            <FaTrash /> Delete
+                            <FaEdit /> Edit
                           </motion.button>
-                        )}
+
+                          {user?.user?.role === "admin" && (
+                            <motion.button
+                              whileHover={{ scale: 1.04, y: -1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleDelete(e.id)}
+                              className="flex items-center gap-2 rounded-xl bg-gray-50 px-4 py-2 font-semibold text-gray-600 transition-all hover:bg-red-50 hover:text-red-600"
+                            >
+                              <FaTrash /> Delete
+                            </motion.button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
