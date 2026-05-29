@@ -166,3 +166,4 @@ export default function Courses() {
     </section>
   );
 }
+//courses
