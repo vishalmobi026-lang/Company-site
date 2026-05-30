@@ -17,8 +17,8 @@ function Hero2() {
           <motion.div
             initial={{ opacity: 0, x: -80, scale: 0.9 }}
             whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.9 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.7 }}
             className="relative order-2 lg:order-1 mt-6 lg:mt-0"
           >
             <div className="absolute inset-0 bg-blue-300/40 blur-2xl rounded-2xl"></div>
@@ -80,15 +80,15 @@ function Hero2() {
           <motion.div
             initial={{ opacity: 0, x: 80 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.7 }}
             className="max-w-xl order-1 lg:order-2"
           >
             <motion.h2
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.6 }}
               className="text-4xl md:text-5xl font-extrabold mb-5 bg-gradient-to-r from-blue-900 to-blue-500 bg-clip-text text-transparent"
             >
               G-TEC Education
@@ -97,8 +97,8 @@ function Hero2() {
             <motion.p
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.7, delay: 0.25 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
               className="text-gray-600 text-lg mb-6 leading-relaxed"
             >
               Transform your future with cutting-edge skills and real-world knowledge.
@@ -109,8 +109,8 @@ function Hero2() {
             <motion.h3
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl font-semibold text-gray-800 mb-8"
             >
               Learn Smart. Grow Fast. Succeed Globally.
@@ -119,8 +119,8 @@ function Hero2() {
             <motion.button
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: 0.55 }}
+              viewport={{ once: false, amount: 0.25 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
               onClick={() => navigate("/courses")}

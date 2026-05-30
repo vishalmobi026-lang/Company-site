@@ -42,8 +42,8 @@ function Hero4() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-blue-900 to-blue-500 bg-clip-text text-transparent pb-2 leading-tight">
               Start Your Career With Confidence
@@ -61,8 +61,8 @@ function Hero4() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.5 }}
             className="mb-6 inline-flex bg-gray-100 border border-gray-300 rounded-full p-1"
           >
             <button
@@ -92,9 +92,9 @@ function Hero4() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             animate={{ scale: [1, 1.06, 1] }}
-            viewport={{ once: false, amount: 0.3 }}
+            viewport={{ once: false, amount: 0.25 }}
             transition={{
-              opacity: { duration: 0.5 },
+              opacity: { duration: 0.4 },
               scale: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
             }}
             className="w-14 sm:w-16 md:w-20 mx-auto translate-x-14 sm:translate-x-16 md:translate-x-14 -translate-y-20 sm:-translate-y-24 md:-translate-y-24 -mb-5 sm:-mb-6 md:-mb-7 pointer-events-none"
@@ -121,7 +121,7 @@ function Hero4() {
                         key={item.id || index}
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false, amount: 0.1 }}
                         transition={{ delay: index * 0.1 }}
                         className={`group relative bg-white border-2 p-8 rounded-[2rem] transition-all duration-500 shadow-xl shadow-slate-200/40 ${
                           item.is_featured ? "ring-8 ring-blue-50/50 border-blue-600" : "border-slate-100"

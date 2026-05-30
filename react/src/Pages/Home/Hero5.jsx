@@ -40,15 +40,15 @@ function Hero5() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.25 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-6xl w-full text-center relative z-10"
         >
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.4 }}
           >
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-white/5 px-4 py-2 text-sm text-cyan-200 backdrop-blur">
               <FaCheck className="text-cyan-300" />
@@ -87,10 +87,10 @@ function Hero5() {
                     rotateX: 0,
                     scale: 1,
                   }}
-                  viewport={{ once: false, amount: 0.3 }}
+                  viewport={{ once: false, amount: 0.25 }}
                   transition={{
-                    duration: 0.75,
-                    delay: index * 0.14,
+                    duration: 0.65,
+                    delay: index * 0.1,
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   whileHover={{ y: -12, scale: 1.04 }}
@@ -110,8 +110,8 @@ function Hero5() {
           <motion.div
             initial={{ opacity: 0, y: 35, scale: 0.96 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
           >
             <div className="grid md:grid-cols-[1.2fr_0.8fr] items-center">

@@ -10,8 +10,8 @@ function Hero1() {
       opacity: 1,
       transition: {
         duration: 0.4,
-        staggerChildren: 0.14,
-        delayChildren: 0.15,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
@@ -22,7 +22,7 @@ function Hero1() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
+        duration: 0.6,
         ease: [0.22, 1, 0.36, 1],
       },
     },
@@ -35,7 +35,7 @@ function Hero1() {
       x: 0,
       scale: 1,
       transition: {
-        duration: 0.9,
+        duration: 0.7,
         ease: [0.22, 1, 0.36, 1],
       },
     },
@@ -52,7 +52,8 @@ function Hero1() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate="show"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.25 }}
           className="max-w-7xl w-full grid md:grid-cols-2 items-center gap-14 relative z-10"
         >
           <motion.div variants={containerVariants} className="max-w-2xl">
