@@ -73,11 +73,11 @@ export default function GameWidget() {
     if (open) {
       // Widget opened by user — stop cycle and show fully
       clearCycle();
-      setMobilePeeking(false);
+      setTimeout(() => setMobilePeeking(false), 0);
     } else {
       // Start auto-peek cycle on mobile
       if (isMobile()) {
-        setMobilePeeking(false);
+        setTimeout(() => setMobilePeeking(false), 0);
         runCycle();
       }
     }

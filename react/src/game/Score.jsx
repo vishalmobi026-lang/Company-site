@@ -7,10 +7,6 @@ export default function ScoreListener() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchContestants();
-  }, []);
-
   const fetchContestants = async () => {
     setIsLoading(true);
     try {
@@ -22,6 +18,10 @@ export default function ScoreListener() {
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    fetchContestants();
+  }, []);
 
   const filteredContestants = contestants.filter((c) => {
     const search = searchTerm.toLowerCase();

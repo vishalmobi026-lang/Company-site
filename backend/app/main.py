@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from dotenv import load_dotenv
 import os
 
@@ -12,11 +12,7 @@ import bcrypt
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
-import smtplib
-from email.mime.text import MIMEText
 import requests
-from email.mime.multipart import MIMEMultipart
-from email.mime.image import MIMEImage
 from gemini_engine import generate_ai_questions
 from sqlalchemy.sql.expression import func
 from app.db import models, database
@@ -615,12 +611,12 @@ def reset_pricing(
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+
 
 @app.post("/contacts", response_model=schemas.ContactMessageResponse)
 def create_contact(message: schemas.ContactMessageCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
     try:
-        new_message = models.ContactMessage(**message.dict())
+        new_message = models.ContactMessage(**message.model_dump())
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
@@ -659,7 +655,7 @@ def create_contact(message: schemas.ContactMessageCreate, background_tasks: Back
 def create_contact_widget(message: schemas.ContactMessageCreate, db: Session = Depends(database.get_db)):
     """ChatWidget submissions - saved to Inbox only, no email sent."""
     try:
-        new_message = models.ContactMessage(**message.dict())
+        new_message = models.ContactMessage(**message.model_dump())
         db.add(new_message)
         db.commit()
         db.refresh(new_message)
@@ -671,7 +667,7 @@ def create_contact_widget(message: schemas.ContactMessageCreate, db: Session = D
 @app.post("/professional-contacts", response_model=schemas.ProfessionalInquiryResponse)
 def create_professional_inquiry(inquiry: schemas.ProfessionalInquiryCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
     try:
-        new_inquiry = models.ProfessionalInquiry(**inquiry.dict())
+        new_inquiry = models.ProfessionalInquiry(**inquiry.model_dump())
         db.add(new_inquiry)
         db.commit()
         db.refresh(new_inquiry)
@@ -762,7 +758,7 @@ def permanent_delete_contact(id: int, db: Session = Depends(database.get_db), ad
 
 @app.post("/enrollments", response_model=schemas.EnrollmentResponse)
 def create_enrollment(enrollment: schemas.EnrollmentCreate, background_tasks: BackgroundTasks, db: Session = Depends(database.get_db)):
-    new_enrollment = models.Enrollment(**enrollment.dict())
+    new_enrollment = models.Enrollment(**enrollment.model_dump())
     db.add(new_enrollment)
     db.commit()
     db.refresh(new_enrollment)
@@ -788,7 +784,7 @@ def update_enrollment(id: int, enrollment: schemas.EnrollmentUpdate, db: Session
     if not db_enroll:
         raise HTTPException(status_code=404, detail="Enrollment not found")
     
-    update_data = enrollment.dict(exclude_unset=True)
+    update_data = enrollment.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_enroll, key, value)
     
