@@ -112,6 +112,7 @@ function Hero1() {
             </motion.div>
           </motion.div>
 
+          {/* Desktop image - full featured */}
           <motion.div
             variants={imageVariants}
             className="hidden md:block relative"
@@ -148,6 +149,34 @@ function Hero1() {
                 <h3 className="text-2xl font-bold text-blue-300">100+</h3>
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* Mobile image - compact, stacked below text */}
+          <motion.div
+            variants={imageVariants}
+            className="block md:hidden relative w-full mt-4"
+          >
+            <div className="absolute inset-0 bg-cyan-400/20 blur-3xl rounded-full" />
+            <img
+              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+              alt="learning"
+              className="relative z-10 w-full h-[220px] object-cover rounded-2xl shadow-2xl border border-white/10"
+            />
+            {/* Compact stat badges - side by side on mobile */}
+            <div className="relative z-10 mt-4 flex justify-center gap-3">
+              <div className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl text-center">
+                <p className="text-xs text-cyan-200">Students</p>
+                <h3 className="text-xl font-bold">10K+</h3>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 backdrop-blur-xl text-center">
+                <p className="text-xs text-gray-300">Courses</p>
+                <h3 className="text-xl font-bold text-cyan-300">25+</h3>
+              </div>
+              <div className="rounded-xl border border-cyan-300/30 bg-blue-950/80 px-4 py-2 backdrop-blur-xl text-center">
+                <p className="text-xs text-gray-300">Projects</p>
+                <h3 className="text-xl font-bold text-blue-300">100+</h3>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </section>

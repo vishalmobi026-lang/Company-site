@@ -169,6 +169,7 @@ class GameScoreCreate(BaseModel):
     couponCode: str
     discount: Optional[int] = 0
     correctAnswers: Optional[int] = 0
+    staff_feedback: Optional[str] = None
 
 class GameScoreResponse(GameScoreCreate):
     id: int

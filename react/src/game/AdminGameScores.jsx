@@ -14,7 +14,9 @@ import {
   FaBookOpen,
   FaExclamationTriangle,
   FaCheckCircle,
-  FaTimesCircle
+  FaTimesCircle,
+  FaCommentDots,
+  FaSave
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -71,6 +73,7 @@ export default function AdminGameScores() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [feedbackMap, setFeedbackMap] = useState({}); // { [scoreId]: feedbackText }
 
   useEffect(() => {
     if (notification) {
@@ -97,11 +100,30 @@ export default function AdminGameScores() {
     try {
       setLoading(true);
       const res = await axios.get(`${API}/gamescores/all`, authHeader);
-      setScores(res.data.sort((a, b) => b.id - a.id)); // Newest first
+      const sorted = res.data.sort((a, b) => b.id - a.id);
+      setScores(sorted);
+      // Pre-populate feedbackMap with existing feedback
+      const map = {};
+      sorted.forEach(s => { map[s.id] = s.staff_feedback || ""; });
+      setFeedbackMap(map);
     } catch (err) {
       console.error("Failed to fetch scores:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveFeedback = async (id) => {
+    try {
+      await axios.put(
+        `${API}/gamescores/${id}/feedback`,
+        { staff_feedback: feedbackMap[id] || "" },
+        authHeader
+      );
+      setNotification({ type: "success", message: "Staff feedback saved successfully!" });
+    } catch (err) {
+      console.error("Failed to save feedback:", err);
+      setNotification({ type: "error", message: "Failed to save feedback. Please try again." });
     }
   };
 
@@ -278,6 +300,31 @@ export default function AdminGameScores() {
                           </div>
                         )}
 
+                      </div>
+
+                      {/* Staff Feedback Section */}
+                      <div className="mt-4 pt-4 border-t border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <FaCommentDots className="text-blue-400" />
+                            <span className="text-xs font-black uppercase tracking-wider text-slate-400">Staff Feedback</span>
+                          </div>
+                          <button
+                            onClick={() => saveFeedback(score.id)}
+                            className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-tight text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-all"
+                          >
+                            <FaSave size={10} /> Save
+                          </button>
+                        </div>
+                        <textarea
+                          rows={2}
+                          placeholder="Add internal notes or feedback about this scholarship result..."
+                          value={feedbackMap[score.id] ?? (score.staff_feedback || "")}
+                          onChange={(e) =>
+                            setFeedbackMap((prev) => ({ ...prev, [score.id]: e.target.value }))
+                          }
+                          className="w-full resize-none rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm text-slate-700 outline-none transition-all focus:ring-2 focus:ring-blue-400/30 focus:border-blue-300"
+                        />
                       </div>
                     </motion.div>
                   </Reveal>

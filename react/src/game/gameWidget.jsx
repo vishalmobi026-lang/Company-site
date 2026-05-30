@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Gamepad2, Zap } from "lucide-react";
 import NeonStrikeGame from "./Gameplay";
@@ -39,6 +39,52 @@ export default function GameWidget() {
     };
   }, []);
 
+  // ── Mobile auto-peek: hidden → show after 7s → stay 7s → hide → repeat ──
+  const [mobilePeeking, setMobilePeeking] = useState(false);
+  const peekCycleRef = useRef(null);
+
+  useEffect(() => {
+    const isMobile = () => window.innerWidth < 640;
+
+    const clearCycle = () => {
+      if (peekCycleRef.current) {
+        clearTimeout(peekCycleRef.current);
+        peekCycleRef.current = null;
+      }
+    };
+
+    const runCycle = () => {
+      if (!isMobile() || open) return;
+
+      // Phase 1: wait 7s then peek in
+      peekCycleRef.current = setTimeout(() => {
+        if (!open) {
+          setMobilePeeking(true);
+          // Phase 2: stay 7s then hide
+          peekCycleRef.current = setTimeout(() => {
+            setMobilePeeking(false);
+            // Phase 3: restart cycle
+            runCycle();
+          }, 7000);
+        }
+      }, 7000);
+    };
+
+    if (open) {
+      // Widget opened by user — stop cycle and show fully
+      clearCycle();
+      setMobilePeeking(false);
+    } else {
+      // Start auto-peek cycle on mobile
+      if (isMobile()) {
+        setMobilePeeking(false);
+        runCycle();
+      }
+    }
+
+    return clearCycle;
+  }, [open]);
+
   return (
     <>
       {/* FLOATING TRIGGER (LEFT SIDE) - SCALED DOWN CYBER STYLE */}
@@ -50,7 +96,7 @@ export default function GameWidget() {
         }}
       >
         <div
-          className={`h-36 w-36 flex items-center justify-center transition-transform duration-[2000ms] ease-out ${!open ? '-translate-x-[45%] hover:translate-x-2 sm:translate-x-0 sm:hover:translate-x-0' : 'translate-x-2 sm:translate-x-0'}`}
+          className={`h-36 w-36 flex items-center justify-center transition-transform duration-[2000ms] ease-out sm:translate-x-0 ${!open ? (mobilePeeking ? 'translate-x-2' : '-translate-x-[45%]') : 'translate-x-2'}`}
         >
         {!open && (
           <motion.div

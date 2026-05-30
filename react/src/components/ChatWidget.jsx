@@ -180,6 +180,49 @@ export default function ChatWidget() {
     };
   }, [open]);
 
+  // ── Mobile auto-peek: hidden → show after 7s → stay 7s → hide → repeat ──
+  const [mobilePeeking, setMobilePeeking] = useState(false);
+  const peekCycleRef = useRef(null);
+
+  useEffect(() => {
+    const isMobile = () => window.innerWidth < 640;
+
+    const clearCycle = () => {
+      if (peekCycleRef.current) {
+        clearTimeout(peekCycleRef.current);
+        peekCycleRef.current = null;
+      }
+    };
+
+    const runCycle = () => {
+      if (!isMobile() || open) return;
+      // Phase 1: wait 7s then peek in
+      peekCycleRef.current = setTimeout(() => {
+        if (!open) {
+          setMobilePeeking(true);
+          // Phase 2: stay visible 7s then hide
+          peekCycleRef.current = setTimeout(() => {
+            setMobilePeeking(false);
+            // Phase 3: restart cycle
+            runCycle();
+          }, 7000);
+        }
+      }, 7000);
+    };
+
+    if (open) {
+      clearCycle();
+      setMobilePeeking(false);
+    } else {
+      if (isMobile()) {
+        setMobilePeeking(false);
+        runCycle();
+      }
+    }
+
+    return clearCycle;
+  }, [open]);
+
   useEffect(() => {
     const MARGIN_DESKTOP = 16; // extra gap above footer
     const MARGIN_MOBILE = 8;
@@ -269,7 +312,7 @@ export default function ChatWidget() {
         }}
       >
         <div
-          className={`h-24 w-24 flex items-center justify-center transition-transform duration-[2000ms] ease-out ${!open ? 'translate-x-[45%] hover:-translate-x-4 sm:translate-x-0 sm:hover:translate-x-0' : '-translate-x-4 sm:translate-x-0'}`}
+          className={`h-24 w-24 flex items-center justify-center transition-transform duration-[2000ms] ease-out sm:translate-x-0 ${!open ? (mobilePeeking ? '-translate-x-4' : 'translate-x-[45%]') : '-translate-x-4'}`}
         >
           {!open && (
             <motion.div

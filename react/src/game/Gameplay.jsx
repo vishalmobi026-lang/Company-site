@@ -374,9 +374,9 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   return (
-    <div className={`fixed inset-0 z-[99999] flex items-center justify-center font-sans overflow-hidden select-none w-full h-full transition-colors duration-500 ${gameState === "playing"
-        ? "bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930]"
-        : "bg-slate-950/40 backdrop-blur-sm"
+    <div className={`fixed inset-0 z-[99999] flex items-center justify-center font-sans select-none w-full h-full transition-colors duration-500 ${gameState === "playing"
+        ? "bg-gradient-to-br from-[#0a0514] via-[#11092e] to-[#0a1930] overflow-hidden"
+        : "bg-slate-950/40 backdrop-blur-sm overflow-y-auto"
       }`}>
 
       {gameState === "playing" ? (
@@ -400,7 +400,8 @@ export default function NeonStrikeGame({ onClose }) {
       <motion.div
         animate={shake ? { x: [-10, 10, -10, 10, 0], y: [-5, 5, -5, 5, 0] } : {}}
         transition={{ duration: 0.3 }}
-        className="w-full h-full relative z-10 flex flex-col justify-start md:justify-center max-w-[1920px] mx-auto overflow-y-auto overflow-x-hidden"
+        className="w-full h-full relative z-10 flex flex-col justify-start md:justify-center max-w-[1920px] mx-auto overflow-x-hidden"
+        style={{ overflowY: gameState === 'playing' ? 'hidden' : 'auto' }}
       >
         <AnimatePresence mode="wait">
 
@@ -412,7 +413,7 @@ export default function NeonStrikeGame({ onClose }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
               transition={{ duration: 0.8, ease: smoothEase }}
-              className="min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center p-4 py-16 md:p-10 relative"
+              className="w-full flex flex-col items-center justify-start md:justify-center p-4 py-16 md:p-10 relative"
             >
               <div className="absolute inset-0 cyber-grid opacity-20 z-0" />
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.1)_0%,transparent_60%)] z-0" />
@@ -583,7 +584,7 @@ export default function NeonStrikeGame({ onClose }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98, y: -20 }}
               transition={{ duration: 1, ease: smoothEase }}
-              className="w-full max-w-5xl my-16 md:my-auto mx-auto bg-[#0b1021]/80 backdrop-blur-2xl p-5 sm:p-8 md:p-12 rounded-[2.5rem] border border-cyan-500/20 shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative overflow-hidden"
+              className="w-full max-w-5xl my-8 md:my-auto mx-auto bg-[#0b1021]/80 backdrop-blur-2xl p-5 sm:p-8 md:p-12 rounded-[2.5rem] border border-cyan-500/20 shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative"
             >
               {/* Inset Border Glow */}
               <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />

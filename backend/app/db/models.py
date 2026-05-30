@@ -108,6 +108,7 @@ class GameScore(Base):
     couponCode = Column(String, unique=True, index=True, nullable=False)
     discount = Column(Integer, default=0, nullable=False)
     correctAnswers = Column(Integer, default=0, nullable=False)
+    staff_feedback = Column(String, nullable=True)
     created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 

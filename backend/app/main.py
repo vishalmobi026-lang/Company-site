@@ -132,6 +132,7 @@ try:
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS college_degree VARCHAR"))
         conn.execute(text("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS staff_feedback VARCHAR"))
         conn.execute(text("ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR"))
+        conn.execute(text("ALTER TABLE game_scores ADD COLUMN IF NOT EXISTS staff_feedback VARCHAR"))
         conn.execute(
             text(
                 "ALTER TABLE courses ADD COLUMN IF NOT EXISTS category_id INTEGER"
@@ -898,6 +899,22 @@ def delete_game_score(id: int, db: Session = Depends(database.get_db), admin: mo
     db.delete(db_score)
     db.commit()
     return {"detail": "Game score record deleted"}
+
+@app.put("/gamescores/{id}/feedback", response_model=schemas.GameScoreResponse)
+def update_game_score_feedback(
+    id: int,
+    update_data: dict,
+    db: Session = Depends(database.get_db),
+    user: models.User = Depends(get_staff_or_admin_user)
+):
+    db_score = db.query(models.GameScore).filter(models.GameScore.id == id).first()
+    if not db_score:
+        raise HTTPException(status_code=404, detail="Score record not found")
+    if "staff_feedback" in update_data:
+        db_score.staff_feedback = update_data["staff_feedback"]
+    db.commit()
+    db.refresh(db_score)
+    return db_score
 
 
 @app.get("/api/countries")
