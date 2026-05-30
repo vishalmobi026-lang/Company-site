@@ -801,9 +801,9 @@ export default function NeonStrikeGame({ onClose }) {
           {/* ----- 3. GAMEPLAY HUD ----- */}
           {gameState === "playing" && (
             <motion.div key="playing" initial={{ opacity: 0, filter: "blur(10px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: smoothEase }} className="flex flex-col h-full w-full relative">
-              <div className="absolute top-0 left-0 w-full z-[100] pointer-events-none p-4 md:p-6 flex justify-between items-start">
+              <div className="absolute top-0 left-0 w-full z-[100] pointer-events-none p-3 md:p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
-                  <div className="relative overflow-hidden flex flex-col gap-1.5 bg-[#050917]/90 backdrop-blur-md p-4 rounded-3xl border-2 border-cyan-400/50 shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-500 max-w-[200px]">
+                  <div className="relative overflow-hidden flex flex-col gap-1 md:gap-1.5 bg-[#050917]/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border-2 border-cyan-400/50 shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-500 min-w-[130px] md:max-w-[200px]">
                     {/* Glowing Tech Corners */}
                     <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-cyan-400/60"></div>
                     <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-cyan-400/60"></div>
@@ -811,28 +811,28 @@ export default function NeonStrikeGame({ onClose }) {
                     <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-cyan-400/60"></div>
 
                     {/* Pulsing indicator */}
-                    <div className="absolute top-2 right-4 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]"></span>
-                      <span className="font-mono text-[7px] text-cyan-400/60 tracking-wider">HUD_v3</span>
+                    <div className="absolute top-1.5 md:top-2 right-2 md:right-4 flex items-center gap-1">
+                      <span className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]"></span>
+                      <span className="font-mono text-[6px] md:text-[7px] text-cyan-400/60 tracking-wider">HUD_v3</span>
                     </div>
 
-                    <p className="font-mono text-[8px] text-cyan-400/70 font-black uppercase tracking-[0.25em] mb-0.5">Telemetry Score</p>
-                    <div className="font-black font-mono text-2xl md:text-3xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)] flex items-baseline gap-1.5 leading-none">
-                      {score.toLocaleString()} <span className="text-[10px] text-cyan-400 font-bold tracking-widest font-sans uppercase">PTS</span>
+                    <p className="font-mono text-[7px] md:text-[8px] text-cyan-400/70 font-black uppercase tracking-[0.2em] md:tracking-[0.25em] mb-0 md:mb-0.5">Telemetry Score</p>
+                    <div className="font-black font-mono text-xl md:text-3xl text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)] flex items-baseline gap-1 md:gap-1.5 leading-none mt-0.5 md:mt-0">
+                      {score.toLocaleString()} <span className="text-[9px] md:text-[10px] text-cyan-400 font-bold tracking-widest font-sans uppercase">PTS</span>
                     </div>
 
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-cyan-400/20">
-                      <span className="font-mono text-[7px] text-slate-400 font-bold uppercase tracking-widest">Shields</span>
-                      <div className="flex gap-1">
+                    <div className="flex items-center justify-between mt-1.5 md:mt-2 pt-1.5 md:pt-2 border-t border-cyan-400/20">
+                      <span className="font-mono text-[6px] md:text-[7px] text-slate-400 font-bold uppercase tracking-widest">Shields</span>
+                      <div className="flex gap-0.5 md:gap-1">
                         {[...Array(3)].map((_, i) => (
-                          <Heart key={i} size={13} className={i < lives ? "text-red-500 fill-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.9)] animate-[heartPulse_1.5s_infinite_alternate]" : "text-white/20"} style={{ animationDelay: `${i * 0.15}s` }} />
+                          <Heart key={i} size={11} className={i < lives ? "text-red-500 fill-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.9)] animate-[heartPulse_1.5s_infinite_alternate] md:w-[13px] md:h-[13px]" : "text-white/20 md:w-[13px] md:h-[13px]"} style={{ animationDelay: `${i * 0.15}s` }} />
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  <div className={`w-fit px-3 py-1.5 md:px-4 md:py-2 rounded-xl font-black font-mono text-sm md:text-lg flex items-center gap-2 shadow-xl backdrop-blur-md transition-all duration-500 ease-out ${combo > 1 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-400/50 shadow-[0_0_20px_rgba(250,204,21,0.4)]' : 'bg-black/40 text-white/50 border border-white/10'}`}>
-                    <Zap size={18} className={combo > 1 ? "fill-yellow-400" : ""} /> x{combo}
+                  <div className={`w-fit px-2.5 py-1 md:px-4 md:py-2 rounded-lg md:rounded-xl font-black font-mono text-xs md:text-lg flex items-center gap-1.5 md:gap-2 shadow-xl backdrop-blur-md transition-all duration-500 ease-out ${combo > 1 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-400/50 shadow-[0_0_20px_rgba(250,204,21,0.4)]' : 'bg-black/40 text-white/50 border border-white/10'}`}>
+                    <Zap size={14} className={`md:w-[18px] md:h-[18px] ${combo > 1 ? "fill-yellow-400" : ""}`} /> x{combo}
                   </div>
                 </div>
                 <div className="hidden md:flex flex-col items-center justify-start w-1/2 max-w-2xl mt-1">
@@ -873,25 +873,25 @@ export default function NeonStrikeGame({ onClose }) {
                 </div>
               </div>
 
-              <div className="md:hidden absolute top-[120px] left-1/2 -translate-x-1/2 w-[92%] z-[90] pointer-events-none">
+              <div className="md:hidden absolute top-[135px] left-1/2 -translate-x-1/2 w-[94%] sm:w-[90%] z-[90] pointer-events-none">
                 <AnimatePresence mode="wait">
                   {currentQuestion && (
                     <motion.div
                       initial={{ y: -20, opacity: 0, filter: "blur(5px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: -20, opacity: 0, filter: "blur(5px)" }} transition={{ duration: 0.5, ease: smoothEase }}
-                      className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-2xl p-4 text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] relative overflow-hidden"
+                      className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-2xl p-3 sm:p-4 text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] relative overflow-hidden"
                     >
                       {/* Glowing corner brackets */}
-                      <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
-                      <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
-                      <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
-                      <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
+                      <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
+                      <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
+                      <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
+                      <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
 
                       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-60"></div>
-                      <p className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-center gap-1.5">
+                      <p className="text-cyan-400 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                         <Sparkles size={10} /> Target Acquired
                       </p>
-                      <h3 className="text-base font-black text-white leading-snug mt-1 px-2 select-text">{currentQuestion}</h3>
+                      <h3 className="text-sm sm:text-base font-black text-white leading-snug mt-1 px-1 select-text">{currentQuestion}</h3>
                     </motion.div>
                   )}
                 </AnimatePresence>
