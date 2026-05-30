@@ -418,13 +418,16 @@ function Navbar() {
               transition={{ duration: 0.35, delay: 0.1 }}
             >
               <div
-                onClick={() => setOpenCourses(!openCourses)}
-                className="flex justify-between cursor-pointer hover:text-blue-700"
+                className="flex justify-between items-center cursor-pointer hover:text-blue-700"
               >
-                Courses
+                <span onClick={() => handleMobileNavigate("/courses")}>
+                  Courses
+                </span>
                 <motion.span
+                  onClick={(e) => { e.stopPropagation(); setOpenCourses(!openCourses); }}
                   animate={{ rotate: openCourses ? 180 : 0 }}
                   transition={{ duration: 0.25 }}
+                  className="p-2"
                 >
                   <FaChevronDown />
                 </motion.span>
