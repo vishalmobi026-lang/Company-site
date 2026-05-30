@@ -940,77 +940,143 @@ def get_pincode_info(pincode: str):
 
 @app.get("/generate-ai-questions")
 def generate_questions_api(topic: str, db: Session = Depends(database.get_db)):
-
-    existing = (
-        db.query(models.AIQuestion)
-        .filter(models.AIQuestion.topic == topic)
-        .count()
-    )
-
-    if existing > 50:
-
-        return {
-            "message": "Questions already exist"
-        }
-
+    """Legacy endpoint kept for compatibility. Generates 30 fresh questions."""
     try:
         ai_questions = generate_ai_questions(topic)
+        for q in ai_questions:
+            db_question = models.AIQuestion(
+                topic=topic,
+                question=q["question"],
+                option1=q["options"][0],
+                option2=q["options"][1],
+                option3=q["options"][2],
+                option4=q["options"][3],
+                correct=q["correct"]
+            )
+            db.add(db_question)
+        db.commit()
+        return {"success": True, "generated": len(ai_questions)}
     except Exception as e:
-        print(f"Error generating AI questions: {e}")
-        from fastapi.responses import JSONResponse
-        return JSONResponse(status_code=500, content={"error": str(e), "message": "Failed to generate questions. Please try again later."})
+        db.rollback()
+        print(f"Error in generate_questions_api: {e}")
+        return {"success": False, "error": str(e)}
 
-    for q in ai_questions:
 
-        question = models.AIQuestion(
-            topic=topic,
-
-            question=q["question"],
-
-            option1=q["options"][0],
-            option2=q["options"][1],
-            option3=q["options"][2],
-            option4=q["options"][3],
-
-            correct=q["correct"]
-        )
-
-        db.add(question)
-
-    db.commit()
-
+@app.post("/admin/seed-questions")
+def seed_questions_pool(
+    topic: str,
+    target: int = 500,
+    db: Session = Depends(database.get_db),
+    admin: models.User = Depends(get_admin_user)
+):
+    """
+    Admin endpoint to pre-seed a large pool of questions (default: 500) for a topic.
+    Calls the Gemini API in batches of 30 until the target is reached.
+    """
+    import time
+    
+    current_count = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).count()
+    needed = max(0, target - current_count)
+    
+    if needed == 0:
+        return {"message": f"Pool already has {current_count} questions for '{topic}'. No seeding needed.", "total": current_count}
+    
+    total_generated = 0
+    errors = 0
+    
+    while total_generated < needed:
+        try:
+            ai_questions = generate_ai_questions(topic)
+            batch_count = 0
+            for q in ai_questions:
+                db.add(models.AIQuestion(
+                    topic=topic,
+                    question=q["question"],
+                    option1=q["options"][0],
+                    option2=q["options"][1],
+                    option3=q["options"][2],
+                    option4=q["options"][3],
+                    correct=q["correct"]
+                ))
+                batch_count += 1
+            db.commit()
+            total_generated += batch_count
+            print(f"Seeded batch: {total_generated}/{needed} for topic '{topic}'")
+            # Small delay to avoid hitting Gemini rate limits
+            time.sleep(1.5)
+        except Exception as e:
+            db.rollback()
+            errors += 1
+            print(f"Batch error ({errors}): {e}")
+            if errors >= 5:
+                break
+            time.sleep(3)
+    
+    final_count = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).count()
     return {
-        "success": True
+        "success": True,
+        "topic": topic,
+        "newly_generated": total_generated,
+        "total_in_pool": final_count,
+        "errors": errors
     }
 
 
 @app.get("/questions")
-
 def get_questions(topic: str, db: Session = Depends(database.get_db)):
+    try:
+        # Always attempt to generate fresh questions via Gemini
+        ai_questions = generate_ai_questions(topic)
+        final = []
+        for q in ai_questions:
+            final.append({
+                "q": q["question"],
+                "options": q["options"],
+                "correct": q["correct"]
+            })
+            
+            # Save to database to continuously grow the 500-question backup pool
+            db_question = models.AIQuestion(
+                topic=topic,
+                question=q["question"],
+                option1=q["options"][0],
+                option2=q["options"][1],
+                option3=q["options"][2],
+                option4=q["options"][3],
+                correct=q["correct"]
+            )
+            db.add(db_question)
+            
+        db.commit()
+        return final[:10]  # Return exactly 10 questions for the game
+    except Exception as e:
+        print(f"Gemini API failed, using 500-question backup pool: {e}")
+        db.rollback()
+        
+        # Fallback: draw 10 random questions from the 500-question backup pool
+        questions = (
+            db.query(models.AIQuestion)
+            .filter(models.AIQuestion.topic == topic)
+            .order_by(func.random())
+            .limit(500)
+            .all()
+        )
 
-    questions = (
-        db.query(models.AIQuestion)
-        .filter(models.AIQuestion.topic == topic)
-        .order_by(func.random())
-        .limit(10)
-        .all()
-    )
+        import random
+        if len(questions) > 10:
+            questions = random.sample(questions, 10)
+        
+        final = []
+        for q in questions:
+            final.append({
+                "q": q.question,
+                "options": [
+                    q.option1,
+                    q.option2,
+                    q.option3,
+                    q.option4
+                ],
+                "correct": q.correct
+            })
 
-    final = []
-
-    for q in questions:
-
-        final.append({
-            "q": q.question,
-
-            "options": [
-                q.option1,
-                q.option2,
-                q.option3,
-                q.option4
-            ],
-
-            "correct": q.correct
-        })
-
-    return final
+        return final
