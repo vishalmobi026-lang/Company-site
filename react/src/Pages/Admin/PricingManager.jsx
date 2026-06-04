@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../../context/AuthContext";
 import {
   FaPlus, FaTrash, FaSave, FaTimes, FaImage,
-  FaLayerGroup, FaBookOpen, FaCrown
+  FaLayerGroup, FaBookOpen, FaCrown, FaEdit
 } from "react-icons/fa";
 
 const API = "https://company-site-jrbr.onrender.com";
@@ -146,6 +146,7 @@ const [newCat, setNewCat] = useState({
   image_url: ""
 });
   const [newCourse, setNewCourse] = useState({ title: "", description: "", image_url: "", category: "", tag: "" });
+  const [editingCourse, setEditingCourse] = useState(null);
 
   const notify = (type, message) => setNotice({ type, message });
 
@@ -265,6 +266,19 @@ const [newCat, setNewCat] = useState({
     }
   };
 
+  const updateCourse = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.put(`${API}/admin/courses/${editingCourse.id}`, editingCourse, auth(user));
+      setCourses((p) => p.map((c) => (c.id === editingCourse.id ? res.data : c)));
+      setEditingCourse(null);
+      notify("success", "Course updated successfully.");
+    } catch (err) {
+      handleApiError(err, "Failed to update course.");
+    }
+  };
+
   const deleteCourse = (id) => setConfirm({
     title: "Delete course?",
     message: "This course will be removed from the public catalog.",
@@ -306,6 +320,100 @@ const [newCat, setNewCat] = useState({
 
       <Notice type={notice?.type} message={notice?.message} onClose={() => setNotice(null)} />
       <ConfirmModal confirm={confirm} setConfirm={setConfirm} />
+
+      <AnimatePresence>
+        {editingCourse && (
+          <motion.div
+            className="fixed inset-0 z-[125] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 35, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.94 }}
+              className="w-full max-w-2xl overflow-hidden rounded-[2.5rem] border border-blue-100 bg-white shadow-2xl"
+            >
+              <div className="flex items-center justify-between bg-gradient-to-br from-slate-50 to-white p-8 border-b border-slate-100">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900">Edit Course</h3>
+                  <p className="mt-1 text-sm font-medium text-slate-500">Update the details for this academic program.</p>
+                </div>
+                <button onClick={() => setEditingCourse(null)} className="rounded-full bg-slate-100 p-3 text-slate-400 hover:bg-slate-200 hover:text-slate-700">
+                  <FaTimes size={16} />
+                </button>
+              </div>
+
+              <form onSubmit={updateCourse} className="p-8">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-black uppercase tracking-widest text-slate-400">Title</label>
+                      <input
+                        required
+                        value={editingCourse.title}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 font-bold outline-none focus:ring-4 focus:ring-blue-100"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-black uppercase tracking-widest text-slate-400">Category</label>
+                      <select
+                        value={editingCourse.category}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, category: e.target.value })}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-100"
+                      >
+                        {categories.map((cat) => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-black uppercase tracking-widest text-slate-400">Tag</label>
+                      <input
+                        value={editingCourse.tag}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, tag: e.target.value })}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 font-bold outline-none focus:ring-4 focus:ring-blue-100"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-black uppercase tracking-widest text-slate-400">Image URL</label>
+                      <input
+                        value={editingCourse.image_url}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, image_url: e.target.value })}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 font-bold outline-none focus:ring-4 focus:ring-blue-100"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-black uppercase tracking-widest text-slate-400">Description</label>
+                      <textarea
+                        required
+                        rows={5}
+                        value={editingCourse.description}
+                        onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
+                        className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 font-medium text-slate-600 outline-none focus:ring-4 focus:ring-blue-100"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex gap-3">
+                  <button type="button" onClick={() => setEditingCourse(null)} className="flex-1 rounded-2xl bg-slate-100 py-4 font-black text-slate-600 hover:bg-slate-200">
+                    Cancel
+                  </button>
+                  <button type="submit" className="flex-1 rounded-2xl bg-gradient-to-r from-blue-900 to-blue-600 py-4 font-black text-white shadow-xl shadow-blue-200 hover:to-blue-500">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-10">
         <Reveal>
@@ -695,9 +803,14 @@ const [newCat, setNewCat] = useState({
                     <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       <FaBookOpen className="text-blue-600" /> ID: {course.id}
                     </div>
-                    <button onClick={() => deleteCourse(course.id)} className="rounded-2xl p-3 text-slate-300 hover:bg-red-50 hover:text-red-600">
-                      <FaTrash size={16} />
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={() => setEditingCourse(course)} className="rounded-2xl p-3 text-slate-300 hover:bg-blue-50 hover:text-blue-600">
+                        <FaEdit size={16} />
+                      </button>
+                      <button onClick={() => deleteCourse(course.id)} className="rounded-2xl p-3 text-slate-300 hover:bg-red-50 hover:text-red-600">
+                        <FaTrash size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </Reveal>
