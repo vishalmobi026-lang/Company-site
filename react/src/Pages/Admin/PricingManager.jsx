@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import LottieLib from "lottie-react";
+const Lottie = LottieLib.default ?? LottieLib;
+import savedAnimation from "../../Assets/saved.json";
+import addAnimation from "../../Assets/add.json";
+import deleteAnimation from "../../Assets/delete.json";
 import { AuthContext } from "../../context/AuthContext";
 import {
   FaPlus, FaTrash, FaSave, FaTimes, FaImage,
@@ -140,6 +145,9 @@ export default function PricingManager() {
 
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [showCatManager, setShowCatManager] = useState(false);
+  const [showSavedAnim, setShowSavedAnim] = useState(false);
+  const [showAddAnim, setShowAddAnim] = useState(false);
+  const [showDeleteAnim, setShowDeleteAnim] = useState(false);
 const [newCat, setNewCat] = useState({
   name: "",
   slug: "",
@@ -149,6 +157,10 @@ const [newCat, setNewCat] = useState({
   const [editingCourse, setEditingCourse] = useState(null);
 
   const notify = (type, message) => setNotice({ type, message });
+
+  const triggerSavedAnim = () => { setShowSavedAnim(true); setTimeout(() => setShowSavedAnim(false), 1800); };
+  const triggerAddAnim   = () => { setShowAddAnim(true);   setTimeout(() => setShowAddAnim(false),   2000); };
+  const triggerDeleteAnim= () => { setShowDeleteAnim(true);setTimeout(() => setShowDeleteAnim(false), 2000); };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -260,6 +272,7 @@ const [newCat, setNewCat] = useState({
       setCourses((p) => [...p, res.data]);
       setShowAddCourse(false);
       setNewCourse({ title: "", description: "", image_url: "", category: categories[0]?.name || "", tag: "" });
+      triggerAddAnim();
       notify("success", "Course added successfully.");
     } catch (err) {
       handleApiError(err, "Failed to add course.");
@@ -272,7 +285,8 @@ const [newCat, setNewCat] = useState({
     try {
       const res = await axios.put(`${API}/admin/courses/${editingCourse.id}`, editingCourse, auth(user));
       setCourses((p) => p.map((c) => (c.id === editingCourse.id ? res.data : c)));
-      setEditingCourse(null);
+      triggerSavedAnim();
+      setTimeout(() => setEditingCourse(null), 1850);
       notify("success", "Course updated successfully.");
     } catch (err) {
       handleApiError(err, "Failed to update course.");
@@ -286,6 +300,7 @@ const [newCat, setNewCat] = useState({
       try {
         await axios.delete(`${API}/admin/courses/${id}`, auth(user));
         setCourses((p) => p.filter((c) => c.id !== id));
+        triggerDeleteAnim();
         notify("success", "Course deleted.");
       } catch (err) {
         handleApiError(err, "Failed to delete course.");
@@ -321,6 +336,50 @@ const [newCat, setNewCat] = useState({
       <Notice type={notice?.type} message={notice?.message} onClose={() => setNotice(null)} />
       <ConfirmModal confirm={confirm} setConfirm={setConfirm} />
 
+      {/* ── Add Course Lottie Overlay ── */}
+      <AnimatePresence>
+        {showAddAnim && (
+          <motion.div
+            key="add-overlay"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[150] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center"
+            >
+              <Lottie animationData={addAnimation} loop={false} style={{ width: 180, height: 180 }} />
+              <p className="mt-2 text-xl font-black text-blue-700 tracking-wide">Course Published!</p>
+              <p className="mt-1 text-sm font-semibold text-slate-500">Added to the live catalog.</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Delete Course Lottie Overlay ── */}
+      <AnimatePresence>
+        {showDeleteAnim && (
+          <motion.div
+            key="delete-overlay"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[150] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center"
+            >
+              <Lottie animationData={deleteAnimation} loop={false} style={{ width: 180, height: 180 }} />
+              <p className="mt-2 text-xl font-black text-red-600 tracking-wide">Course Removed!</p>
+              <p className="mt-1 text-sm font-semibold text-slate-500">Deleted from the catalog.</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {editingCourse && (
           <motion.div
@@ -333,7 +392,7 @@ const [newCat, setNewCat] = useState({
               initial={{ opacity: 0, y: 35, scale: 0.92 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.94 }}
-              className="w-full max-w-2xl overflow-hidden rounded-[2.5rem] border border-blue-100 bg-white shadow-2xl"
+              className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] border border-blue-100 bg-white shadow-2xl"
             >
               <div className="flex items-center justify-between bg-gradient-to-br from-slate-50 to-white p-8 border-b border-slate-100">
                 <div>
@@ -410,6 +469,22 @@ const [newCat, setNewCat] = useState({
                   </button>
                 </div>
               </form>
+
+              {/* ── Saved Lottie Overlay inside modal ── */}
+              <AnimatePresence>
+                {showSavedAnim && (
+                  <motion.div
+                    key="saved-overlay"
+                    initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                    className="absolute inset-0 z-[200] flex flex-col items-center justify-center rounded-[2.5rem] bg-white/90 backdrop-blur-sm"
+                  >
+                    <Lottie animationData={savedAnimation} loop={false} style={{ width: 160, height: 160 }} />
+                    <p className="mt-2 text-lg font-black text-emerald-600 tracking-wide">Changes Saved!</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </motion.div>
           </motion.div>
         )}
