@@ -40,6 +40,7 @@ export default function ScoreListener() {
       </div>
     );
   }
+  // hi
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans py-10">
