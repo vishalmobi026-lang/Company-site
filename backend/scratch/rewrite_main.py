@@ -1,4 +1,9 @@
-from fastapi import FastAPI
+import os
+
+base_dir = 'c:/G-Tec-Azhagiyamandapam/Company-site/backend/app'
+main_path = os.path.join(base_dir, 'main.py')
+
+new_main_content = """from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
@@ -77,3 +82,9 @@ app.include_router(contacts.router, tags=["contacts"])
 app.include_router(enrollments.router, tags=["enrollments"])
 app.include_router(courses.router, tags=["courses"])
 app.include_router(game.router, tags=["game"])
+"""
+
+with open(main_path, 'w', encoding='utf-8') as f:
+    f.write(new_main_content)
+
+print("Successfully replaced main.py")
