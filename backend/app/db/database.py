@@ -10,8 +10,14 @@ load_dotenv()
 # Get the URL from the environment variable
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create the engine with a pre-ping check
-engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
+# Create the engine with a pre-ping check and longer timeouts for Neon DB sleep
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, 
+    pool_pre_ping=True,
+    pool_recycle=300,
+    pool_timeout=30,
+    connect_args={"connect_timeout": 15}
+)
 
 # Session and Base setup
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

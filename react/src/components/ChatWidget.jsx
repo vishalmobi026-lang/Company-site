@@ -285,7 +285,7 @@ export default function ChatWidget() {
     setLoading(true);
 
     try {
-      await axios.post("https://company-site-jrbr.onrender.com/contacts/widget", form);
+      await axios.post("https://company-site-jxbr.onrender.com/contacts/widget", form);
 
       addToast("Information received! We will be in touch shortly.", "success");
       setForm({ name: "", phone: "", email: "" });

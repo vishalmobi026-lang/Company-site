@@ -21,7 +21,7 @@ export default function ContactDetail() {
   const fetchContacts = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://company-site-jrbr.onrender.com/admin/contacts", {
+      const res = await axios.get("https://company-site-jxbr.onrender.com/admin/contacts", {
         headers: {
           Authorization: `Bearer ${user?.access_token}`
         }
@@ -40,7 +40,7 @@ export default function ContactDetail() {
     if (!window.confirm("Are you sure you want to delete this message?")) return;
 
     try {
-      await axios.delete(`https://company-site-jrbr.onrender.com/admin/contacts/${id}`, {
+      await axios.delete(`https://company-site-jxbr.onrender.com/admin/contacts/${id}`, {
         headers: {
           Authorization: `Bearer ${user?.access_token}`
         }

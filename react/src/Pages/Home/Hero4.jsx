@@ -20,7 +20,7 @@ function Hero4() {
   useEffect(() => {
     const fetchPricing = async () => {
       try {
-        const res = await axios.get("https://company-site-jrbr.onrender.com/pricing");
+        const res = await axios.get("https://company-site-jxbr.onrender.com/pricing");
         setPricing(res.data);
       } catch (err) {
         console.error("Failed to fetch pricing", err);

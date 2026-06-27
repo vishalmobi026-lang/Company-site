@@ -37,7 +37,7 @@ export default function Courses() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
+        const res = await axios.get("https://company-site-jxbr.onrender.com/categories");
         if (res.data) {
           setCategories(res.data);
         }

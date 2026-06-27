@@ -139,7 +139,7 @@ function Contact() {
       };
 
       // Call Backend API
-      const response = await fetch("https://company-site-jrbr.onrender.com/professional-contacts", {
+      const response = await fetch("https://company-site-jxbr.onrender.com/professional-contacts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
