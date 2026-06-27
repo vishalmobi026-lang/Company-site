@@ -90,7 +90,7 @@ function Designing() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("https://company-site-jxbr.onrender.com/courses?category=Designing");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/courses?category=Designing");
         const formatted = res.data.map(c => ({
           title: c.title,
           desc: c.description,

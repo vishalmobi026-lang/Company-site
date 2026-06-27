@@ -12,7 +12,7 @@ import {
   FaLayerGroup, FaBookOpen, FaCrown, FaEdit
 } from "react-icons/fa";
 
-const API = "https://company-site-jxbr.onrender.com";
+const API = "https://company-site-jrbr.onrender.com";
 const auth = (user) => ({ headers: { Authorization: `Bearer ${user?.access_token}` } });
 
 const defaults = [

@@ -54,7 +54,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "https://company-site-jxbr.onrender.com/admin/login",
+        "https://company-site-jrbr.onrender.com/admin/login",
         {
           username: form.username,
           password: form.password,

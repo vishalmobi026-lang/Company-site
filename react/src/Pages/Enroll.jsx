@@ -146,7 +146,7 @@ function Enroll() {
   useEffect(() => {
     const fetchAllCourses = async () => {
       try {
-        const res = await axios.get("https://company-site-jxbr.onrender.com/courses");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/courses");
         setAllCourses(res.data);
       } catch (err) {
         console.error("Failed to fetch courses for enrollment", err);
@@ -271,7 +271,7 @@ function Enroll() {
 
   const fetchLocation = async (pincode) => {
     try {
-      const res = await axios.get(`https://company-site-jxbr.onrender.com/api/pincode/${pincode}`);
+      const res = await axios.get(`https://company-site-jrbr.onrender.com/api/pincode/${pincode}`);
       const data = res.data?.[0];
 
       if (data?.Status === "Success" && data?.PostOffice?.length > 0) {
@@ -347,7 +347,7 @@ function Enroll() {
     setLoading(true);
 
     try {
-      await axios.post("https://company-site-jxbr.onrender.com/enrollments", form);
+      await axios.post("https://company-site-jrbr.onrender.com/enrollments", form);
       setSubmitStatus("success");
     } catch (err) {
       console.error(err);

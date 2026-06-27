@@ -46,7 +46,7 @@ function Navbar() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://company-site-jxbr.onrender.com/categories");
+        const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
         if (res.data && res.data.length > 0) {
           setCategories(res.data);
         } else {

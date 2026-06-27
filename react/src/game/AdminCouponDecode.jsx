@@ -19,7 +19,7 @@ export default function AdminCouponDecoder() {
 
     try {
       // Fetch all game scores from the backend
-      const response = await fetch('https://company-site-jxbr.onrender.com/gamescores/all');
+      const response = await fetch('https://company-site-jrbr.onrender.com/gamescores/all');
       const data = await response.json();
 
 
