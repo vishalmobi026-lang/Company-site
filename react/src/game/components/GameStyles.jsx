@@ -2,7 +2,7 @@ import React from "react";
 
 export default function GameStyles() {
   return (
-
+    <>
       <style jsx="true">{`
         .nebula-glow-1 {
           animation: driftGlowOne 20s ease-in-out infinite;
@@ -100,6 +100,6 @@ export default function GameStyles() {
           perspective: 1000px;
         }
       `}</style>
-    </div>
+    </>
   );
 }
