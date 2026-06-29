@@ -39,6 +39,8 @@ export default function GameStyles() {
             radial-gradient(1px 1px at 290px 100px, #fff, transparent);
           background-size: 300px 300px;
           animation: moveStarsSlow 25s linear infinite;
+          will-change: background-position;
+          transform: translateZ(0);
         }
         .starfield-2 {
           background-image: 
@@ -49,6 +51,8 @@ export default function GameStyles() {
             radial-gradient(1.5px 1.5px at 280px 60px, #fff, transparent);
           background-size: 320px 320px;
           animation: moveStarsMedium 15s linear infinite;
+          will-change: background-position;
+          transform: translateZ(0);
         }
         .starfield-3 {
           background-image: 
@@ -58,6 +62,8 @@ export default function GameStyles() {
             radial-gradient(3px 3px at 230px 260px, rgba(255,255,255,0.9), transparent);
           background-size: 280px 280px;
           animation: moveStarsFast 8s linear infinite;
+          will-change: background-position;
+          transform: translateZ(0);
         }
         @keyframes moveStarsSlow {
           from { background-position: 0 0; }
@@ -82,11 +88,15 @@ export default function GameStyles() {
           background: linear-gradient(to bottom, transparent, rgba(34,211,238,0.2), transparent);
           background-size: 100% 4px;
           animation: scan-v 4s linear infinite;
+          will-change: background-position;
+          transform: translateZ(0);
         }
         .scanline-vertical {
           background: linear-gradient(to right, transparent, rgba(34,211,238,0.4), transparent);
           background-size: 4px 100%;
           animation: scan-h 8s linear infinite;
+          will-change: background-position;
+          transform: translateZ(0);
         }
         @keyframes scan-v {
           0% { background-position: 0 -100%; }

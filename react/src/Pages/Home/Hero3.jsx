@@ -16,14 +16,14 @@ function Hero3() {
           <motion.div
             initial={{ opacity: 0, x: -80 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.25 }}
+            viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.6 }}
             className="max-w-xl"
           >
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.6 }}
               className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight bg-gradient-to-r from-blue-900 via-blue-400 to-cyan-300 bg-clip-text text-transparent"
             >
@@ -33,7 +33,7 @@ function Hero3() {
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-gray-300 text-lg md:text-xl mb-6"
             >
@@ -43,7 +43,7 @@ function Hero3() {
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.6, delay: 0.15 }}
               className="text-xl md:text-2xl font-semibold text-gray-200 mb-8"
             >
@@ -60,7 +60,7 @@ function Hero3() {
                   key={item}
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, amount: 0.25 }}
+                  viewport={{ once: true, amount: 0.25 }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                   className="flex items-center gap-2"
                 >
@@ -73,7 +73,7 @@ function Hero3() {
             <motion.button
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.25 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -87,7 +87,7 @@ function Hero3() {
           <motion.div
             initial={{ opacity: 0, x: 80 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.25 }}
+            viewport={{ once: true, amount: 0.25 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="hidden md:block relative mt-10 md:mt-0"
           >

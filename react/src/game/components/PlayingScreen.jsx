@@ -217,6 +217,7 @@ export default function PlayingScreen({ ctx }) {
                         repeat: Infinity,
                         ease: "easeInOut"
                       }}
+                      style={{ willChange: "transform", transform: "translateZ(0)" }}
                       className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
                     >
                       {/* SHIP BODY - PROFESSIONAL DESIGN */}
@@ -296,6 +297,7 @@ export default function PlayingScreen({ ctx }) {
                           repeat: Infinity,
                           ease: "linear"
                         }}
+                        style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
                         className="absolute bottom-[-10px] w-14 h-28 bg-gradient-to-t from-cyan-400 via-blue-500/50 to-transparent blur-xl rounded-full z-0"
                       />
 

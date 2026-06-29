@@ -53,7 +53,7 @@ function Hero1() {
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: false, amount: 0.25 }}
+          viewport={{ once: true, amount: 0.25 }}
           className="max-w-7xl w-full grid md:grid-cols-2 items-center gap-14 relative z-10"
         >
           <motion.div variants={containerVariants} className="max-w-2xl">
@@ -163,19 +163,19 @@ function Hero1() {
               alt="learning"
               className="relative z-10 w-full h-[220px] object-cover rounded-2xl shadow-2xl border border-white/10"
             />
-            {/* Compact stat badges - side by side on mobile */}
-            <div className="relative z-10 mt-4 flex justify-center gap-3">
-              <div className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl text-center">
-                <p className="text-xs text-cyan-200">Students</p>
-                <h3 className="text-xl font-bold">10K+</h3>
+            {/* Compact stat badges - wrap on small mobile */}
+            <div className="relative z-10 mt-5 flex flex-wrap justify-center gap-2 sm:gap-3">
+              <div className="flex-1 min-w-[100px] rounded-xl border border-white/10 bg-white/10 px-3 py-2 backdrop-blur-xl text-center">
+                <p className="text-[11px] text-cyan-200">Students</p>
+                <h3 className="text-lg font-bold">10K+</h3>
               </div>
-              <div className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 backdrop-blur-xl text-center">
-                <p className="text-xs text-gray-300">Courses</p>
-                <h3 className="text-xl font-bold text-cyan-300">25+</h3>
+              <div className="flex-1 min-w-[100px] rounded-xl border border-white/10 bg-slate-900/80 px-3 py-2 backdrop-blur-xl text-center">
+                <p className="text-[11px] text-gray-300">Courses</p>
+                <h3 className="text-lg font-bold text-cyan-300">25+</h3>
               </div>
-              <div className="rounded-xl border border-cyan-300/30 bg-blue-950/80 px-4 py-2 backdrop-blur-xl text-center">
-                <p className="text-xs text-gray-300">Projects</p>
-                <h3 className="text-xl font-bold text-blue-300">100+</h3>
+              <div className="flex-1 min-w-[100px] rounded-xl border border-cyan-300/30 bg-blue-950/80 px-3 py-2 backdrop-blur-xl text-center">
+                <p className="text-[11px] text-gray-300">Projects</p>
+                <h3 className="text-lg font-bold text-blue-300">100+</h3>
               </div>
             </div>
           </motion.div>
