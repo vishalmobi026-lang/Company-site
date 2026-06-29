@@ -202,12 +202,13 @@ export default function NeonStrikeGame({ onClose }) {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (gameState !== "playing") return;
+    if (e.key === "ArrowLeft" && stateRef.current.lane > 0) movePlayer(-1);
+    if (e.key === "ArrowRight" && stateRef.current.lane < 2) movePlayer(1);
+  };
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (gameState !== "playing") return;
-      if (e.key === "ArrowLeft" && stateRef.current.lane > 0) movePlayer(-1);
-      if (e.key === "ArrowRight" && stateRef.current.lane < 2) movePlayer(1);
-    };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState]);
