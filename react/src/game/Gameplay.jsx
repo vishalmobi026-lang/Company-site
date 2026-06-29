@@ -236,7 +236,19 @@ export default function NeonStrikeGame({ onClose }) {
     setCorrectCount(0);
 
     setPlayerLane(1);
-    gameLoopRef.current = setInterval(gameTick, 30);
+    
+    const loop = (time) => {
+      const state = stateRef.current;
+      if (!state.lastTick) state.lastTick = time;
+      const delta = time - state.lastTick;
+      
+      if (delta >= 30) {
+        gameTick();
+        state.lastTick = time - (delta % 30);
+      }
+      gameLoopRef.current = requestAnimationFrame(loop);
+    };
+    gameLoopRef.current = requestAnimationFrame(loop);
   };
 
   const gameTick = () => {
@@ -340,7 +352,7 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   const endGame = async () => {
-    clearInterval(gameLoopRef.current);
+    cancelAnimationFrame(gameLoopRef.current);
 
     const finalScore = stateRef.current.score;
     let prefix = "B2";
@@ -375,7 +387,7 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   const handleExit = () => {
-    clearInterval(gameLoopRef.current);
+    cancelAnimationFrame(gameLoopRef.current);
     onClose();
   };
 
