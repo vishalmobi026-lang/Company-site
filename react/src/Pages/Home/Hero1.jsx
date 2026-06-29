@@ -43,7 +43,7 @@ function Hero1() {
 
   return (
     <>
-      <section className="relative h-[calc(100vh-120px)] flex items-center justify-center overflow-hidden bg-slate-950 text-white px-6">
+      <section className="relative min-h-[calc(100vh-120px)] py-12 md:py-0 flex items-center justify-center overflow-hidden bg-slate-950 text-white px-6">
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
         <div className="absolute w-[550px] h-[550px] bg-blue-500/25 blur-3xl rounded-full top-[-130px] left-[-120px]"></div>
