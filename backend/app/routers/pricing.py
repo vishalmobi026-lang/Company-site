@@ -34,6 +34,7 @@ def update_pricing(
                 db_price.is_featured = bool(p.is_featured)
                 db_price.accent_color = p.accent_color
                 db_price.border_color = p.border_color
+                db_price.is_disabled = bool(p.is_disabled)
             else:
                 db_price = models.Pricing(
                     course_name=p.course_name,
@@ -42,7 +43,8 @@ def update_pricing(
                     features=p.features,
                     is_featured=bool(p.is_featured),
                     accent_color=p.accent_color,
-                    border_color=p.border_color
+                    border_color=p.border_color,
+                    is_disabled=bool(p.is_disabled)
                 )
                 db.add(db_price)
             updated_pricings.append(db_price)

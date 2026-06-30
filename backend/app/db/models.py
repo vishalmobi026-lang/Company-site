@@ -21,6 +21,7 @@ class Pricing(Base):
     is_featured = Column(Boolean, default=False)
     accent_color = Column(String, default="#3b82f6")
     border_color = Column(String, default="#e2e8f0")
+    is_disabled = Column(Boolean, default=False)
 
 class ContactMessage(Base):
     __tablename__ = "contact_messages"
@@ -89,6 +90,7 @@ class Course(Base):
     category_id = Column(Integer)
     tag = Column(String)
     is_active = Column(Integer, default=1)
+    order_index = Column(Integer, default=0)
 class Category(Base):
     __tablename__ = "categories"
 

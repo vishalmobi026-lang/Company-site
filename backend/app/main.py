@@ -27,6 +27,8 @@ try:
         conn.execute(text("ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR"))
         conn.execute(text("ALTER TABLE game_scores ADD COLUMN IF NOT EXISTS staff_feedback VARCHAR"))
         conn.execute(text("ALTER TABLE courses ADD COLUMN IF NOT EXISTS category_id INTEGER"))
+        conn.execute(text("ALTER TABLE pricing ADD COLUMN IF NOT EXISTS is_disabled BOOLEAN DEFAULT FALSE"))
+        conn.execute(text("ALTER TABLE courses ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0"))
     print("Successfully applied database migrations!")
 except Exception as e:
     print(f"Error executing database migrations: {e}")

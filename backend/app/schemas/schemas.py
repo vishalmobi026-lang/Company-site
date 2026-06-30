@@ -23,6 +23,7 @@ class PricingCreate(BaseModel):
     is_featured: Optional[bool] = False
     accent_color: Optional[str] = "#3b82f6"
     border_color: Optional[str] = "#e2e8f0"
+    is_disabled: Optional[bool] = False
 
     @field_validator('standard_price', 'offer_price', mode='before')
     @classmethod
@@ -127,6 +128,7 @@ class CourseCreate(BaseModel):
     category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = 1
+    order_index: Optional[int] = 0
 
 class CourseUpdate(BaseModel):
     title: Optional[str] = None
@@ -136,6 +138,11 @@ class CourseUpdate(BaseModel):
     category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = None
+    order_index: Optional[int] = None
+
+class CourseReorder(BaseModel):
+    id: int
+    order_index: int
 
 class CategoryCreate(BaseModel):
     name: str
@@ -157,6 +164,7 @@ class CourseResponse(BaseModel):
     category_id: Optional[int] = None
     tag: Optional[str] = None
     is_active: Optional[int] = 1
+    order_index: Optional[int] = 0
 
     class Config:
         from_attributes = True

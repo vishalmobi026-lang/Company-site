@@ -12,7 +12,7 @@ def get_courses(category: str = None, db: Session = Depends(database.get_db)):
     query = db.query(models.Course)
     if category:
         query = query.filter(models.Course.category == category)
-    return query.all()
+    return query.order_by(models.Course.order_index.asc()).all()
 
 @router.post("/admin/courses", response_model=schemas.CourseResponse)
 def create_course(course: schemas.CourseCreate, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
@@ -33,6 +33,13 @@ def update_course(id: int, course: schemas.CourseUpdate, db: Session = Depends(d
     db.commit()
     db.refresh(db_course)
     return db_course
+
+@router.put("/admin/courses/reorder")
+def reorder_courses(courses: List[schemas.CourseReorder], db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    for course_data in courses:
+        db.query(models.Course).filter(models.Course.id == course_data.id).update({"order_index": course_data.order_index})
+    db.commit()
+    return {"detail": "Courses reordered"}
 
 @router.delete("/admin/courses/{id}")
 def delete_course(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
