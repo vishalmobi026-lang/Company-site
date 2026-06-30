@@ -6,6 +6,10 @@ const smoothEase = [0.16, 1, 0.3, 1];
 
 export default function ResultScreen({ ctx }) {
   const { gameState, score, playerLane, entities, currentQuestion, floatingTexts, lives, combo, shake, couponCode, copied, correctCount, discount, countries, categories, formData, formError, isFetchingQs, setGameState, setScore, setPlayerLane, setEntities, setCurrentQuestion, setFloatingTexts, setLives, setCombo, setShake, setCouponCode, setCopied, setCorrectCount, setDiscount, setCountries, setCategories, setFormData, setFormError, setIsFetchingQs, triggerShake, addFloatingText, copyToClipboard, handlePhoneChange, submitForm, handleKeyDown, movePlayer, startGame, gameTick, endGame, handleExit, decodeHTML } = ctx;
+  
+  const hashSignature = React.useMemo(() => Math.random().toString(36).substring(2, 10).toUpperCase(), []);
+  const transactionHash = React.useMemo(() => Math.random().toString(36).substring(2, 15).toUpperCase(), []);
+
   return (
     <>
           {gameState === "result" && (
@@ -95,7 +99,7 @@ export default function ResultScreen({ ctx }) {
                     </div>
                     <div className="text-right">
                       <p className="font-mono text-[9px] text-cyan-500/50 uppercase tracking-[0.2em]">Hash_Signature</p>
-                      <p className="font-mono text-[11px] text-zinc-400">{Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
+                      <p className="font-mono text-[11px] text-zinc-400">{hashSignature}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -291,7 +295,7 @@ export default function ResultScreen({ ctx }) {
 
                 {/* FOOTER HASH */}
                 <div className="text-[8px] font-mono text-zinc-700 uppercase tracking-widest opacity-50">
-                  Transaction_Hash: {Math.random().toString(36).substring(2, 15).toUpperCase()}
+                  Transaction_Hash: {transactionHash}
                 </div>
               </div>
             </motion.div>

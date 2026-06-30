@@ -32,7 +32,7 @@ function Hero4() {
 
   return (
     <>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white text-gray-900 px-6 py-16">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white text-gray-900 px-4 sm:px-6 py-16">
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#7c3aed_1px,transparent_1px),linear-gradient(90deg,#7c3aed_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
         <div className="absolute w-[400px] h-[400px] bg-blue-300/30 blur-3xl rounded-full top-[-100px] left-[-100px]"></div>
@@ -97,12 +97,12 @@ function Hero4() {
               opacity: { duration: 0.4 },
               scale: { duration: 1.2, repeat: Infinity, ease: "easeInOut" },
             }}
-            className="w-14 sm:w-16 md:w-20 mx-auto translate-x-14 sm:translate-x-16 md:translate-x-14 -translate-y-20 sm:-translate-y-24 md:-translate-y-24 -mb-5 sm:-mb-6 md:-mb-7 pointer-events-none"
+            className="w-12 sm:w-16 md:w-20 mx-auto translate-x-10 sm:translate-x-16 md:translate-x-14 -translate-y-16 sm:-translate-y-24 md:-translate-y-24 -mb-4 sm:-mb-6 md:-mb-7 pointer-events-none"
           >
             {View}
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 -mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 -mt-8">
             {(() => {
                 const featured = pricing.filter(p => p.is_featured);
                 const nonFeatured = pricing.filter(p => !p.is_featured);

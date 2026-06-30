@@ -15,7 +15,7 @@ export default function IntroScreen({ ctx }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}
               transition={{ duration: 0.8, ease: smoothEase }}
-              className="w-full flex flex-col items-center justify-start md:justify-center p-4 py-16 md:p-10 relative"
+              className="w-full flex flex-col items-center justify-start md:justify-center p-3 py-10 sm:p-4 sm:py-16 md:p-10 relative"
             >
               <div className="absolute inset-0 cyber-grid opacity-20 z-0" />
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.1)_0%,transparent_60%)] z-0" />
@@ -24,12 +24,12 @@ export default function IntroScreen({ ctx }) {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: smoothEase }}
-                className="z-10 w-full max-w-7xl flex flex-col lg:flex-row gap-8 items-stretch"
+                className="z-10 w-full max-w-7xl flex flex-col lg:flex-row gap-5 sm:gap-8 items-stretch"
               >
                 {/* LEFT PANEL: TITLE CARD */}
                 <motion.div
                   whileHover={{ y: -6, scale: 1.005 }}
-                  className="flex-1 bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-6 md:p-12 rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] flex flex-col justify-between overflow-hidden relative group transition-all duration-500 hover:shadow-[0_0_80px_-15px_rgba(34,211,238,0.25)] hover:border-cyan-400/40"
+                  className="flex-1 bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-4 sm:p-6 md:p-12 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] flex flex-col justify-between overflow-hidden relative group transition-all duration-500 hover:shadow-[0_0_80px_-15px_rgba(34,211,238,0.25)] hover:border-cyan-400/40"
                 >
                   {/* Inset Border Glow */}
                   <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
@@ -78,7 +78,7 @@ export default function IntroScreen({ ctx }) {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
-                    className="mt-12 relative z-10 bg-[#060b18]/60 border border-cyan-500/20 p-5 rounded-2xl flex flex-col gap-3 backdrop-blur-md"
+                    className="mt-6 sm:mt-12 relative z-10 bg-[#060b18]/60 border border-cyan-500/20 p-4 rounded-2xl flex flex-col gap-3 backdrop-blur-md"
                   >
                     <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
                       <span className="font-mono text-[9px] text-cyan-200/60 font-bold uppercase tracking-wider flex items-center gap-1.5">
@@ -86,7 +86,7 @@ export default function IntroScreen({ ctx }) {
                       </span>
                       <span className="font-mono text-[9px] text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded font-bold uppercase tracking-widest border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">Handshake Active</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <div className="text-[9px] text-cyan-200/50 font-bold font-sans uppercase">Handshake target</div>
                         <div className="text-sm font-black text-white tracking-tight flex items-center gap-1 mt-0.5">
@@ -110,7 +110,7 @@ export default function IntroScreen({ ctx }) {
                   initial={{ x: 50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3, duration: 0.8, ease: smoothEase }}
-                  className="lg:w-[450px] bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-6 md:p-10 rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative flex flex-col justify-between overflow-hidden"
+                  className="lg:w-[420px] bg-[#0b1021]/80 backdrop-blur-2xl border border-cyan-500/20 p-4 sm:p-6 md:p-10 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative flex flex-col justify-between overflow-hidden"
                 >
                   <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
 
@@ -121,7 +121,7 @@ export default function IntroScreen({ ctx }) {
                   />
 
                   <div>
-                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-cyan-500/20">
+                    <div className="flex items-center justify-between mb-5 sm:mb-8 pb-4 border-b border-cyan-500/20">
                       <h3 className="text-white font-black text-xl uppercase tracking-widest flex items-center gap-3">
                         <Sparkles className="text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.8)]" size={24} /> Directives
                       </h3>
@@ -159,12 +159,12 @@ export default function IntroScreen({ ctx }) {
                     </div>
                   </div>
 
-                  <div className="mt-10 space-y-5 relative z-10">
+                  <div className="mt-6 sm:mt-10 space-y-4 sm:space-y-5 relative z-10">
                     <motion.button
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setGameState("form")}
-                      className="group relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black py-4 md:py-5 rounded-2xl shadow-[0_0_30px_-5px_rgba(34,211,238,0.4)] hover:shadow-[0_0_50px_-5px_rgba(34,211,238,0.6)] transition-all duration-300 text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 overflow-hidden"
+                      className="group relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black py-3.5 sm:py-4 md:py-5 rounded-2xl shadow-[0_0_30px_-5px_rgba(34,211,238,0.4)] hover:shadow-[0_0_50px_-5px_rgba(34,211,238,0.6)] transition-all duration-300 text-sm sm:text-base md:text-lg uppercase tracking-widest flex justify-center items-center gap-3 border border-cyan-400/50 overflow-hidden"
                     >
                       <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
                       <span className="relative z-10 flex items-center gap-3 font-extrabold">

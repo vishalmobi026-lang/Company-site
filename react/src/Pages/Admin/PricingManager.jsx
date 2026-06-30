@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import LottieLib from "lottie-react";
 const Lottie = LottieLib.default ?? LottieLib;
 import savedAnimation from "../../Assets/saved.json";
@@ -9,7 +9,8 @@ import deleteAnimation from "../../Assets/delete.json";
 import { AuthContext } from "../../context/AuthContext";
 import {
   FaPlus, FaTrash, FaSave, FaTimes, FaImage,
-  FaLayerGroup, FaBookOpen, FaCrown, FaEdit
+  FaLayerGroup, FaBookOpen, FaCrown, FaEdit, FaSearch,
+  FaGripVertical
 } from "react-icons/fa";
 
 const API = "https://company-site-jrbr.onrender.com";
@@ -133,6 +134,11 @@ export default function PricingManager() {
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState(null);
   const [confirm, setConfirm] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [courseOrder, setCourseOrder] = useState([]);
+  const [dragEnabled, setDragEnabled] = useState(false);
   const { user, isAuthenticated, logout } = useContext(AuthContext);
 
   const handleApiError = (err, fallbackMessage) => {
@@ -184,8 +190,10 @@ const [newCat, setNewCat] = useState({
         axios.get(`${API}/categories`),
       ]);
 
+      const loadedCourses = courseRes.data;
       setPricings(pricingRes.data.length ? pricingRes.data : defaults);
-      setCourses(courseRes.data);
+      setCourses(loadedCourses);
+      setCourseOrder(loadedCourses.map((c) => c.id));
       setCategories(catRes.data);
       if (catRes.data.length) setNewCourse((p) => ({ ...p, category: catRes.data[0].name }));
     } catch (err) {
@@ -328,7 +336,7 @@ const [newCat, setNewCat] = useState({
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white px-4 pb-20 pt-24 text-slate-900 selection:bg-blue-100 sm:px-6">
+    <div className="relative min-h-screen overflow-hidden bg-white px-3 pb-20 pt-16 text-slate-900 selection:bg-blue-100 sm:px-6 sm:pt-24">
       <motion.div animate={{ backgroundPosition: ["0px 0px", "40px 40px"] }} transition={{ duration: 18, repeat: Infinity, ease: "linear" }} className="absolute inset-0 opacity-10 bg-[linear-gradient(#2563eb_1px,transparent_1px),linear-gradient(90deg,#2563eb_1px,transparent_1px)] bg-[size:40px_40px]" />
       <div className="absolute left-[-130px] top-[-140px] h-[430px] w-[430px] rounded-full bg-blue-300/30 blur-3xl" />
       <div className="absolute bottom-[-130px] right-[-120px] h-[390px] w-[390px] rounded-full bg-cyan-300/30 blur-3xl" />
@@ -492,22 +500,22 @@ const [newCat, setNewCat] = useState({
 
       <div className="relative z-10 mx-auto max-w-7xl space-y-10">
         <Reveal>
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <div className="mb-2 flex items-center gap-3">
-                <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-blue-500 p-3 text-white shadow-lg shadow-blue-200">
-                  <FaCrown size={24} />
+                <div className="rounded-2xl bg-gradient-to-br from-blue-900 to-blue-500 p-2.5 text-white shadow-lg shadow-blue-200 sm:p-3">
+                  <FaCrown size={20} />
                 </div>
-                <h1 className="bg-gradient-to-r from-blue-950 to-blue-500 bg-clip-text text-3xl font-black tracking-tight text-transparent md:text-4xl">
+                <h1 className="bg-gradient-to-r from-blue-950 to-blue-500 bg-clip-text text-2xl font-black tracking-tight text-transparent sm:text-3xl md:text-4xl">
                   Management
                 </h1>
               </div>
-              <p className="ml-1 font-medium text-slate-500">
-                Control course pricing, manage divisions, and update your academic offerings in real-time.
+              <p className="ml-1 text-sm font-medium text-slate-500 sm:text-base">
+                Control pricing, manage divisions, and update your courses in real-time.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
+            <div className="flex w-fit items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
               <span className="text-xs font-black uppercase tracking-widest text-slate-600">{courses.length} Courses Live</span>
             </div>
@@ -537,44 +545,68 @@ const [newCat, setNewCat] = useState({
               </div>
             </div>
 
-            <div className="grid gap-8 lg:grid-cols-3">
+            <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
               {pricings.slice(0, 3).map((pricing, index) => (
                 <Reveal key={pricing.id || index} index={index}>
                   <div
                     style={{ borderColor: pricing.is_featured ? pricing.accent_color || "#3b82f6" : "#f1f5f9" }}
-                    className={`group relative rounded-[2rem] border-2 bg-white p-8 shadow-xl shadow-slate-200/40 transition-all duration-500 hover:-translate-y-2 ${
+                    className={`group relative rounded-[2rem] border-2 bg-white p-5 sm:p-8 shadow-xl shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1 ${
                       pricing.is_featured ? "ring-8 ring-blue-50/70" : "hover:border-slate-300"
-                    }`}
+                    } ${pricing._disabled ? "opacity-50 grayscale" : ""}`}
                   >
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                      <div className="space-y-2 md:col-span-2">
-                        <div className="flex items-center justify-between px-1">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Academic Program Name</label>
-                          {pricing.is_featured === 1 && (
-                            <span style={{ color: pricing.accent_color }} className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest">
-                              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" /> Featured on Home
-                            </span>
-                          )}
-                        </div>
-                        <input value={pricing.course_name} onChange={(e) => updatePricing(index, "course_name", e.target.value)} className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4 font-black text-slate-800 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50" />
+                    {/* ── Slot Header: name + disable toggle ── */}
+                    <div className="mb-4 flex items-start justify-between gap-2">
+                      <div className="space-y-1 flex-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Program Name</label>
+                        <input
+                          value={pricing.course_name}
+                          onChange={(e) => updatePricing(index, "course_name", e.target.value)}
+                          disabled={pricing._disabled}
+                          className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 font-black text-slate-800 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed"
+                        />
                       </div>
+                      <button
+                        title={pricing._disabled ? "Enable slot" : "Disable slot"}
+                        onClick={() => updatePricing(index, "_disabled", !pricing._disabled)}
+                        className={`mt-5 shrink-0 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                          pricing._disabled
+                            ? "bg-red-50 text-red-500 hover:bg-red-100"
+                            : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                        }`}
+                      >
+                        {pricing._disabled ? "Off" : "On"}
+                      </button>
+                    </div>
 
+                    {pricing._disabled && (
+                      <p className="mb-4 rounded-xl bg-red-50 px-4 py-2 text-center text-xs font-bold text-red-400">
+                        This slot is hidden from the home page pricing section.
+                      </p>
+                    )}
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       {[
                         ["Standard Tuition (₹)", "standard_price", "text-slate-600"],
                         ["Special Offer (₹)", "offer_price", "text-blue-600"],
                       ].map(([label, field, color]) => (
                         <div key={field} className="space-y-2">
                           <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</label>
-                          <input value={pricing[field]} onChange={(e) => updatePricing(index, field, e.target.value)} className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono font-bold ${color} shadow-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50`} />
+                          <input
+                            value={pricing[field]}
+                            onChange={(e) => updatePricing(index, field, e.target.value)}
+                            disabled={pricing._disabled}
+                            className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono font-bold ${color} shadow-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed`}
+                          />
                         </div>
                       ))}
 
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-8 border-t border-slate-50 pt-6 md:col-span-2">
-                        <div className="space-y-4">
+                      <div className="col-span-full mt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-50 pt-4">
+                        <div className="space-y-2">
                           <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-400">Home Page Presence</label>
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
+                            disabled={pricing._disabled}
                             onClick={() => {
                               const active = !pricing.is_featured;
                               updatePricing(index, "is_featured", active);
@@ -583,7 +615,7 @@ const [newCat, setNewCat] = useState({
                                 updatePricing(index, "border_color", "#dbeafe");
                               }
                             }}
-                            className={`flex items-center gap-4 rounded-[2rem] bg-slate-100 px-10 py-5 text-xs font-black uppercase tracking-widest transition-all ${
+                            className={`flex items-center gap-3 rounded-[2rem] bg-slate-100 px-6 py-4 text-xs font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed ${
                               pricing.is_featured ? "text-blue-600 shadow-[inset_6px_6px_12px_#cbd5e1,inset_-6px_-6px_12px_#ffffff]" : "text-slate-400 shadow-[8px_8px_16px_#cbd5e1,-8px_-8px_16px_#ffffff]"
                             }`}
                           >
@@ -593,18 +625,17 @@ const [newCat, setNewCat] = useState({
                         </div>
                       </div>
 
-                      <div className="mt-2 space-y-3 md:col-span-2">
+                      <div className="col-span-full mt-2 space-y-3">
                         <div className="flex items-center justify-between">
-                          <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-400">Program Highlights / Features</label>
+                          <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-400">Highlights / Features</label>
                           <button onClick={() => updateFeatures(index, (f) => [...f, "New Feature"])} className="flex items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-xs font-bold text-blue-600">
-                            <FaPlus size={10} /> Add Item
+                            <FaPlus size={10} /> Add
                           </button>
                         </div>
-
                         <div className="flex flex-wrap gap-2">
                           {(pricing.features || "").split(",").filter(Boolean).map((feature, fIndex) => (
                             <div key={fIndex} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white py-1 pl-3 pr-1 shadow-sm">
-                              <input value={feature} onChange={(e) => updateFeatures(index, (f) => f.map((x, i) => i === fIndex ? e.target.value : x))} className="w-32 bg-transparent text-xs font-bold text-slate-600 outline-none" />
+                              <input value={feature} onChange={(e) => updateFeatures(index, (f) => f.map((x, i) => i === fIndex ? e.target.value : x))} className="w-28 bg-transparent text-xs font-bold text-slate-600 outline-none" />
                               <button onClick={() => updateFeatures(index, (f) => f.filter((_, i) => i !== fIndex))} className="rounded-lg p-1.5 text-slate-300 hover:text-red-500">
                                 <FaTimes size={12} />
                               </button>
@@ -847,51 +878,197 @@ const [newCat, setNewCat] = useState({
           </form>
         </motion.div>
       )}
-    </AnimatePresence>
-  </section>
-</Reveal>
+      </AnimatePresence>
+    </section>
+  </Reveal>
 
-
-        <div className="h-[500px] overflow-y-auto pr-2">
-          <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
-            {courses.map((course, index) => (
-              <Reveal key={course.id} index={index}>
-                <div className="group relative flex flex-col rounded-[2.5rem] border border-blue-100 bg-white/90 p-6 shadow-blue-100 backdrop-blur transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
-                  <div className="relative mb-6 h-56 overflow-hidden rounded-[2rem] shadow-md">
-                    <img src={course.image_url} alt={course.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-blue-950/45 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                    <div className="absolute right-5 top-5 rounded-full bg-white/95 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-sm backdrop-blur">
-                      {course.category}
-                    </div>
-                  </div>
-
-                  <div className="flex-1 px-2">
-                    <div className="mb-3 flex items-center gap-2">
-                      <span className="h-px w-8 bg-blue-600" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{course.tag || "Academic"}</span>
-                    </div>
-                    <h3 className="mb-3 text-xl font-black text-slate-900 transition-colors group-hover:text-blue-600">{course.title}</h3>
-                    <p className="mb-6 line-clamp-3 text-sm font-medium leading-relaxed text-slate-500">{course.description}</p>
-                  </div>
-
-                  <div className="mt-auto flex items-center justify-between border-t border-slate-50 px-2 pt-6">
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      <FaBookOpen className="text-blue-600" /> ID: {course.id}
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => setEditingCourse(course)} className="rounded-2xl p-3 text-slate-300 hover:bg-blue-50 hover:text-blue-600">
-                        <FaEdit size={16} />
-                      </button>
-                      <button onClick={() => deleteCourse(course.id)} className="rounded-2xl p-3 text-slate-300 hover:bg-red-50 hover:text-red-600">
-                        <FaTrash size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
+        {/* ── Category Tabs ── */}
+        <Reveal>
+          <div className="flex flex-wrap gap-2">
+            {["All", ...categories.map((c) => c.name)].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`rounded-full px-4 py-2 text-xs font-black uppercase tracking-widest transition-all ${
+                  selectedCategory === cat
+                    ? "bg-gradient-to-r from-blue-900 to-blue-500 text-white shadow-lg shadow-blue-200"
+                    : "bg-white border border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600"
+                }`}
+              >
+                {cat}
+                {cat !== "All" && (
+                  <span className="ml-1.5 opacity-60">
+                    ({courses.filter((c) => c.category === cat).length})
+                  </span>
+                )}
+                {cat === "All" && (
+                  <span className="ml-1.5 opacity-60">({courses.length})</span>
+                )}
+              </button>
             ))}
           </div>
-        </div>
+        </Reveal>
+
+        {/* ── Course Catalog (Overflow Section) ── */}
+        <Reveal>
+          <div className="rounded-[2rem] border border-blue-100 bg-white/80 shadow-xl shadow-blue-50 backdrop-blur-xl overflow-hidden">
+            {/* Sticky header inside overflow section */}
+            <div className="flex flex-col gap-3 border-b border-slate-100 bg-white/95 p-4 sm:flex-row sm:items-center sm:gap-4">
+              {/* Search bar */}
+              <div className="relative flex-1">
+                <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                <input
+                  type="text"
+                  placeholder="Search course name or keyword…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+                />
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-bold text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="a-z">A–Z</option>
+                  <option value="z-a">Z–A</option>
+                </select>
+                <button
+                  onClick={() => setDragEnabled((p) => !p)}
+                  title="Toggle drag-and-drop reorder mode"
+                  className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest transition-all ${
+                    dragEnabled
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  }`}
+                >
+                  <FaGripVertical size={13} />
+                  <span className="hidden sm:inline">{dragEnabled ? "Done" : "Reorder"}</span>
+                </button>
+              </div>
+            </div>
+
+            {dragEnabled && (
+              <div className="bg-blue-50 px-5 py-2 text-center text-xs font-bold text-blue-600">
+                🖱️ Drag and drop the cards below to reorder courses. Click "Done" when finished.
+              </div>
+            )}
+
+            {/* Scrollable course grid */}
+            <div className="h-[520px] overflow-y-auto p-4 sm:p-6">
+              {(() => {
+                const filtered = courses
+                  .filter((c) => {
+                    const q = searchQuery.toLowerCase();
+                    const matchesSearch = c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
+                    const matchesCat = selectedCategory === "All" || c.category === selectedCategory;
+                    return matchesSearch && matchesCat;
+                  })
+                  .sort((a, b) => {
+                    if (dragEnabled) return 0; // preserve drag order
+                    if (sortOrder === "a-z") return a.title.localeCompare(b.title);
+                    if (sortOrder === "z-a") return b.title.localeCompare(a.title);
+                    if (sortOrder === "oldest") return a.id - b.id;
+                    return b.id - a.id;
+                  });
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="flex h-full flex-col items-center justify-center gap-3 text-slate-400">
+                      <FaSearch size={28} className="opacity-30" />
+                      <p className="font-bold">No courses match your search.</p>
+                    </div>
+                  );
+                }
+
+                if (dragEnabled) {
+                  return (
+                    <Reorder.Group
+                      axis="y"
+                      values={filtered}
+                      onReorder={(newOrder) => {
+                        const ids = newOrder.map((c) => c.id);
+                        // merge reordered filtered list back into full courses list
+                        setCourses((prev) => {
+                          const rest = prev.filter((c) => !ids.includes(c.id));
+                          return [...newOrder, ...rest];
+                        });
+                      }}
+                      className="space-y-3"
+                    >
+                      {filtered.map((course) => (
+                        <Reorder.Item key={course.id} value={course} className="cursor-grab active:cursor-grabbing">
+                          <div className="flex items-center gap-4 rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+                            <FaGripVertical className="shrink-0 text-slate-300" size={18} />
+                            <img
+                              src={course.image_url}
+                              alt={course.title}
+                              className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-sm"
+                            />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-black text-slate-900">{course.title}</p>
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500">{course.category}</p>
+                            </div>
+                            <div className="flex shrink-0 gap-2">
+                              <button onClick={() => setEditingCourse(course)} className="rounded-xl p-2.5 text-slate-300 hover:bg-blue-50 hover:text-blue-600">
+                                <FaEdit size={14} />
+                              </button>
+                              <button onClick={() => deleteCourse(course.id)} className="rounded-xl p-2.5 text-slate-300 hover:bg-red-50 hover:text-red-500">
+                                <FaTrash size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </Reorder.Item>
+                      ))}
+                    </Reorder.Group>
+                  );
+                }
+
+                return (
+                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    {filtered.map((course, index) => (
+                      <Reveal key={course.id} index={index}>
+                        <div className="group relative flex flex-col rounded-[2rem] border border-blue-100 bg-white/90 p-5 shadow-sm backdrop-blur transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
+                          <div className="relative mb-4 h-44 overflow-hidden rounded-2xl shadow-md">
+                            <img src={course.image_url} alt={course.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-blue-950/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                            <div className="absolute right-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-sm backdrop-blur">
+                              {course.category}
+                            </div>
+                          </div>
+                          <div className="flex-1 px-1">
+                            <div className="mb-2 flex items-center gap-2">
+                              <span className="h-px w-6 bg-blue-600" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">{course.tag || "Academic"}</span>
+                            </div>
+                            <h3 className="mb-2 text-lg font-black text-slate-900 transition-colors group-hover:text-blue-600">{course.title}</h3>
+                            <p className="line-clamp-2 text-xs font-medium leading-relaxed text-slate-500">{course.description}</p>
+                          </div>
+                          <div className="mt-auto flex items-center justify-between border-t border-slate-50 px-1 pt-4">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                              <FaBookOpen className="text-blue-600" /> ID: {course.id}
+                            </div>
+                            <div className="flex gap-1">
+                              <button onClick={() => setEditingCourse(course)} className="rounded-xl p-2.5 text-slate-300 hover:bg-blue-50 hover:text-blue-600">
+                                <FaEdit size={15} />
+                              </button>
+                              <button onClick={() => deleteCourse(course.id)} className="rounded-xl p-2.5 text-slate-300 hover:bg-red-50 hover:text-red-600">
+                                <FaTrash size={15} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Reveal>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        </Reveal>
       </div>
     </div>
   );
