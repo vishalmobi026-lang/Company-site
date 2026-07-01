@@ -13,7 +13,7 @@ import {
   FaGripVertical
 } from "react-icons/fa";
 
-const API = "https://company-site-jrbr.onrender.com";
+const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
 const auth = (user) => ({ headers: { Authorization: `Bearer ${user?.access_token}` } });
 
 const defaults = [
@@ -977,20 +977,22 @@ const [newCat, setNewCat] = useState({
             {/* Scrollable course grid */}
             <div className="h-[520px] overflow-y-auto p-4 sm:p-6">
               {(() => {
-                const filtered = courses
+                let filtered = courses
                   .filter((c) => {
                     const q = searchQuery.toLowerCase();
                     const matchesSearch = c.title.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
                     const matchesCat = selectedCategory === "All" || c.category === selectedCategory;
                     return matchesSearch && matchesCat;
-                  })
-                  .sort((a, b) => {
-                    if (dragEnabled || sortOrder === "custom") return 0; // preserve custom/drag order
+                  });
+                  
+                if (!dragEnabled && sortOrder !== "custom") {
+                  filtered.sort((a, b) => {
                     if (sortOrder === "a-z") return a.title.localeCompare(b.title);
                     if (sortOrder === "z-a") return b.title.localeCompare(a.title);
                     if (sortOrder === "oldest") return a.id - b.id;
                     return b.id - a.id;
                   });
+                }
 
                 if (filtered.length === 0) {
                   return (
