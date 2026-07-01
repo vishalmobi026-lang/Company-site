@@ -136,7 +136,7 @@ export default function PricingManager() {
   const [confirm, setConfirm] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortOrder, setSortOrder] = useState("newest");
+  const [sortOrder, setSortOrder] = useState("custom");
   const [courseOrder, setCourseOrder] = useState([]);
   const [dragEnabled, setDragEnabled] = useState(false);
   const { user, isAuthenticated, logout } = useContext(AuthContext);
@@ -315,6 +315,16 @@ const [newCat, setNewCat] = useState({
       }
     },
   });
+
+  const saveCourseOrder = async () => {
+    try {
+      const payload = courses.map((c, idx) => ({ id: c.id, order_index: idx }));
+      await axios.put(`${API}/admin/courses/reorder`, payload, auth(user));
+      notify("success", "Course order updated successfully.");
+    } catch (err) {
+      handleApiError(err, "Failed to update course order.");
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -552,7 +562,7 @@ const [newCat, setNewCat] = useState({
                     style={{ borderColor: pricing.is_featured ? pricing.accent_color || "#3b82f6" : "#f1f5f9" }}
                     className={`group relative rounded-[2rem] border-2 bg-white p-5 sm:p-8 shadow-xl shadow-slate-200/40 transition-all duration-500 hover:-translate-y-1 ${
                       pricing.is_featured ? "ring-8 ring-blue-50/70" : "hover:border-slate-300"
-                    } ${pricing._disabled ? "opacity-50 grayscale" : ""}`}
+                    } ${pricing.is_disabled ? "opacity-50 grayscale" : ""}`}
                   >
                     {/* ── Slot Header: name + disable toggle ── */}
                     <div className="mb-4 flex items-start justify-between gap-2">
@@ -561,24 +571,24 @@ const [newCat, setNewCat] = useState({
                         <input
                           value={pricing.course_name}
                           onChange={(e) => updatePricing(index, "course_name", e.target.value)}
-                          disabled={pricing._disabled}
+                          disabled={pricing.is_disabled}
                           className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 font-black text-slate-800 shadow-inner outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed"
                         />
                       </div>
                       <button
-                        title={pricing._disabled ? "Enable slot" : "Disable slot"}
-                        onClick={() => updatePricing(index, "_disabled", !pricing._disabled)}
+                        title={pricing.is_disabled ? "Enable slot" : "Disable slot"}
+                        onClick={() => updatePricing(index, "is_disabled", !pricing.is_disabled)}
                         className={`mt-5 shrink-0 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-                          pricing._disabled
+                          pricing.is_disabled
                             ? "bg-red-50 text-red-500 hover:bg-red-100"
                             : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                         }`}
                       >
-                        {pricing._disabled ? "Off" : "On"}
+                        {pricing.is_disabled ? "Off" : "On"}
                       </button>
                     </div>
 
-                    {pricing._disabled && (
+                    {pricing.is_disabled && (
                       <p className="mb-4 rounded-xl bg-red-50 px-4 py-2 text-center text-xs font-bold text-red-400">
                         This slot is hidden from the home page pricing section.
                       </p>
@@ -594,7 +604,7 @@ const [newCat, setNewCat] = useState({
                           <input
                             value={pricing[field]}
                             onChange={(e) => updatePricing(index, field, e.target.value)}
-                            disabled={pricing._disabled}
+                            disabled={pricing.is_disabled}
                             className={`w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-mono font-bold ${color} shadow-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-50 disabled:cursor-not-allowed`}
                           />
                         </div>
@@ -606,7 +616,7 @@ const [newCat, setNewCat] = useState({
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            disabled={pricing._disabled}
+                            disabled={pricing.is_disabled}
                             onClick={() => {
                               const active = !pricing.is_featured;
                               updatePricing(index, "is_featured", active);
@@ -931,13 +941,20 @@ const [newCat, setNewCat] = useState({
                   onChange={(e) => setSortOrder(e.target.value)}
                   className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-bold text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
                 >
+                  <option value="custom">Custom Order</option>
                   <option value="newest">Newest</option>
                   <option value="oldest">Oldest</option>
                   <option value="a-z">A–Z</option>
                   <option value="z-a">Z–A</option>
                 </select>
                 <button
-                  onClick={() => setDragEnabled((p) => !p)}
+                  onClick={() => {
+                    if (dragEnabled) {
+                      saveCourseOrder();
+                      setSortOrder("custom");
+                    }
+                    setDragEnabled((p) => !p);
+                  }}
                   title="Toggle drag-and-drop reorder mode"
                   className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest transition-all ${
                     dragEnabled
@@ -968,7 +985,7 @@ const [newCat, setNewCat] = useState({
                     return matchesSearch && matchesCat;
                   })
                   .sort((a, b) => {
-                    if (dragEnabled) return 0; // preserve drag order
+                    if (dragEnabled || sortOrder === "custom") return 0; // preserve custom/drag order
                     if (sortOrder === "a-z") return a.title.localeCompare(b.title);
                     if (sortOrder === "z-a") return b.title.localeCompare(a.title);
                     if (sortOrder === "oldest") return a.id - b.id;
