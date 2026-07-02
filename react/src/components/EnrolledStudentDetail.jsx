@@ -410,11 +410,7 @@ export default function EnrolledStudentDetail() {
           </Reveal>
         )}
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600" />
-          </div>
-        ) : filteredEnrollments.length === 0 ? (
+        {!loading && filteredEnrollments.length === 0 ? (
           <Reveal>
             <div className="rounded-3xl border border-blue-100 bg-white/90 p-20 text-center shadow-xl shadow-blue-100/40 backdrop-blur">
               <FaUserGraduate className="mx-auto mb-4 text-7xl text-gray-200" />

@@ -263,14 +263,7 @@ export default function ProfessionalInquiries() {
           </div>
         </Reveal>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-32">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-cyan-600" />
-            <p className="mt-4 animate-pulse font-medium text-slate-500">
-              Loading professional emails...
-            </p>
-          </div>
-        ) : inquiries.length === 0 ? (
+        {!loading && inquiries.length === 0 ? (
           <Reveal>
             <div className="rounded-3xl border border-cyan-100 bg-white/90 p-20 text-center shadow-xl shadow-cyan-100/40 backdrop-blur">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-50">

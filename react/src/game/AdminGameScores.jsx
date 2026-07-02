@@ -199,12 +199,7 @@ export default function AdminGameScores() {
           </div>
         </Reveal>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-            <p className="text-slate-400 font-bold animate-pulse uppercase tracking-widest text-xs">Loading Secure Records...</p>
-          </div>
-        ) : filteredScores.length === 0 ? (
+        {!loading && filteredScores.length === 0 ? (
           <Reveal>
             <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-[2.5rem] p-20 text-center shadow-2xl shadow-blue-900/5">
               <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">

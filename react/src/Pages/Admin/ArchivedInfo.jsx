@@ -290,11 +290,7 @@ export default function ArchivedInfo() {
           </div>
         </Reveal>
 
-        {loading ? (
-          <div className="py-20 text-center font-bold uppercase tracking-widest text-blue-600 animate-pulse">
-            Loading Archive Vault...
-          </div>
-        ) : deletedContacts.length === 0 ? (
+        {!loading && deletedContacts.length === 0 ? (
           <Reveal>
             <div className="rounded-[3rem] border border-blue-100 bg-white/90 p-20 text-center shadow-xl shadow-blue-100/40 backdrop-blur">
               <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 text-slate-200">

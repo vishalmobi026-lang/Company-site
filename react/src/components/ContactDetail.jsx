@@ -75,11 +75,7 @@ export default function ContactDetail() {
           </div>
         )}
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : contacts.length === 0 ? (
+        {!loading && contacts.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
             <FaEnvelope className="text-gray-200 text-6xl mx-auto mb-4" />
             <p className="text-xl text-gray-400 font-medium">No messages found.</p>
