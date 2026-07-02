@@ -1,6 +1,6 @@
 
 import Lottie from "lottie-react";
-import loadingAnimation from "../assets/loading.json"; // Assuming this is where the lottie file is
+import loadingAnimation from "../Assets/loading.json"; // Assuming this is where the lottie file is
 
 // Fallback for Vite/ESM interop issues where default export is wrapped
 const LottieComponent = Lottie.default || Lottie;
