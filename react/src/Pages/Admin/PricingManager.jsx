@@ -146,7 +146,11 @@ export default function PricingManager() {
       logout();
       return;
     }
-    notify("error", err.response?.data?.detail || fallbackMessage);
+    let detail = err.response?.data?.detail;
+    if (typeof detail === 'object' && detail !== null) {
+      detail = JSON.stringify(detail);
+    }
+    notify("error", detail || fallbackMessage);
   };
 
   const [showAddCourse, setShowAddCourse] = useState(false);

@@ -22,6 +22,13 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(database.g
     db.refresh(new_course)
     return new_course
 
+@router.put("/admin/courses/reorder")
+def reorder_courses(courses: List[schemas.CourseReorder], db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
+    for course_data in courses:
+        db.query(models.Course).filter(models.Course.id == course_data.id).update({"order_index": course_data.order_index})
+    db.commit()
+    return {"detail": "Courses reordered"}
+
 @router.put("/admin/courses/{id}", response_model=schemas.CourseResponse)
 def update_course(id: int, course: schemas.CourseUpdate, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
     db_course = db.query(models.Course).filter(models.Course.id == id).first()
@@ -33,13 +40,6 @@ def update_course(id: int, course: schemas.CourseUpdate, db: Session = Depends(d
     db.commit()
     db.refresh(db_course)
     return db_course
-
-@router.put("/admin/courses/reorder")
-def reorder_courses(courses: List[schemas.CourseReorder], db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
-    for course_data in courses:
-        db.query(models.Course).filter(models.Course.id == course_data.id).update({"order_index": course_data.order_index})
-    db.commit()
-    return {"detail": "Courses reordered"}
 
 @router.delete("/admin/courses/{id}")
 def delete_course(id: int, db: Session = Depends(database.get_db), admin: models.User = Depends(get_admin_user)):
