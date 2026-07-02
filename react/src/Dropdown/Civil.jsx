@@ -89,7 +89,11 @@ function Civil() {
     const fetchCourses = async () => {
       try {
         const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
-        const res = await axios.get(`${API}/courses?category=Civil`);
+        // Resolve real category name from slug to match DB exactly
+        const catRes = await axios.get(`${API}/categories`);
+        const cat = catRes.data.find(c => c.slug === "civil");
+        const categoryName = cat ? cat.name : "Civil";
+        const res = await axios.get(`${API}/courses?category=${encodeURIComponent(categoryName)}`);
         const formatted = res.data.map(c => ({
           title: c.title,
           desc: c.description,

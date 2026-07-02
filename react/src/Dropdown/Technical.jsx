@@ -86,8 +86,11 @@ function Technical() {
     const fetchCourses = async () => {
       try {
         const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
-        const res = await axios.get(`${API}/courses?category=Technical`);
-        // Map backend fields to frontend props
+        // Resolve the real category name from the slug to match DB exactly
+        const catRes = await axios.get(`${API}/categories`);
+        const cat = catRes.data.find(c => c.slug === "it-technical");
+        const categoryName = cat ? cat.name : "IT / Technical";
+        const res = await axios.get(`${API}/courses?category=${encodeURIComponent(categoryName)}`);
         const formatted = res.data.map(c => ({
           title: c.title,
           desc: c.description,
@@ -103,6 +106,7 @@ function Technical() {
     };
     fetchCourses();
   }, []);
+
 
   return (
     <section className="relative min-h-screen bg-slate-950 text-white py-14 sm:py-16 px-4 sm:px-6 overflow-hidden">

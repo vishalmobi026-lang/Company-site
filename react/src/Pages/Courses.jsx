@@ -1,8 +1,9 @@
 import { FaCheckCircle, FaArrowRight, FaLayerGroup, FaLaptopCode, FaBriefcase, FaPaintBrush, FaCalculator, FaHardHat, FaCode } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import LoadingScreen from "../components/LoadingScreen";
 
 const CATEGORY_IMAGES = {
   "it / technical": "https://images.unsplash.com/photo-1518770660439-4636190af475",
@@ -33,6 +34,13 @@ export default function Courses() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+
+  // 1-second loader on every visit / reload
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -59,7 +67,24 @@ export default function Courses() {
     CATEGORY_TAGS[name?.toLowerCase()] || "Certificate Course";
 
   return (
+    <>
+      {/* Lottie loading screen — fades out after 1s */}
+      <AnimatePresence>
+        {showLoader && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[9999]"
+          >
+            <LoadingScreen />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     <section className="relative min-h-screen bg-slate-950 text-white py-16 px-4 sm:px-6 overflow-hidden">
+
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#38bdf8_1px,transparent_1px),linear-gradient(90deg,#38bdf8_1px,transparent_1px)] bg-[size:40px_40px] animate-[moveGrid_20s_linear_infinite]"></div>
 
       <div className="absolute w-[520px] h-[520px] bg-blue-500/20 blur-3xl rounded-full top-[-140px] left-[-130px]"></div>
@@ -151,7 +176,10 @@ export default function Courses() {
           </div>
       </div>
     </section>
+    </>
   );
 }
+//courses
+//courses are here
 //courses
 //courses are here
