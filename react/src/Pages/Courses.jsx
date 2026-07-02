@@ -37,7 +37,8 @@ export default function Courses() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("https://company-site-jrbr.onrender.com/categories");
+        const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
+        const res = await axios.get(`${API}/categories`);
         if (res.data) {
           setCategories(res.data);
         }
@@ -86,12 +87,7 @@ export default function Courses() {
           </p>
         </motion.div>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {categories.map((cat, index) => (
               <motion.div
                 key={cat.id}
@@ -153,7 +149,6 @@ export default function Courses() {
               </div>
             )}
           </div>
-        )}
       </div>
     </section>
   );

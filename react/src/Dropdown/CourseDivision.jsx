@@ -110,8 +110,9 @@ function CourseDivision() {
     const fetchCoursesAndCategory = async () => {
       try {
         setLoading(true);
+        const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
         // 1. Fetch categories to find the name for this slug
-        const catRes = await axios.get("https://company-site-jrbr.onrender.com/categories");
+        const catRes = await axios.get(`${API}/categories`);
         const currentCat = catRes.data.find(c => c.slug === categorySlug);
         
         if (currentCat) {
@@ -120,7 +121,7 @@ function CourseDivision() {
           // Note: Backend stores category name in 'category' field
           try {
             const res = await axios.get(
-              `https://company-site-jrbr.onrender.com/courses?category=${encodeURIComponent(currentCat.name)}`
+              `${API}/courses?category=${encodeURIComponent(currentCat.name)}`
             );
             if (res.data && res.data.length > 0) {
               const formatted = res.data.map(c => ({
@@ -192,11 +193,7 @@ function CourseDivision() {
           </p>
         </motion.div>
 
-        {loading ? (
-            <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
-            </div>
-        ) : courses.length === 0 ? (
+        {!loading && courses.length === 0 ? (
             <div className="text-center py-20 text-gray-400">
                 No courses found in this category yet. Check back soon!
             </div>

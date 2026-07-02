@@ -90,7 +90,8 @@ function NonTechnical() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get("https://company-site-jrbr.onrender.com/courses?category=NonTechnical");
+        const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
+        const res = await axios.get(`${API}/courses?category=NonTechnical`);
         const formatted = res.data.map(c => ({
           title: c.title,
           desc: c.description,

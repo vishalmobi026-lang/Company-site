@@ -338,16 +338,7 @@ const [newCat, setNewCat] = useState({
     );
   }
 
-  if (loading) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white">
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#2563eb_1px,transparent_1px),linear-gradient(90deg,#2563eb_1px,transparent_1px)] bg-[size:40px_40px]" />
-        <motion.div animate={{ scale: [1, 1.06, 1], opacity: [0.7, 1, 0.7] }} transition={{ duration: 1.5, repeat: Infinity }} className="relative z-10 font-black uppercase tracking-widest text-blue-700">
-          Initializing Management Portal...
-        </motion.div>
-      </div>
-    );
-  }
+  // Initializing screen removed to show UI without delay
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-white px-3 pb-20 pt-16 text-slate-900 selection:bg-blue-100 sm:px-6 sm:pt-24">
