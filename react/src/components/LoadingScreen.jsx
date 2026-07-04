@@ -18,30 +18,29 @@ export default function LoadingScreen() {
           style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
         />
 
-        {/* Logo badge: sits on top of the animation, centred, with a blue
-            background so the G-Tec mark is clearly legible */}
+        {/* Logo badge: uses the official G-TEC favicon so colours are exact */}
         <div
           style={{
             position: "relative",
             zIndex: 10,
-            width: 88,
-            height: 88,
+            width: 96,
+            height: 96,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #1a56db 0%, #0e3fa8 100%)",
-            boxShadow: "0 0 0 4px rgba(26,86,219,0.25), 0 4px 20px rgba(14,63,168,0.4)",
+            background: "#ffffff",
+            boxShadow: "0 0 0 3px rgba(26,86,219,0.3), 0 6px 24px rgba(0,0,0,0.18)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            overflow: "hidden",
           }}
         >
           <img
-            src="/logo.webp"
+            src="https://www.gteceducation.com/assets/img/favicon/favicon-100x100.png"
             alt="G-Tec Azhagiyamandapam"
             style={{
-              width: 64,
-              height: 64,
+              width: 88,
+              height: 88,
               objectFit: "contain",
-              filter: "brightness(0) invert(1)",  /* make the logo white on the blue bg */
               animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite",
             }}
           />
