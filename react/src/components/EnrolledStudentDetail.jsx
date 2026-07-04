@@ -15,6 +15,7 @@ import {
   FaSave,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import CourseLoadingSpinner from "./CourseLoadingSpinner";
 
 const API = "https://company-site-jrbr.onrender.com";
 
@@ -410,7 +411,11 @@ export default function EnrolledStudentDetail() {
           </Reveal>
         )}
 
-        {!loading && filteredEnrollments.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <CourseLoadingSpinner label="Fetching student enrollments..." />
+          </div>
+        ) : !loading && filteredEnrollments.length === 0 ? (
           <Reveal>
             <div className="rounded-3xl border border-blue-100 bg-white/90 p-20 text-center shadow-xl shadow-blue-100/40 backdrop-blur">
               <FaUserGraduate className="mx-auto mb-4 text-7xl text-gray-200" />
