@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import CourseLoadingSpinner from "../components/CourseLoadingSpinner";
 
 function CourseCard({ course, index, navigate }) {
   const [imageError, setImageError] = useState(false);
@@ -142,14 +143,20 @@ function Designing() {
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course, index) => (
-            <CourseCard
-              key={course.title}
-              course={course}
-              index={index}
-              navigate={navigate}
-            />
-          ))}
+          {loading ? (
+            <div className="col-span-full">
+              <CourseLoadingSpinner label="Loading Designing courses..." />
+            </div>
+          ) : (
+            courses.map((course, index) => (
+              <CourseCard
+                key={course.title}
+                course={course}
+                index={index}
+                navigate={navigate}
+              />
+            ))
+          )}
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaCheckCircle, FaArrowRight, FaLaptopCode, FaCode } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
+import CourseLoadingSpinner from "../components/CourseLoadingSpinner";
 
 const FALLBACK_COURSES = {
   "it / technical": [
@@ -193,7 +194,11 @@ function CourseDivision() {
           </p>
         </motion.div>
 
-        {!loading && courses.length === 0 ? (
+        {loading ? (
+          <div className="col-span-full">
+            <CourseLoadingSpinner label={`Loading ${categoryName || ""} courses...`} />
+          </div>
+        ) : !loading && courses.length === 0 ? (
             <div className="text-center py-20 text-gray-400">
                 No courses found in this category yet. Check back soon!
             </div>
