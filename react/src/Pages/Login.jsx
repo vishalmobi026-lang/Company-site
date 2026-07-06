@@ -11,7 +11,7 @@ import {
   FaUserShield,
   FaKey,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -139,6 +139,43 @@ export default function Login() {
           transition={{ duration: 0.7 }}
           className="relative w-full max-w-lg mx-auto lg:-translate-y-15 overflow-hidden rounded-[28px] border border-cyan-400/30 bg-white/5 backdrop-blur-xl shadow-2xl"
         >
+          {/* Auth loading overlay — sits inside the card */}
+          <AnimatePresence>
+            {loading && (
+              <motion.div
+                key="auth-loader"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-[28px] bg-slate-950/80 backdrop-blur-sm"
+              >
+                <style>{`
+                  @keyframes spin-cw  { to { transform: rotate(360deg);  } }
+                  @keyframes spin-ccw { to { transform: rotate(-360deg); } }
+                  .auth-outer { animation: spin-cw  2s linear infinite; }
+                  .auth-inner { animation: spin-ccw 1.5s linear infinite; }
+                `}</style>
+                <div className="relative flex items-center justify-center" style={{ width: 120, height: 120 }}>
+                  <div className="auth-outer absolute rounded-full border-4 border-transparent border-t-blue-400 border-b-cyan-400"
+                       style={{ width: 110, height: 110 }} />
+                  <div className="auth-inner absolute rounded-full border-4 border-transparent border-l-blue-500 border-r-indigo-400"
+                       style={{ width: 80, height: 80 }} />
+                  <div style={{
+                    width: 44, height: 44, borderRadius: "50%",
+                    background: "linear-gradient(135deg,#1a56db,#0e3fa8)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 0 0 2px rgba(26,86,219,0.4)",
+                  }}>
+                    <img src="/logo.webp" alt="G-Tec" style={{ width: 28, height: 28, objectFit: "contain" }} />
+                  </div>
+                </div>
+                <p className="mt-4 text-sm font-semibold tracking-wide text-cyan-300 animate-pulse">
+                  Verifying credentials...
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-900 via-cyan-400 to-blue-500"></div>
 
           <div className="border-b border-slate-800 bg-slate-950/60 px-6 py-4">

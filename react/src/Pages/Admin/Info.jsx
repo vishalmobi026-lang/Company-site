@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
+import CourseLoadingSpinner from "../../components/CourseLoadingSpinner";
 import {
   FaTrash,
   FaUser,
@@ -302,7 +303,11 @@ export default function Info() {
           </div>
         </Reveal>
 
-        {!loading && contacts.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <CourseLoadingSpinner label="Fetching contact inquiries..." />
+          </div>
+        ) : !loading && contacts.length === 0 ? (
           <Reveal>
             <div className="rounded-3xl border border-blue-100 bg-white/90 p-20 text-center shadow-xl shadow-blue-100/40 backdrop-blur">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-50">
