@@ -972,7 +972,11 @@ const [newCat, setNewCat] = useState({
 
             {/* Scrollable course grid */}
             <div className="h-[520px] overflow-y-auto p-4 sm:p-6">
-              {(() => {
+              {loading ? (
+                <div className="flex h-full items-center justify-center">
+                  <CourseLoadingSpinner label="Loading course catalog..." />
+                </div>
+              ) : (() => {
                 let filtered = courses
                   .filter((c) => {
                     const q = searchQuery.toLowerCase();
