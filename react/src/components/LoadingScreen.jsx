@@ -1,25 +1,49 @@
 
-import Lottie from "lottie-react";
-import loadingAnimation from "../Assets/loading.json";
-
-// Fallback for Vite/ESM interop issues where default export is wrapped
-const LottieComponent = Lottie.default || Lottie;
-
 export default function LoadingScreen() {
   return (
     <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[9999]">
+      <style>{`
+        @keyframes spin-clockwise {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes spin-counterclockwise {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(-360deg); }
+        }
+        @keyframes logo-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.06); }
+        }
+        .outer-ring {
+          animation: spin-clockwise 2s linear infinite;
+        }
+        .inner-ring {
+          animation: spin-counterclockwise 1.5s linear infinite;
+        }
+        .logo-badge {
+          animation: logo-pulse 2s ease-in-out infinite;
+        }
+      `}</style>
+
       {/* Outer wrapper: large enough so the spinning rings are never clipped */}
       <div className="relative flex items-center justify-center" style={{ width: 340, height: 340 }}>
 
-        {/* Lottie fills the full wrapper – no overflow hidden */}
-        <LottieComponent
-          animationData={loadingAnimation}
-          loop={true}
-          style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }}
+        {/* Outer spinner ring */}
+        <div
+          className="outer-ring absolute rounded-full border-4 border-transparent border-t-blue-600 border-b-cyan-500"
+          style={{ width: 220, height: 220, opacity: 0.85 }}
+        />
+
+        {/* Inner spinner ring */}
+        <div
+          className="inner-ring absolute rounded-full border-4 border-transparent border-l-blue-500 border-r-indigo-400"
+          style={{ width: 180, height: 180, opacity: 0.7 }}
         />
 
         {/* Logo badge: /logo.webp on blue background */}
         <div
+          className="logo-badge"
           style={{
             position: "relative",
             zIndex: 10,
@@ -41,7 +65,6 @@ export default function LoadingScreen() {
               width: 72,
               height: 72,
               objectFit: "contain",
-              animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite",
             }}
           />
         </div>
