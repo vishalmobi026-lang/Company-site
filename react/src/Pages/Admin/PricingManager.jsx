@@ -12,6 +12,7 @@ import {
   FaLayerGroup, FaBookOpen, FaCrown, FaEdit, FaSearch,
   FaGripVertical
 } from "react-icons/fa";
+import CourseLoadingSpinner from "../../components/CourseLoadingSpinner";
 
 const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
 const auth = (user) => ({ headers: { Authorization: `Bearer ${user?.access_token}` } });
