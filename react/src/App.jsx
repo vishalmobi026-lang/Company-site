@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -27,92 +29,115 @@ import CourseDivision from "./Dropdown/CourseDivision";
 
 function App() {
   const { isAuthenticated } = useContext(AuthContext);
+  const [showLoader, setShowLoader] = useState(true);
+
+  // 1-second loader on first visit / reload of the site
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <Navbar />
+    <>
+      <AnimatePresence>
+        {showLoader && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-[9999]"
+          >
+            <LoadingScreen />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/courses/:categorySlug" element={<CourseDivision />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/enroll" element={<Enroll />} />
+      <BrowserRouter>
+        <ScrollToTop />
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+          <Navbar />
 
-            {/* Admin Protected Routes */}
-            <Route
-              path="/admin/enrollments"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                  <EnrolledStudentDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/contacts"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                  <Info />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/contacts/archived"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <ArchivedInfo />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/contacts/professional"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                  <ProfessionalInquiries />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/pricing"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <PricingManager />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/coupon-decoder"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                  <AdminCouponDecoder />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/game-scores"
-              element={
-                <ProtectedRoute allowedRoles={["admin", "staff"]}>
-                  <AdminGameScores />
-                </ProtectedRoute>
-              }
-            />
+          <div style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:categorySlug" element={<CourseDivision />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/enroll" element={<Enroll />} />
+
+              {/* Admin Protected Routes */}
+              <Route
+                path="/admin/enrollments"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                    <EnrolledStudentDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/contacts"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                    <Info />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/contacts/archived"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <ArchivedInfo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/contacts/professional"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                    <ProfessionalInquiries />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/pricing"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <PricingManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/coupon-decoder"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                    <AdminCouponDecoder />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/game-scores"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "staff"]}>
+                    <AdminGameScores />
+                  </ProtectedRoute>
+                }
+              />
 
 
-          </Routes>
+            </Routes>
 
+          </div>
+
+          <Footer />
+          <ChatWidget />
+          <GameWidget />
         </div>
 
-        <Footer />
-        <ChatWidget />
-        <GameWidget />
-      </div>
-
-    </BrowserRouter>
+      </BrowserRouter>
+    </>
   );
 }
 
