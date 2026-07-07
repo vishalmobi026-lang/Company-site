@@ -19,6 +19,7 @@ import {
   FaSave
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import CourseLoadingSpinner from "../components/CourseLoadingSpinner";
 
 const API = "https://company-site-jrbr.onrender.com";
 
@@ -199,7 +200,11 @@ export default function AdminGameScores() {
           </div>
         </Reveal>
 
-        {!loading && filteredScores.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <CourseLoadingSpinner label="Fetching scholarship results..." />
+          </div>
+        ) : !loading && filteredScores.length === 0 ? (
           <Reveal>
             <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-[2.5rem] p-20 text-center shadow-2xl shadow-blue-900/5">
               <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">

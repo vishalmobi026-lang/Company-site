@@ -12,7 +12,6 @@ import {
   FaLayerGroup, FaBookOpen, FaCrown, FaEdit, FaSearch,
   FaGripVertical
 } from "react-icons/fa";
-import CourseLoadingSpinner from "../../components/CourseLoadingSpinner";
 
 const API = import.meta.env.DEV ? "http://localhost:8000" : "https://company-site-jrbr.onrender.com";
 const auth = (user) => ({ headers: { Authorization: `Bearer ${user?.access_token}` } });
@@ -973,8 +972,9 @@ const [newCat, setNewCat] = useState({
             {/* Scrollable course grid */}
             <div className="h-[520px] overflow-y-auto p-4 sm:p-6">
               {loading ? (
-                <div className="flex h-full items-center justify-center">
-                  <CourseLoadingSpinner label="Loading course catalog..." />
+                <div className="flex h-full flex-col items-center justify-center gap-4 py-20">
+                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+                  <p className="text-sm font-bold text-slate-500">Loading course catalog...</p>
                 </div>
               ) : (() => {
                 let filtered = courses

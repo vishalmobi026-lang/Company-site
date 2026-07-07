@@ -114,7 +114,7 @@ function Navbar() {
             </div>
 
             <a
-              href="https://g-tec-nagercoil.vercel.app"
+              href="www.gtec-nagercoil-azhagiyamandapam.com"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:block text-xs text-gray-600 mt-1 hover:text-blue-600"
@@ -147,11 +147,10 @@ function Navbar() {
             onMouseLeave={() => setOpenCourses(false)}
           >
             <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                location.pathname.startsWith("/courses")
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname.startsWith("/courses")
                   ? "text-blue-600 bg-blue-50/50"
                   : "hover:text-blue-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               <span className="font-semibold" onClick={() => navigate("/courses")}>Courses</span>
               <FaChevronDown className={`text-[10px] transition-transform duration-300 ${openCourses ? 'rotate-180' : ''}`} />
@@ -198,11 +197,10 @@ function Navbar() {
               onMouseLeave={() => setOpenAdmin(false)}
             >
               <div
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
-                  location.pathname.startsWith("/admin")
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${location.pathname.startsWith("/admin")
                     ? "text-blue-600 bg-blue-50/50"
                     : "hover:text-blue-600 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <FaUserShield className="text-sm" />
                 <span className="font-semibold">
@@ -220,24 +218,24 @@ function Navbar() {
                     className="absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50"
                   >
                     <div className="bg-gray-900 text-white p-2 rounded-[1.5rem] w-80 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-gray-800 backdrop-blur-xl">
-                      
+
                       {user?.user?.role === "admin" ? (
                         <>
                           {/* FULL ADMIN VIEW */}
                           <div className="p-3">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Records & Results</p>
                             <div className="space-y-1">
-                              <AdminLink 
-                                icon={<FaUserGraduate />} 
-                                label="Student Enrollments" 
-                                path="/admin/enrollments" 
+                              <AdminLink
+                                icon={<FaUserGraduate />}
+                                label="Student Enrollments"
+                                path="/admin/enrollments"
                                 active={location.pathname === "/admin/enrollments"}
                                 onClick={() => { navigate("/admin/enrollments"); setOpenAdmin(false); }}
                               />
-                              <AdminLink 
-                                icon={<FaTrophy />} 
-                                label="Scholarship Results" 
-                                path="/admin/game-scores" 
+                              <AdminLink
+                                icon={<FaTrophy />}
+                                label="Scholarship Results"
+                                path="/admin/game-scores"
                                 active={location.pathname === "/admin/game-scores"}
                                 onClick={() => { navigate("/admin/game-scores"); setOpenAdmin(false); }}
                               />
@@ -249,24 +247,24 @@ function Navbar() {
                           <div className="p-3">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Communications</p>
                             <div className="space-y-1">
-                              <AdminLink 
-                                icon={<FaEnvelopeOpenText />} 
-                                label="Inbox Inquiries" 
-                                path="/admin/contacts" 
+                              <AdminLink
+                                icon={<FaEnvelopeOpenText />}
+                                label="Inbox Inquiries"
+                                path="/admin/contacts"
                                 active={location.pathname === "/admin/contacts"}
                                 onClick={() => { navigate("/admin/contacts"); setOpenAdmin(false); }}
                               />
-                              <AdminLink 
-                                icon={<FaBriefcase />} 
-                                label="Professional Emails" 
-                                path="/admin/contacts/professional" 
+                              <AdminLink
+                                icon={<FaBriefcase />}
+                                label="Professional Emails"
+                                path="/admin/contacts/professional"
                                 active={location.pathname === "/admin/contacts/professional"}
                                 onClick={() => { navigate("/admin/contacts/professional"); setOpenAdmin(false); }}
                               />
-                              <AdminLink 
-                                icon={<FaHistory />} 
-                                label="Archived Inquiries" 
-                                path="/admin/contacts/archived" 
+                              <AdminLink
+                                icon={<FaHistory />}
+                                label="Archived Inquiries"
+                                path="/admin/contacts/archived"
                                 active={location.pathname === "/admin/contacts/archived"}
                                 onClick={() => { navigate("/admin/contacts/archived"); setOpenAdmin(false); }}
                               />
@@ -278,17 +276,17 @@ function Navbar() {
                           <div className="p-3">
                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Tools & Pricing</p>
                             <div className="space-y-1">
-                              <AdminLink 
-                                icon={<FaTicketAlt />} 
-                                label="Verify Coupon" 
-                                path="/admin/coupon-decoder" 
+                              <AdminLink
+                                icon={<FaTicketAlt />}
+                                label="Verify Coupon"
+                                path="/admin/coupon-decoder"
                                 active={location.pathname === "/admin/coupon-decoder"}
                                 onClick={() => { navigate("/admin/coupon-decoder"); setOpenAdmin(false); }}
                               />
-                              <AdminLink 
-                                icon={<FaTags />} 
-                                label="Course Management" 
-                                path="/admin/pricing" 
+                              <AdminLink
+                                icon={<FaTags />}
+                                label="Course Management"
+                                path="/admin/pricing"
                                 active={location.pathname === "/admin/pricing"}
                                 onClick={() => { navigate("/admin/pricing"); setOpenAdmin(false); }}
                               />
@@ -300,17 +298,17 @@ function Navbar() {
                         <div className="p-3">
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Records & Results</p>
                           <div className="space-y-1">
-                            <AdminLink 
-                              icon={<FaUserGraduate />} 
-                              label="Student Enrollments" 
-                              path="/admin/enrollments" 
+                            <AdminLink
+                              icon={<FaUserGraduate />}
+                              label="Student Enrollments"
+                              path="/admin/enrollments"
                               active={location.pathname === "/admin/enrollments"}
                               onClick={() => { navigate("/admin/enrollments"); setOpenAdmin(false); }}
                             />
-                            <AdminLink 
-                              icon={<FaTrophy />} 
-                              label="Scholarship Results" 
-                              path="/admin/game-scores" 
+                            <AdminLink
+                              icon={<FaTrophy />}
+                              label="Scholarship Results"
+                              path="/admin/game-scores"
                               active={location.pathname === "/admin/game-scores"}
                               onClick={() => { navigate("/admin/game-scores"); setOpenAdmin(false); }}
                             />
@@ -320,10 +318,10 @@ function Navbar() {
 
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 px-2">Inquiry Portal</p>
                           <div className="space-y-1">
-                            <AdminLink 
-                              icon={<FaEnvelopeOpenText />} 
-                              label="Inbox Inquiries" 
-                              path="/admin/contacts" 
+                            <AdminLink
+                              icon={<FaEnvelopeOpenText />}
+                              label="Inbox Inquiries"
+                              path="/admin/contacts"
                               active={location.pathname === "/admin/contacts"}
                               onClick={() => { navigate("/admin/contacts"); setOpenAdmin(false); }}
                             />
@@ -344,8 +342,8 @@ function Navbar() {
           <li
             onClick={() => navigate("/about")}
             className={`cursor-pointer ${location.pathname === "/about"
-                ? "text-blue-600"
-                : "hover:text-blue-600"
+              ? "text-blue-600"
+              : "hover:text-blue-600"
               }`}
           >
             About us
@@ -355,8 +353,8 @@ function Navbar() {
           <li
             onClick={() => navigate("/contact")}
             className={`cursor-pointer ${location.pathname === "/contact"
-                ? "text-blue-600"
-                : "hover:text-blue-600"
+              ? "text-blue-600"
+              : "hover:text-blue-600"
               }`}
           >
             Contact us
@@ -445,9 +443,9 @@ function Navbar() {
 
                   >
                     {categories.map(cat => (
-                      <div 
+                      <div
                         key={cat.id}
-                        className="cursor-pointer hover:text-blue-700 py-1" 
+                        className="cursor-pointer hover:text-blue-700 py-1"
                         onClick={() => handleMobileNavigate(`/courses/${cat.slug}`)}
                       >
                         {cat.name}
@@ -599,11 +597,10 @@ function AdminLink({ icon, label, onClick, active }) {
   return (
     <div
       onClick={onClick}
-      className={`group flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer ${
-        active 
-          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+      className={`group flex items-center gap-3 p-2.5 rounded-xl transition-all cursor-pointer ${active
+          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
           : "hover:bg-blue-600 text-gray-300 hover:text-white"
-      }`}
+        }`}
     >
       <div className={`text-sm transition-transform group-hover:scale-110 ${active ? 'text-white' : 'text-gray-500 group-hover:text-white'}`}>
         {icon}
