@@ -114,7 +114,7 @@ function Navbar() {
             </div>
 
             <a
-              href="www.gtec-nagercoil-azhagiyamandapam.com"
+              href="https://www.gtec-nagercoil-azhagiyamandapam.com"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:block text-xs text-gray-600 mt-1 hover:text-blue-600"
