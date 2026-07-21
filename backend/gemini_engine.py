@@ -19,7 +19,8 @@ def generate_ai_questions(topic):
     Generate 10 MCQ quiz questions about {topic}.
     
     IMPORTANT RESTRICTIONS:
-    - Keep the questions very short and sweet (maximum 10-12 words).
+    - Questions MUST be under 35 words. Clear and easy to read.
+    - Avoid very long wordy questions. Be concise but still meaningful.
     - Keep the options very brief (maximum 1-3 words). This is strictly required because they will be displayed on small animated game objects.
 
     Return ONLY JSON.
