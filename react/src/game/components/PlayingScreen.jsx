@@ -197,39 +197,42 @@ export default function PlayingScreen({ ctx }) {
                           width: '25%'
                         }}>
 
-                        {!ent.revealed && (
+                        {!ent.revealed && (() => {
+                          const safeId = ent.id.toString().replace('.', '-');
+                          return (
                           <div
                             className="relative flex items-center justify-center transition-transform hover:scale-110 duration-300"
                             style={{ width: `${asteroidMobile}px`, height: `${asteroidMobile}px` }}
                           >
                             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" style={{ filter: `drop-shadow(0 8px 20px rgba(${theme.glow},0.5)) drop-shadow(0 0 8px rgba(${theme.glow},0.3))` }}>
                               <defs>
-                                <radialGradient id={`aGrad-${ent.id}`} cx="35%" cy="35%" r="65%">
+                                <radialGradient id={`aGrad-${safeId}`} cx="35%" cy="35%" r="65%">
                                   <stop offset="0%" stopColor="#6b6b6b" />
                                   <stop offset="50%" stopColor="#3a3a3a" />
                                   <stop offset="100%" stopColor="#1a1a1a" />
                                 </radialGradient>
-                                <filter id={`craterF-${ent.id}`}>
+                                <filter id={`craterF-${safeId}`}>
                                   <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.8" />
                                 </filter>
                               </defs>
-                              <path d="M50 2 C70 4, 90 20, 96 45 C100 70, 85 92, 55 97 C25 99, 4 75, 2 50 C0 25, 20 4, 50 2 Z" fill={`url(#aGrad-${ent.id})`} />
+                              <path d="M50 2 C70 4, 90 20, 96 45 C100 70, 85 92, 55 97 C25 99, 4 75, 2 50 C0 25, 20 4, 50 2 Z" fill={`url(#aGrad-${safeId})`} />
                               {/* Highlight edge */}
                               <path d="M50 2 C70 4, 90 20, 96 45" stroke="rgba(255,255,255,0.15)" strokeWidth="2" fill="none" />
                               {/* Craters */}
-                              <circle cx="28" cy="35" r="10" fill="#141414" filter={`url(#craterF-${ent.id})`} opacity="0.85" />
+                              <circle cx="28" cy="35" r="10" fill="#141414" filter={`url(#craterF-${safeId})`} opacity="0.85" />
                               <circle cx="32" cy="30" r="4" fill="#0a0a0a" opacity="0.6" />
-                              <circle cx="75" cy="55" r="13" fill="#141414" filter={`url(#craterF-${ent.id})`} opacity="0.75" />
+                              <circle cx="75" cy="55" r="13" fill="#141414" filter={`url(#craterF-${safeId})`} opacity="0.75" />
                               <circle cx="70" cy="52" r="5" fill="#0a0a0a" opacity="0.5" />
-                              <circle cx="45" cy="82" r="8" fill="#141414" filter={`url(#craterF-${ent.id})`} opacity="0.85" />
-                              <circle cx="80" cy="25" r="5" fill="#141414" filter={`url(#craterF-${ent.id})`} opacity="0.65" />
-                              <circle cx="18" cy="65" r="6" fill="#141414" filter={`url(#craterF-${ent.id})`} opacity="0.75" />
+                              <circle cx="45" cy="82" r="8" fill="#141414" filter={`url(#craterF-${safeId})`} opacity="0.85" />
+                              <circle cx="80" cy="25" r="5" fill="#141414" filter={`url(#craterF-${safeId})`} opacity="0.65" />
+                              <circle cx="18" cy="65" r="6" fill="#141414" filter={`url(#craterF-${safeId})`} opacity="0.75" />
                             </svg>
                             <span className="relative z-10 text-sm sm:text-base md:text-xl font-black text-white text-center px-2 sm:px-5 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                               {ent.text}
                             </span>
                           </div>
-                        )}
+                          );
+                        })()}
 
                         {ent.revealed ? (
                           ent.isCorrect ? (
