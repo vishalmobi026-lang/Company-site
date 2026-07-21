@@ -49,27 +49,19 @@ export default function PlayingScreen({ ctx }) {
                     {currentQuestion && (
                       <motion.div
                         initial={{ y: -20, opacity: 0, filter: "blur(5px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: -20, opacity: 0, filter: "blur(5px)" }} transition={{ duration: 0.5, ease: smoothEase }}
-                        className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-3xl p-5 text-center shadow-[0_0_40px_rgba(34,211,238,0.3)] w-full relative overflow-hidden animate-[hudScan_10s_linear_infinite]"
+                        className="relative w-[90%] max-w-3xl mx-auto"
                       >
-                        {/* Glowing corner brackets */}
-                        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
-                        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
-                        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
-                        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+                        {/* Floating Question Badge */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2d1b4e] border border-[#58358c] text-white text-[9px] font-black uppercase tracking-widest px-4 py-1 rounded-full flex items-center gap-2 shadow-[0_0_15px_rgba(88,53,140,0.8)] z-10">
+                          <Sparkles size={10} className="text-[#a855f7]" /> QUESTION
+                        </div>
 
-                        {/* Faint Grid Scanline Overlay */}
-                        <div className="absolute inset-0 bg-[linear-gradient(transparent_96%,rgba(34,211,238,0.08)_96%)] bg-[length:100%_8px] opacity-40 pointer-events-none"></div>
-
-                        {/* Telemetry info in tiny fonts */}
-                        <div className="absolute top-2 left-6 font-mono text-[8px] text-cyan-400/60 uppercase tracking-widest">Target Node ID: GTEC_98</div>
-                        <div className="absolute top-2 right-6 font-mono text-[8px] text-cyan-400/60 uppercase tracking-widest">Link Rate: 99.8%</div>
-
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-60"></div>
-                        <p className="text-cyan-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 flex items-center justify-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                          <Sparkles size={12} className="text-cyan-400" /> Target Acquired
-                        </p>
-                        <h3 className="text-xl md:text-2xl font-black text-white leading-tight mt-2 px-4 select-text">{currentQuestion}</h3>
+                        {/* Main Purple Capsule Container */}
+                        <div className="bg-gradient-to-r from-[#170f2d] via-[#241342] to-[#170f2d] backdrop-blur-xl border border-[#4c2878] rounded-[3rem] py-6 px-10 text-center shadow-[0_0_40px_rgba(76,40,120,0.6)] w-full relative overflow-hidden">
+                          {/* Inner Top Purple Glow */}
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#a855f7] to-transparent opacity-50"></div>
+                          <h3 className="text-xl md:text-2xl lg:text-3xl font-black text-white leading-tight mt-1 px-4 select-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{currentQuestion}</h3>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -87,20 +79,16 @@ export default function PlayingScreen({ ctx }) {
                   {currentQuestion && (
                     <motion.div
                       initial={{ y: -20, opacity: 0, filter: "blur(5px)" }} animate={{ y: 0, opacity: 1, filter: "blur(0px)" }} exit={{ y: -20, opacity: 0, filter: "blur(5px)" }} transition={{ duration: 0.5, ease: smoothEase }}
-                      className="bg-[#050917]/95 backdrop-blur-xl border-2 border-cyan-400/80 rounded-2xl p-3 sm:p-4 text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] relative overflow-hidden"
+                      className="relative w-full"
                     >
-                      {/* Glowing corner brackets */}
-                      <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
-                      <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
-                      <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
-                      <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#2d1b4e] border border-[#58358c] text-white text-[7px] sm:text-[8px] font-black uppercase tracking-widest px-3 py-0.5 rounded-full flex items-center gap-1.5 shadow-[0_0_10px_rgba(88,53,140,0.8)] z-10">
+                        <Sparkles size={8} className="text-[#a855f7]" /> QUESTION
+                      </div>
 
-                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 opacity-60"></div>
-                      <p className="text-cyan-400 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] mb-1 flex items-center justify-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                        <Sparkles size={10} /> Target Acquired
-                      </p>
-                      <h3 className="text-sm sm:text-base font-black text-white leading-snug mt-1 px-1 select-text">{currentQuestion}</h3>
+                      <div className="bg-gradient-to-r from-[#170f2d] via-[#241342] to-[#170f2d] backdrop-blur-xl border border-[#4c2878] rounded-[2rem] py-4 px-6 text-center shadow-[0_0_30px_rgba(76,40,120,0.6)] w-full relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#a855f7] to-transparent opacity-50"></div>
+                        <h3 className="text-base sm:text-lg font-black text-white leading-snug mt-1 px-1 select-text drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">{currentQuestion}</h3>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -155,18 +143,40 @@ export default function PlayingScreen({ ctx }) {
                         }}>
 
                         {!ent.revealed && (
-                          <div className="relative overflow-hidden bg-[#050917]/95 border-2 border-cyan-400/70 p-3 md:p-6 rounded-2xl text-white font-bold text-center shadow-[0_0_30px_rgba(34,211,238,0.25)] backdrop-blur-md flex items-center justify-center min-h-[60px] md:min-h-[100px] w-full break-words transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_40px_rgba(34,211,238,0.45)]">
-                            {/* Futuristic Tech Corner Brackets */}
-                            <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-cyan-400/80"></div>
-                            <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-cyan-400/80"></div>
-                            <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-cyan-400/80"></div>
-                            <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-cyan-400/80"></div>
+                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-36 md:h-36 flex items-center justify-center transition-transform hover:scale-110 duration-300">
+                            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]">
+                              <defs>
+                                <radialGradient id="asteroidGrad" cx="35%" cy="35%" r="65%">
+                                  <stop offset="0%" stopColor="#4a5568" />
+                                  <stop offset="60%" stopColor="#1e293b" />
+                                  <stop offset="100%" stopColor="#0f172a" />
+                                </radialGradient>
+                                <filter id="craterShadow">
+                                  <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.7" />
+                                </filter>
+                                <filter id="asteroidHighlight">
+                                  <feDropShadow dx="-2" dy="-2" stdDeviation="2" floodColor="#cbd5e1" floodOpacity="0.2" />
+                                </filter>
+                              </defs>
+                              
+                              {/* Irregular Asteroid Shape */}
+                              <path d="M50 2 C70 4, 90 20, 96 45 C100 70, 85 92, 55 97 C25 99, 4 75, 2 50 C0 25, 20 4, 50 2 Z" fill="url(#asteroidGrad)" filter="url(#asteroidHighlight)" />
+                              
+                              {/* Craters */}
+                              <circle cx="28" cy="35" r="10" fill="#0f172a" filter="url(#craterShadow)" opacity="0.8" />
+                              <circle cx="32" cy="30" r="4" fill="#020617" opacity="0.5" />
 
-                            {/* Faint Scanline Grid Overlay */}
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,24,45,0)_95%,rgba(34,211,238,0.15)_95%)] bg-[length:100%_6px] opacity-35 pointer-events-none"></div>
+                              <circle cx="75" cy="55" r="14" fill="#0f172a" filter="url(#craterShadow)" opacity="0.7" />
+                              <circle cx="70" cy="52" r="6" fill="#020617" opacity="0.4" />
 
-                            <span className="relative z-10 text-[10px] leading-tight sm:text-xs md:text-lg md:leading-snug bg-gradient-to-b from-white to-slate-200 bg-clip-text text-transparent drop-shadow-sm select-text">{ent.text}</span>
-                          </div>
+                              <circle cx="45" cy="82" r="8" fill="#0f172a" filter="url(#craterShadow)" opacity="0.8" />
+                              <circle cx="80" cy="25" r="6" fill="#0f172a" filter="url(#craterShadow)" opacity="0.6" />
+                              <circle cx="18" cy="65" r="7" fill="#0f172a" filter="url(#craterShadow)" opacity="0.7" />
+                            </svg>
+                        {!ent.revealed && (
+                          <span className="relative z-10 text-[9px] sm:text-xs md:text-base font-black text-white text-center px-2 sm:px-4 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                            {ent.text}
+                          </span>
                         )}
 
                         {ent.revealed ? (
@@ -218,7 +228,7 @@ export default function PlayingScreen({ ctx }) {
                         ease: "easeInOut"
                       }}
                       style={{ willChange: "transform", transform: "translateZ(0)" }}
-                      className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
+                      className="relative w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 flex items-center justify-center"
                     >
                       {/* SHIP BODY - PROFESSIONAL DESIGN */}
                       <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-10 drop-shadow-[0_15px_25px_rgba(34,211,238,0.4)]">
@@ -349,8 +359,8 @@ export default function PlayingScreen({ ctx }) {
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute left-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
 
-                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
-                    <ChevronLeft size={44} className="text-cyan-500 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:-translate-x-2 transition-all duration-300" />
+                  <div className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 md:gap-4">
+                    <ChevronLeft size={32} className="text-cyan-500 md:w-11 md:h-11 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:-translate-x-2 transition-all duration-300" />
                     <div className="flex flex-col items-start text-left">
                       <span className="hidden md:block text-[10px] text-cyan-500/50 font-mono font-bold uppercase tracking-widest group-hover:text-cyan-400/80 transition-colors">System Override</span>
                       <span className="hidden md:block text-cyan-500/80 font-mono font-black tracking-[0.2em] uppercase text-sm group-hover:text-cyan-300 transition-colors">Port Thrust</span>
@@ -372,12 +382,12 @@ export default function PlayingScreen({ ctx }) {
                   <div className="absolute inset-0 bg-gradient-to-l from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute right-0 top-0 w-1.5 h-full bg-gradient-to-b from-cyan-300 to-blue-600 opacity-50 group-hover:opacity-100 group-hover:shadow-[0_0_20px_#22d3ee] transition-all duration-300" />
 
-                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
+                  <div className="relative z-10 flex items-center justify-center gap-1 sm:gap-2 md:gap-4">
                     <div className="flex flex-col items-end text-right">
                       <span className="hidden md:block text-[10px] text-cyan-500/50 font-mono font-bold uppercase tracking-widest group-hover:text-cyan-400/80 transition-colors">System Override</span>
                       <span className="hidden md:block text-cyan-500/80 font-mono font-black tracking-[0.2em] uppercase text-sm group-hover:text-cyan-300 transition-colors">Starboard</span>
                     </div>
-                    <ChevronRight size={44} className="text-cyan-500 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:translate-x-2 transition-all duration-300" />
+                    <ChevronRight size={32} className="text-cyan-500 md:w-11 md:h-11 group-hover:text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.3)] group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] group-hover:translate-x-2 transition-all duration-300" />
                   </div>
 
                   <div className="absolute top-3 left-3 flex gap-1 opacity-20 group-hover:opacity-100 transition-opacity duration-500">

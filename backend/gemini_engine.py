@@ -17,6 +17,10 @@ def generate_ai_questions(topic):
 
     prompt = f"""
     Generate 10 MCQ quiz questions about {topic}.
+    
+    IMPORTANT RESTRICTIONS:
+    - Keep the questions very short and sweet (maximum 10-12 words).
+    - Keep the options very brief (maximum 1-3 words). This is strictly required because they will be displayed on small animated game objects.
 
     Return ONLY JSON.
 

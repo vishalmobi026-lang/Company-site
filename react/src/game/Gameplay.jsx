@@ -110,12 +110,15 @@ export default function NeonStrikeGame({ onClose }) {
       .catch((err) => console.error("Failed to fetch categories:", err));
   }, []);
 
-  // Lock body scroll when overlay is open
+  // Lock body scroll when overlay is open and cleanup game loop on unmount
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = originalStyle;
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
     };
   }, []);
 
@@ -230,7 +233,8 @@ export default function NeonStrikeGame({ onClose }) {
     stateRef.current = {
       lane: 1, score: 0, lives: 3, combo: 1, speed: 0.35, entities: [],
       flashTimer: 0, frame: 0, questions: questionsToPlay, qIndex: 0,
-      isQuestionActive: false, spawnTimer: 166, correctCount: 0
+      isQuestionActive: false, spawnTimer: 50, correctCount: 0,
+      isEnded: false
     };
 
     setCorrectCount(0);
@@ -238,6 +242,7 @@ export default function NeonStrikeGame({ onClose }) {
     setPlayerLane(1);
     
     const loop = (time) => {
+      if (stateRef.current.isEnded) return;
       const state = stateRef.current;
       if (!state.lastTick) state.lastTick = time;
       const delta = time - state.lastTick;
@@ -246,7 +251,9 @@ export default function NeonStrikeGame({ onClose }) {
         gameTick();
         state.lastTick = time - (delta % 30);
       }
-      gameLoopRef.current = requestAnimationFrame(loop);
+      if (!stateRef.current.isEnded) {
+        gameLoopRef.current = requestAnimationFrame(loop);
+      }
     };
     gameLoopRef.current = requestAnimationFrame(loop);
   };
@@ -326,7 +333,7 @@ export default function NeonStrikeGame({ onClose }) {
         if (state.qIndex >= state.questions.length) state.qIndex = 0;
         setCurrentQuestion(state.questions[state.qIndex].q);
 
-        state.spawnTimer = 166;
+        state.spawnTimer = 50;
       }, 800);
     }
 
@@ -352,6 +359,8 @@ export default function NeonStrikeGame({ onClose }) {
   };
 
   const endGame = async () => {
+    if (stateRef.current.isEnded) return;
+    stateRef.current.isEnded = true;
     cancelAnimationFrame(gameLoopRef.current);
 
     const finalScore = stateRef.current.score;

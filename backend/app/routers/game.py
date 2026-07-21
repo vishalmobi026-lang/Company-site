@@ -2,14 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 from typing import List
-import requests
 import urllib3
+import threading
 from app.db import models, database
 from app.schemas import schemas
 from app.core.security import get_admin_user, get_staff_or_admin_user
 from gemini_engine import generate_ai_questions
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Global lock to prevent concurrent Gemini API generation
+ai_generation_lock = threading.Lock()
 
 router = APIRouter()
 
@@ -72,53 +75,36 @@ def get_pincode_info(pincode: str):
 @router.get("/generate-ai-questions")
 def generate_questions_api(topic: str, db: Session = Depends(database.get_db)):
     existing = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).count()
-    if existing > 50:
-        return {"message": "Questions already exist"}
-    try:
-        ai_questions = generate_ai_questions(topic)
-    except Exception as e:
-        from fastapi.responses import JSONResponse
-        return JSONResponse(status_code=500, content={"error": str(e), "message": "Failed to generate questions. Please try again later."})
-    for q in ai_questions:
-        question = models.AIQuestion(
-            topic=topic,
-            question=q["question"],
-            option1=q["options"][0],
-            option2=q["options"][1],
-            option3=q["options"][2],
-            option4=q["options"][3],
-            correct=q["correct"]
-        )
-        db.add(question)
-    db.commit()
-    return {"success": True}
+    if existing >= 500:
+        return {"message": "Questions already exist (Limit 500 reached)"}
+    
+    with ai_generation_lock:
+        try:
+            ai_questions = generate_ai_questions(topic)
+            for q in ai_questions:
+                question = models.AIQuestion(
+                    topic=topic,
+                    question=q["question"],
+                    option1=q["options"][0],
+                    option2=q["options"][1],
+                    option3=q["options"][2],
+                    option4=q["options"][3],
+                    correct=q["correct"]
+                )
+                db.add(question)
+            db.commit()
+            return {"success": True}
+        except Exception as e:
+            db.rollback()
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=500, content={"error": str(e), "message": "Failed to generate questions. Please try again later."})
 
 @router.get("/questions")
 def get_questions(topic: str, db: Session = Depends(database.get_db)):
-    try:
-        ai_questions = generate_ai_questions(topic)
-        final = []
-        for q in ai_questions:
-            final.append({
-                "q": q["question"],
-                "options": q["options"],
-                "correct": q["correct"]
-            })
-            db_question = models.AIQuestion(
-                topic=topic,
-                question=q["question"],
-                option1=q["options"][0],
-                option2=q["options"][1],
-                option3=q["options"][2],
-                option4=q["options"][3],
-                correct=q["correct"]
-            )
-            db.add(db_question)
-        db.commit()
-        return final
-    except Exception as e:
-        db.rollback()
-        questions = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).order_by(func.random()).limit(10).all()
+    existing = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).count()
+    
+    if existing >= 500:
+        questions = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).order_by(func.random()).all()
         final = []
         for q in questions:
             final.append({
@@ -127,3 +113,37 @@ def get_questions(topic: str, db: Session = Depends(database.get_db)):
                 "correct": q.correct
             })
         return final
+
+    with ai_generation_lock:
+        # Check again inside the lock in case another thread just generated questions
+        existing_now = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).count()
+        if existing_now < 500:
+            try:
+                ai_questions = generate_ai_questions(topic)
+                for q in ai_questions:
+                    db_question = models.AIQuestion(
+                        topic=topic,
+                        question=q["question"],
+                        option1=q["options"][0],
+                        option2=q["options"][1],
+                        option3=q["options"][2],
+                        option4=q["options"][3],
+                        correct=q["correct"]
+                    )
+                    db.add(db_question)
+                db.commit()
+            except Exception as e:
+                db.rollback()
+                # Fallback to just returning random questions if generation fails
+                pass
+
+    # ALWAYS return ALL available questions from the entire pool randomly shuffled for every student
+    questions = db.query(models.AIQuestion).filter(models.AIQuestion.topic == topic).order_by(func.random()).all()
+    final = []
+    for q in questions:
+        final.append({
+            "q": q.question,
+            "options": [q.option1, q.option2, q.option3, q.option4],
+            "correct": q.correct
+        })
+    return final
