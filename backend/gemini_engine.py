@@ -16,11 +16,13 @@ model = genai.GenerativeModel("gemini-flash-latest")
 def generate_ai_questions(topic):
 
     prompt = f"""
-    Generate 10 MCQ quiz questions about {topic}.
+    Generate 10 UNIQUE, RANDOM, and DIVERSE MCQ quiz questions about {topic}.
+    (Seed: {random.randint(1, 1000000)})
     
     IMPORTANT RESTRICTIONS:
     - Questions MUST be maximum 7 words. Ultra short and direct.
     - Options MUST be maximum 2 words each. One or two words only. No sentences.
+    - DO NOT repeat questions you have generated before. Pick obscure or random facts within {topic}.
     - Example question: "What does CPU stand for?"
     - Example options: "RAM", "Processor", "Memory", "Cache"
 

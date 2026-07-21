@@ -236,31 +236,49 @@ export default function PlayingScreen({ ctx }) {
 
                         {ent.revealed ? (
                           ent.isCorrect ? (
-                            <div className="w-12 h-12 md:w-20 md:h-20 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(34,197,94,1)] border-4 border-white animate-pulse">
-                              <CheckCircle2 size={32} className="text-white" />
-                            </div>
+                            <motion.div
+                              initial={{ scale: 0.5, opacity: 1 }}
+                              animate={{ scale: [1, 2, 2.5], opacity: [1, 1, 0] }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              className="relative flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 pointer-events-none"
+                            >
+                              <div className="absolute inset-0 bg-green-400 rounded-full blur-[10px] sm:blur-[15px] mix-blend-screen opacity-90"></div>
+                              <div className="absolute inset-2 bg-emerald-500 rounded-full blur-[8px] opacity-90"></div>
+                              <div className="absolute inset-4 bg-teal-300 rounded-full blur-[4px] opacity-100 z-10"></div>
+                              
+                              <motion.div 
+                                initial={{ scale: 0.5, opacity: 1, borderWidth: "6px" }}
+                                animate={{ scale: 2.2, opacity: 0, borderWidth: "0px" }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="absolute inset-0 border-green-300 rounded-full z-0"
+                              />
+                            </motion.div>
                           ) : (
                             <motion.div
                               initial={{ scale: 0.5, opacity: 1 }}
-                              animate={{ scale: [1, 2.5, 3.5], opacity: [1, 1, 0] }}
-                              transition={{ duration: 0.7, ease: "easeOut" }}
-                              className="relative flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48"
+                              animate={{ scale: [1, 3, 4.5], opacity: [1, 1, 0] }}
+                              transition={{ duration: 0.8, ease: "easeOut" }}
+                              className="relative flex items-center justify-center w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 pointer-events-none"
                             >
                               {/* Explosion Core Layers */}
-                              <div className="absolute inset-0 bg-yellow-400 rounded-full blur-[15px] sm:blur-[25px] mix-blend-screen opacity-90"></div>
-                              <div className="absolute inset-2 bg-orange-500 rounded-full blur-[10px] sm:blur-[15px] opacity-90"></div>
-                              <div className="absolute inset-4 bg-red-600 rounded-full blur-[5px] sm:blur-[10px] opacity-100"></div>
-                              <div className="absolute inset-6 bg-white rounded-full blur-[2px] opacity-100 z-10"></div>
+                              <div className="absolute inset-0 bg-yellow-300 rounded-full blur-[20px] sm:blur-[30px] mix-blend-screen opacity-100"></div>
+                              <div className="absolute inset-2 bg-orange-500 rounded-full blur-[15px] sm:blur-[20px] opacity-100"></div>
+                              <div className="absolute inset-4 bg-red-600 rounded-full blur-[8px] sm:blur-[15px] opacity-100"></div>
+                              <div className="absolute inset-8 bg-white rounded-full blur-[4px] opacity-100 z-10"></div>
                               
-                              {/* Blast shockwave ring */}
+                              {/* Multiple Blast shockwave rings */}
                               <motion.div 
-                                initial={{ scale: 0.5, opacity: 1, borderWidth: "10px" }}
-                                animate={{ scale: 2.5, opacity: 0, borderWidth: "0px" }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
-                                className="absolute inset-0 border-yellow-300 rounded-full z-0"
+                                initial={{ scale: 0.3, opacity: 1, borderWidth: "15px" }}
+                                animate={{ scale: 3, opacity: 0, borderWidth: "0px" }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                className="absolute inset-0 border-yellow-100 rounded-full z-0"
                               />
-
-                              <Bomb size={48} className="relative z-20 text-black/80 drop-shadow-lg" />
+                              <motion.div 
+                                initial={{ scale: 0.5, opacity: 1, borderWidth: "8px" }}
+                                animate={{ scale: 2.5, opacity: 0, borderWidth: "0px" }}
+                                transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+                                className="absolute inset-0 border-orange-400 rounded-full z-0"
+                              />
                             </motion.div>
                           )
                         ) : null}
