@@ -19,8 +19,10 @@ def generate_ai_questions(topic):
     Generate 10 MCQ quiz questions about {topic}.
     
     IMPORTANT RESTRICTIONS:
-    - Questions MUST be maximum 20 words. Be concise and clear.
-    - Keep the options very brief (maximum 1-3 words). This is strictly required because they will be displayed on small animated game objects.
+    - Questions MUST be maximum 10 words. Short and direct.
+    - Options MUST be maximum 2 words each. One or two words only. No sentences.
+    - Example question: "What does CPU stand for?"
+    - Example options: "RAM", "Processor", "Memory", "Cache"
 
     Return ONLY JSON.
 
