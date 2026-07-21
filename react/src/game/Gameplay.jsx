@@ -67,6 +67,7 @@ export default function NeonStrikeGame({ onClose }) {
   const [copied, setCopied] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [discount, setDiscount] = useState(0);
+  const [phase, setPhase] = useState(0); // Phase changes every 4 questions
 
   const [countries, setCountries] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -234,10 +235,11 @@ export default function NeonStrikeGame({ onClose }) {
       lane: 1, score: 0, lives: 3, combo: 1, speed: 0.35, entities: [],
       flashTimer: 0, frame: 0, questions: questionsToPlay, qIndex: 0,
       isQuestionActive: false, spawnTimer: 35, correctCount: 0,
-      isEnded: false
+      isEnded: false, phaseQCount: 0
     };
 
     setCorrectCount(0);
+    setPhase(0);
 
     setPlayerLane(1);
     
@@ -334,6 +336,12 @@ export default function NeonStrikeGame({ onClose }) {
         setCurrentQuestion(state.questions[state.qIndex].q);
 
         state.spawnTimer = 35;
+
+        // Increment phase every 4 questions
+        state.phaseQCount = (state.phaseQCount || 0) + 1;
+        if (state.phaseQCount % 4 === 0) {
+          setPhase(prev => prev + 1);
+        }
       }, 800);
     }
 
@@ -352,10 +360,8 @@ export default function NeonStrikeGame({ onClose }) {
       }
     }
 
-    if (state.frame % 3 === 0) {
-      setScore(state.score);
-      setEntities([...state.entities]);
-    }
+    setScore(state.score);
+    setEntities([...state.entities]);
   };
 
   const endGame = async () => {
@@ -400,7 +406,7 @@ export default function NeonStrikeGame({ onClose }) {
     onClose();
   };
 
-  const ctx = { gameState, score, playerLane, entities, currentQuestion, floatingTexts, lives, combo, shake, couponCode, copied, correctCount, discount, countries, categories, formData, formError, isFetchingQs, setGameState, setScore, setPlayerLane, setEntities, setCurrentQuestion, setFloatingTexts, setLives, setCombo, setShake, setCouponCode, setCopied, setCorrectCount, setDiscount, setCountries, setCategories, setFormData, setFormError, setIsFetchingQs, triggerShake, addFloatingText, copyToClipboard, handlePhoneChange, submitForm, handleKeyDown, movePlayer, startGame, gameTick, endGame, handleExit, decodeHTML, stateRef };
+  const ctx = { gameState, score, playerLane, entities, currentQuestion, floatingTexts, lives, combo, shake, couponCode, copied, correctCount, discount, phase, countries, categories, formData, formError, isFetchingQs, setGameState, setScore, setPlayerLane, setEntities, setCurrentQuestion, setFloatingTexts, setLives, setCombo, setShake, setCouponCode, setCopied, setCorrectCount, setDiscount, setCountries, setCategories, setFormData, setFormError, setIsFetchingQs, triggerShake, addFloatingText, copyToClipboard, handlePhoneChange, submitForm, handleKeyDown, movePlayer, startGame, gameTick, endGame, handleExit, decodeHTML, stateRef };
 
   return (
     <div 

@@ -5,7 +5,23 @@ import { CheckCircle2, ChevronRight, Gamepad2, GraduationCap, XCircle, ArrowRigh
 const smoothEase = [0.16, 1, 0.3, 1];
 
 export default function PlayingScreen({ ctx }) {
-  const { gameState, score, playerLane, entities, currentQuestion, floatingTexts, lives, combo, shake, couponCode, copied, correctCount, discount, countries, categories, formData, formError, isFetchingQs, setGameState, setScore, setPlayerLane, setEntities, setCurrentQuestion, setFloatingTexts, setLives, setCombo, setShake, setCouponCode, setCopied, setCorrectCount, setDiscount, setCountries, setCategories, setFormData, setFormError, setIsFetchingQs, triggerShake, addFloatingText, copyToClipboard, handlePhoneChange, submitForm, handleKeyDown, movePlayer, startGame, gameTick, endGame, handleExit, decodeHTML, stateRef } = ctx;
+  const { gameState, score, playerLane, entities, currentQuestion, floatingTexts, lives, combo, shake, couponCode, copied, correctCount, discount, phase, countries, categories, formData, formError, isFetchingQs, setGameState, setScore, setPlayerLane, setEntities, setCurrentQuestion, setFloatingTexts, setLives, setCombo, setShake, setCouponCode, setCopied, setCorrectCount, setDiscount, setCountries, setCategories, setFormData, setFormError, setIsFetchingQs, triggerShake, addFloatingText, copyToClipboard, handlePhoneChange, submitForm, handleKeyDown, movePlayer, startGame, gameTick, endGame, handleExit, decodeHTML, stateRef } = ctx;
+
+  // Phase colour themes — cycles every 4 questions
+  const PHASE_THEMES = [
+    { grid: 'rgba(34,211,238,0.45)',  lane: 'rgba(34,211,238,0.6)',  glow: '34,211,238',  bg: 'rgba(34,211,238,0.06)',  name: 'CYAN'    },
+    { grid: 'rgba(168,85,247,0.45)', lane: 'rgba(168,85,247,0.7)', glow: '168,85,247', bg: 'rgba(168,85,247,0.06)', name: 'PURPLE'  },
+    { grid: 'rgba(249,115,22,0.45)', lane: 'rgba(249,115,22,0.7)', glow: '249,115,22', bg: 'rgba(249,115,22,0.06)', name: 'ORANGE'  },
+    { grid: 'rgba(34,197,94,0.45)',  lane: 'rgba(34,197,94,0.7)',  glow: '34,197,94',  bg: 'rgba(34,197,94,0.06)',  name: 'GREEN'   },
+    { grid: 'rgba(239,68,68,0.45)',  lane: 'rgba(239,68,68,0.7)',  glow: '239,68,68',  bg: 'rgba(239,68,68,0.06)',  name: 'RED'     },
+  ];
+  const theme = PHASE_THEMES[phase % PHASE_THEMES.length];
+
+  // Asteroid base size grows each phase (capped at 3 phases of growth)
+  const asteroidGrowth = Math.min(phase, 3);
+  const asteroidMobile = 80 + asteroidGrowth * 12;  // px — starts 80, grows 12px per phase
+  const asteroidSm     = 112 + asteroidGrowth * 14; // sm: starts 112
+  const asteroidMd     = 176 + asteroidGrowth * 16; // md: starts 176
   return (
     <>
           {gameState === "playing" && (
@@ -113,13 +129,13 @@ export default function PlayingScreen({ ctx }) {
                   {/* Sleek Digital Grid Layer (Perspective Movement lines) */}
                   <div className="absolute inset-0 opacity-40">
                     {/* Thin sliding horizontal neon lines */}
-                    <div className="absolute inset-0 bg-[linear-gradient(transparent_97%,rgba(34,211,238,0.45)_97%)] bg-[length:100%_120px] animate-[slideDown_0.6s_linear_infinite]"></div>
+                    <div className="absolute inset-0 animate-[slideDown_0.6s_linear_infinite]" style={{ backgroundImage: `linear-gradient(transparent 97%, ${theme.grid} 97%)`, backgroundSize: '100% 120px' }}></div>
                   </div>
 
                   {/* Glowing Laser Lane Separators */}
                   <div className="absolute inset-0 flex justify-evenly pointer-events-none opacity-80">
-                    <div className="w-[1.5px] md:w-[2.5px] h-full bg-cyan-400/60 shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
-                    <div className="w-[1.5px] md:w-[2.5px] h-full bg-cyan-400/60 shadow-[0_0_25px_rgba(34,211,238,0.9)] transition-all duration-500"></div>
+                    <div className="w-[1.5px] md:w-[2.5px] h-full transition-all duration-1000" style={{ background: theme.lane, boxShadow: `0 0 25px rgba(${theme.glow},0.9)` }}></div>
+                    <div className="w-[1.5px] md:w-[2.5px] h-full transition-all duration-1000" style={{ background: theme.lane, boxShadow: `0 0 25px rgba(${theme.glow},0.9)` }}></div>
                   </div>
                 </div>
 
@@ -139,11 +155,16 @@ export default function PlayingScreen({ ctx }) {
                           top: `${ent.top}%`,
                           transform: `translate(-50%, -50%) scale(${scale})`,
                           zIndex: Math.floor(ent.top),
-                          width: '25%'
+                          width: '25%',
+                          transition: 'top 30ms linear, left 30ms linear, transform 30ms linear',
+                          willChange: 'top, left, transform'
                         }}>
 
                         {!ent.revealed && (
-                          <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-44 md:h-44 flex items-center justify-center transition-transform hover:scale-110 duration-300">
+                          <div
+                            className="relative flex items-center justify-center transition-transform hover:scale-110 duration-300"
+                            style={{ width: `${asteroidMobile}px`, height: `${asteroidMobile}px` }}
+                          >
                             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]">
                               <defs>
                                 <radialGradient id="asteroidGrad" cx="35%" cy="35%" r="65%">
