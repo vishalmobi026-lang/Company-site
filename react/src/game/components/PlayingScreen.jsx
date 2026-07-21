@@ -173,10 +173,10 @@ export default function PlayingScreen({ ctx }) {
                               <circle cx="80" cy="25" r="6" fill="#0f172a" filter="url(#craterShadow)" opacity="0.6" />
                               <circle cx="18" cy="65" r="7" fill="#0f172a" filter="url(#craterShadow)" opacity="0.7" />
                             </svg>
-                        {!ent.revealed && (
-                          <span className="relative z-10 text-[9px] sm:text-xs md:text-base font-black text-white text-center px-2 sm:px-4 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
-                            {ent.text}
-                          </span>
+                            <span className="relative z-10 text-[9px] sm:text-xs md:text-base font-black text-white text-center px-2 sm:px-4 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                              {ent.text}
+                            </span>
+                          </div>
                         )}
 
                         {ent.revealed ? (
