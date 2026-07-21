@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, ChevronRight, Gamepad2, GraduationCap, XCircle, ArrowRight, ShieldCheck, Zap, Copy, Heart, Sparkles, Bomb, ChevronLeft, X } from "lucide-react";
 
@@ -19,16 +19,55 @@ export default function PlayingScreen({ ctx }) {
 
   // Asteroid base size grows each phase (capped at 3 phases of growth)
   const asteroidGrowth = Math.min(phase, 3);
-  const asteroidMobile = 80 + asteroidGrowth * 12;  // px — starts 80, grows 12px per phase
-  const asteroidSm     = 112 + asteroidGrowth * 14; // sm: starts 112
-  const asteroidMd     = 176 + asteroidGrowth * 16; // md: starts 176
+  const asteroidMobile = 80 + asteroidGrowth * 12;
+  const asteroidSm     = 112 + asteroidGrowth * 14;
+  const asteroidMd     = 176 + asteroidGrowth * 16;
+
+  // Phase-change announcement banner
+  const prevPhaseRef = useRef(phase);
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
+  useEffect(() => {
+    if (prevPhaseRef.current !== phase) {
+      prevPhaseRef.current = phase;
+      setShowAnnouncement(true);
+      const t = setTimeout(() => setShowAnnouncement(false), 2200);
+      return () => clearTimeout(t);
+    }
+  }, [phase]);
   return (
     <>
           {gameState === "playing" && (
             <motion.div key="playing" initial={{ opacity: 0, filter: "blur(10px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease: smoothEase }} className="flex flex-col h-full w-full relative">
+
+              {/* ── Ambient Nebula Glow — shifts colour with phase ── */}
+              <div className="absolute inset-0 pointer-events-none z-0 transition-all duration-[2000ms]" style={{ background: `radial-gradient(ellipse 80% 50% at 50% 100%, rgba(${theme.glow},0.12) 0%, transparent 70%)` }} />
+              <div className="absolute inset-0 pointer-events-none z-0 transition-all duration-[2000ms]" style={{ background: `radial-gradient(ellipse 40% 30% at 20% 40%, rgba(${theme.glow},0.05) 0%, transparent 60%)` }} />
+              <div className="absolute inset-0 pointer-events-none z-0 transition-all duration-[2000ms]" style={{ background: `radial-gradient(ellipse 40% 30% at 80% 40%, rgba(${theme.glow},0.05) 0%, transparent 60%)` }} />
+
+              {/* ── Phase Announcement Banner ── */}
+              <AnimatePresence>
+                {showAnnouncement && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.7, y: -30 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 1.2, y: -20 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-x-0 top-1/3 z-[200] flex flex-col items-center justify-center pointer-events-none"
+                  >
+                    <div
+                      className="px-8 py-4 rounded-2xl backdrop-blur-xl border-2 flex flex-col items-center gap-1 shadow-2xl"
+                      style={{ borderColor: `rgba(${theme.glow},0.8)`, background: `rgba(0,0,0,0.75)`, boxShadow: `0 0 60px rgba(${theme.glow},0.5)` }}
+                    >
+                      <span className="text-[10px] font-mono font-black uppercase tracking-[0.3em] opacity-70" style={{ color: `rgba(${theme.glow},1)` }}>Sector Shift</span>
+                      <span className="text-3xl md:text-5xl font-black text-white uppercase tracking-widest drop-shadow-lg">Phase {phase + 1}</span>
+                      <span className="text-sm md:text-lg font-black uppercase tracking-[0.25em] mt-1" style={{ color: `rgba(${theme.glow},1)`, textShadow: `0 0 20px rgba(${theme.glow},0.8)` }}>{theme.name} Sector</span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div className="absolute top-0 left-0 w-full z-[100] pointer-events-none p-3 md:p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-2 md:gap-3 pointer-events-auto">
-                  <div className="relative overflow-hidden flex flex-col gap-1 md:gap-1.5 bg-[#050917]/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border-2 border-cyan-400/50 shadow-[0_0_25px_rgba(34,211,238,0.15)] transition-all duration-500 min-w-[130px] md:max-w-[200px]">
+                  <div className="relative overflow-hidden flex flex-col gap-1 md:gap-1.5 bg-[#050917]/90 backdrop-blur-md p-3 md:p-4 rounded-2xl md:rounded-3xl border-2 transition-all duration-[1500ms] shadow-[0_0_25px_rgba(34,211,238,0.15)] min-w-[130px] md:max-w-[200px]" style={{ borderColor: `rgba(${theme.glow},0.6)`, boxShadow: `0 0 25px rgba(${theme.glow},0.2)` }}>
                     {/* Glowing Tech Corners */}
                     <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-cyan-400/60"></div>
                     <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-cyan-400/60"></div>
@@ -252,7 +291,7 @@ export default function PlayingScreen({ ctx }) {
                       className="relative w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 flex items-center justify-center"
                     >
                       {/* SHIP BODY - PROFESSIONAL DESIGN */}
-                      <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-10 drop-shadow-[0_15px_25px_rgba(34,211,238,0.4)]">
+                      <svg viewBox="0 0 120 120" className="absolute inset-0 w-full h-full z-10" style={{ filter: `drop-shadow(0 15px 25px rgba(${theme.glow},0.5))`, transition: 'filter 1.5s ease' }}>
                         <defs>
                           <linearGradient id="bodyBase" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stopColor="#1e293b" />
