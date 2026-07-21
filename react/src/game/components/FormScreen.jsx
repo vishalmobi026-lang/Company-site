@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ChevronRight, Gamepad2, GraduationCap, XCircle, ArrowRight, ShieldCheck, Zap, Copy, Sparkles, User, Phone, ChevronDown, BookOpen, AlertCircle, Loader2, Rocket } from "lucide-react";
+import { CheckCircle2, ChevronRight, ChevronLeft, Gamepad2, GraduationCap, XCircle, ArrowRight, ShieldCheck, Zap, Copy, Sparkles, User, Phone, ChevronDown, BookOpen, AlertCircle, Loader2, Rocket } from "lucide-react";
 
 const smoothEase = [0.16, 1, 0.3, 1];
 const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.2 } } };
@@ -19,6 +19,14 @@ export default function FormScreen({ ctx }) {
               transition={{ duration: 1, ease: smoothEase }}
               className="w-full max-w-5xl my-8 md:my-auto mx-auto bg-[#0b1021]/80 backdrop-blur-2xl p-5 sm:p-8 md:p-12 rounded-[2.5rem] border border-cyan-500/20 shadow-[0_0_50px_-12px_rgba(34,211,238,0.15)] relative"
             >
+              {/* Back Button */}
+              <button 
+                onClick={() => setGameState("intro")} 
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-2 bg-white/5 hover:bg-cyan-900/30 text-cyan-400 hover:text-cyan-300 px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 border border-cyan-500/20 hover:border-cyan-400/50 shadow-[0_0_15px_rgba(34,211,238,0.1)] hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] text-xs font-bold uppercase tracking-wider z-50 group"
+              >
+                <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back
+              </button>
+
               {/* Inset Border Glow */}
               <div className="absolute inset-0 rounded-[2.5rem] border border-cyan-400/10 pointer-events-none z-20" />
 

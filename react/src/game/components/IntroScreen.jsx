@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ChevronRight, Gamepad2, GraduationCap, XCircle, ArrowRight, ShieldCheck, ShieldAlert, Zap, Copy, BrainCircuit, Sparkles, User, Clock, BookOpen } from "lucide-react";
+import { CheckCircle2, ChevronRight, Gamepad2, GraduationCap, XCircle, ArrowRight, ShieldCheck, ShieldAlert, Zap, Copy, BrainCircuit, Sparkles, User, Clock, BookOpen, ChevronLeft } from "lucide-react";
 
 const smoothEase = [0.16, 1, 0.3, 1];
 
@@ -24,8 +24,18 @@ export default function IntroScreen({ ctx }) {
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: smoothEase }}
-                className="z-10 w-full max-w-7xl flex flex-col lg:flex-row gap-5 sm:gap-8 items-stretch"
+                className="z-10 w-full max-w-7xl flex flex-col lg:flex-row gap-5 sm:gap-8 items-stretch relative"
               >
+                {/* Back / Exit Button */}
+                <div className="absolute -top-12 left-0 sm:-top-14 lg:-top-10 lg:left-0 z-50">
+                  <button 
+                    onClick={handleExit} 
+                    className="flex items-center gap-2 bg-white/5 hover:bg-cyan-900/30 text-cyan-400 hover:text-cyan-300 px-4 py-2 rounded-full backdrop-blur-md transition-all duration-300 border border-cyan-500/20 hover:border-cyan-400/50 shadow-[0_0_15px_rgba(34,211,238,0.1)] hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] text-xs font-bold uppercase tracking-wider group"
+                  >
+                    <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back
+                  </button>
+                </div>
+
                 {/* LEFT PANEL: TITLE CARD */}
                 <motion.div
                   whileHover={{ y: -6, scale: 1.005 }}
