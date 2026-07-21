@@ -201,8 +201,8 @@ export default function PlayingScreen({ ctx }) {
                           const safeId = ent.id.toString().replace('.', '-');
                           return (
                           <div
-                            className="relative flex items-center justify-center transition-transform hover:scale-110 duration-300"
-                            style={{ width: `${asteroidMobile}px`, height: `${asteroidMobile}px` }}
+                            className="relative flex items-center justify-center transition-transform hover:scale-110 duration-300 w-[var(--ast-mob)] h-[var(--ast-mob)] sm:w-[var(--ast-sm)] sm:h-[var(--ast-sm)] md:w-[var(--ast-md)] md:h-[var(--ast-md)]"
+                            style={{ '--ast-mob': `${asteroidMobile}px`, '--ast-sm': `${asteroidSm}px`, '--ast-md': `${asteroidMd}px` }}
                           >
                             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full" style={{ filter: `drop-shadow(0 8px 20px rgba(${theme.glow},0.5)) drop-shadow(0 0 8px rgba(${theme.glow},0.3))` }}>
                               <defs>
