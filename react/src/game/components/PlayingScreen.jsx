@@ -68,8 +68,8 @@ export default function PlayingScreen({ ctx }) {
                 </div>
 
                 <div className="pointer-events-auto">
-                  <button onClick={handleExit} className="bg-white/10 hover:bg-red-500/80 text-white p-2.5 md:p-3 rounded-full backdrop-blur-md transition-all duration-500 border border-white/20 shadow-lg">
-                    <X size={20} />
+                  <button onClick={handleExit} className="flex items-center gap-1.5 md:gap-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 md:px-5 md:py-2.5 rounded-full backdrop-blur-md transition-all duration-500 border border-white/20 shadow-lg font-bold text-[10px] md:text-sm uppercase tracking-wider">
+                    <ChevronLeft size={18} className="md:w-5 md:h-5" /> Back
                   </button>
                 </div>
               </div>
@@ -143,19 +143,19 @@ export default function PlayingScreen({ ctx }) {
                         }}>
 
                         {!ent.revealed && (
-                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-36 md:h-36 flex items-center justify-center transition-transform hover:scale-110 duration-300">
+                          <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-44 md:h-44 flex items-center justify-center transition-transform hover:scale-110 duration-300">
                             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]">
                               <defs>
                                 <radialGradient id="asteroidGrad" cx="35%" cy="35%" r="65%">
-                                  <stop offset="0%" stopColor="#4a5568" />
-                                  <stop offset="60%" stopColor="#1e293b" />
-                                  <stop offset="100%" stopColor="#0f172a" />
+                                  <stop offset="0%" stopColor="#525252" />
+                                  <stop offset="60%" stopColor="#262626" />
+                                  <stop offset="100%" stopColor="#171717" />
                                 </radialGradient>
                                 <filter id="craterShadow">
                                   <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.7" />
                                 </filter>
                                 <filter id="asteroidHighlight">
-                                  <feDropShadow dx="-2" dy="-2" stdDeviation="2" floodColor="#cbd5e1" floodOpacity="0.2" />
+                                  <feDropShadow dx="-2" dy="-2" stdDeviation="2" floodColor="#a3a3a3" floodOpacity="0.2" />
                                 </filter>
                               </defs>
                               
@@ -163,17 +163,17 @@ export default function PlayingScreen({ ctx }) {
                               <path d="M50 2 C70 4, 90 20, 96 45 C100 70, 85 92, 55 97 C25 99, 4 75, 2 50 C0 25, 20 4, 50 2 Z" fill="url(#asteroidGrad)" filter="url(#asteroidHighlight)" />
                               
                               {/* Craters */}
-                              <circle cx="28" cy="35" r="10" fill="#0f172a" filter="url(#craterShadow)" opacity="0.8" />
-                              <circle cx="32" cy="30" r="4" fill="#020617" opacity="0.5" />
+                              <circle cx="28" cy="35" r="10" fill="#171717" filter="url(#craterShadow)" opacity="0.8" />
+                              <circle cx="32" cy="30" r="4" fill="#0a0a0a" opacity="0.5" />
 
-                              <circle cx="75" cy="55" r="14" fill="#0f172a" filter="url(#craterShadow)" opacity="0.7" />
-                              <circle cx="70" cy="52" r="6" fill="#020617" opacity="0.4" />
+                              <circle cx="75" cy="55" r="14" fill="#171717" filter="url(#craterShadow)" opacity="0.7" />
+                              <circle cx="70" cy="52" r="6" fill="#0a0a0a" opacity="0.4" />
 
-                              <circle cx="45" cy="82" r="8" fill="#0f172a" filter="url(#craterShadow)" opacity="0.8" />
-                              <circle cx="80" cy="25" r="6" fill="#0f172a" filter="url(#craterShadow)" opacity="0.6" />
-                              <circle cx="18" cy="65" r="7" fill="#0f172a" filter="url(#craterShadow)" opacity="0.7" />
+                              <circle cx="45" cy="82" r="8" fill="#171717" filter="url(#craterShadow)" opacity="0.8" />
+                              <circle cx="80" cy="25" r="6" fill="#171717" filter="url(#craterShadow)" opacity="0.6" />
+                              <circle cx="18" cy="65" r="7" fill="#171717" filter="url(#craterShadow)" opacity="0.7" />
                             </svg>
-                            <span className="relative z-10 text-[9px] sm:text-xs md:text-base font-black text-white text-center px-2 sm:px-4 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                            <span className="relative z-10 text-[10px] sm:text-sm md:text-lg font-black text-white text-center px-2 sm:px-5 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                               {ent.text}
                             </span>
                           </div>
