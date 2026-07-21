@@ -240,9 +240,28 @@ export default function PlayingScreen({ ctx }) {
                               <CheckCircle2 size={32} className="text-white" />
                             </div>
                           ) : (
-                            <div className="w-12 h-12 md:w-20 md:h-20 bg-red-600 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(239,68,68,1)] border-4 border-yellow-400">
-                              <Bomb size={32} className="text-yellow-300" />
-                            </div>
+                            <motion.div
+                              initial={{ scale: 0.5, opacity: 1 }}
+                              animate={{ scale: [1, 2.5, 3.5], opacity: [1, 1, 0] }}
+                              transition={{ duration: 0.7, ease: "easeOut" }}
+                              className="relative flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 md:w-48 md:h-48"
+                            >
+                              {/* Explosion Core Layers */}
+                              <div className="absolute inset-0 bg-yellow-400 rounded-full blur-[15px] sm:blur-[25px] mix-blend-screen opacity-90"></div>
+                              <div className="absolute inset-2 bg-orange-500 rounded-full blur-[10px] sm:blur-[15px] opacity-90"></div>
+                              <div className="absolute inset-4 bg-red-600 rounded-full blur-[5px] sm:blur-[10px] opacity-100"></div>
+                              <div className="absolute inset-6 bg-white rounded-full blur-[2px] opacity-100 z-10"></div>
+                              
+                              {/* Blast shockwave ring */}
+                              <motion.div 
+                                initial={{ scale: 0.5, opacity: 1, borderWidth: "10px" }}
+                                animate={{ scale: 2.5, opacity: 0, borderWidth: "0px" }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="absolute inset-0 border-yellow-300 rounded-full z-0"
+                              />
+
+                              <Bomb size={48} className="relative z-20 text-black/80 drop-shadow-lg" />
+                            </motion.div>
                           )
                         ) : null}
                       </div>
